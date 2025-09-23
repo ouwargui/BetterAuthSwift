@@ -29,22 +29,18 @@ public class BetterAuthClient: ObservableObject {
   }
 
   public func getSession() async throws -> Session {
-    let session = try await httpClient.request(
+    return try await httpClient.request(
       route: .getSession,
       responseType: Session.self,
     )
-
-    return session
   }
 
   public func signOut() async throws -> SignOutResponse {
     return try await sessionStore.withSessionRefresh {
-      let response = try await httpClient.request(
+      return try await httpClient.request(
         route: .signOut,
         responseType: SignOutResponse.self
       )
-      
-      return response
     }
   }
 }
@@ -57,9 +53,21 @@ extension BetterAuthClient {
       self.client = client
     }
 
-    public func email(_ email: String, password: String) async {}
+    public func email(with body: SignInEmailRequest) async throws -> SignInEmailResponse{
+      guard let client = client else {
+        throw BetterAuthSwiftError(message: "Client deallocated")
+      }
+      
+      return try await client.sessionStore.withSessionRefresh {
+        return try await client.httpClient.request(
+          route: .signInEmail,
+          body: body,
+          responseType: SignInEmailResponse.self
+        )
+      }
+    }
 
-    public func social(_ provider: String, callbackURL: URL? = nil) async {}
+    public func social(with body: SignInSocialRequest) async {}
   }
 
   public class SignUp {
@@ -75,13 +83,11 @@ extension BetterAuthClient {
       }
       
       return try await client.sessionStore.withSessionRefresh {
-        let response = try await client.httpClient.request(
+        return try await client.httpClient.request(
           route: .signUpEmail,
           body: body,
           responseType: SignUpEmailResponse.self
         )
-
-        return response
       }
     }
   }

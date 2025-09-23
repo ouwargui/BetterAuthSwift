@@ -40,9 +40,14 @@ struct ContentView: View {
       } else {
         Button {
           Task {
-            let res = try await client.signUp.email(with: .init(email: email, password: password, name: "Gui"))
-            
-            print(res.user.name)
+            try await client.signIn.email(with: .init(email: email, password: password))
+          }
+        } label: {
+          Text("Sign in")
+        }
+        Button {
+          Task {
+            try await client.signUp.email(with: .init(email: email, password: password, name: "Gui"))
           }
         } label: {
           Text("Sign up")

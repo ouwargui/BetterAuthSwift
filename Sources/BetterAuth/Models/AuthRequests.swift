@@ -50,7 +50,10 @@ public struct SignInEmailRequest: Codable, Sendable {
 }
 
 public struct SignInEmailResponse: Codable, Sendable {
-  
+  public let user: User
+  public let token: String
+  public let redirect: Bool
+  public let url: String?
 }
 
 public struct SignInSocialRequest: Codable, Sendable {
