@@ -1,0 +1,4 @@
+{
+  "swift.excludePathsFromPackageDependencies": [".build", ".swiftpm", ".git"],
+  "swift.excludePathsFromActivation": [".build", ".swiftpm", ".git"]
+}
