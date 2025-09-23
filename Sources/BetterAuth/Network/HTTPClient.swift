@@ -2,12 +2,11 @@ import Foundation
 
 private struct Empty: Codable {}
 
-class HTTPClient {
+actor HTTPClient {
   private let baseURL: URL
   private let session = URLSession.shared
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
-  private let storage = KeychainStorage()
 
   init(baseURL: URL) {
     self.baseURL = baseURL
@@ -28,6 +27,7 @@ class HTTPClient {
       body: body
     )
   }
+
   func request<T: Decodable>(
     route: BetterAuthRoute,
     responseType: T.Type

@@ -1,11 +1,11 @@
 import Foundation
 
-public struct Session: Codable {
+public struct Session: Codable, Sendable {
   public let session: SessionData
   public let user: User
 }
 
-public struct SessionData: Codable {
+public struct SessionData: Codable, Sendable {
   public let id: String
   public let userId: String
   public let expiresAt: Date
@@ -13,7 +13,7 @@ public struct SessionData: Codable {
   public let updatedAt: Date
 }
 
-public struct User: Codable {
+public struct User: Codable, Sendable {
   public let id: String
   public let email: String
   public let name: String?

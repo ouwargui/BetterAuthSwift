@@ -6,15 +6,19 @@ private struct Empty: Codable {}
 public class BetterAuthClient {
   private let baseUrl: URL
   private let httpClient: HTTPClient
+  private let sessionStore: SessionStore
+  
+  public var session: Session? {
+    sessionStore.current
+  }
 
   public lazy var signIn = SignIn(client: self)
   public lazy var signUp = SignUp(client: self)
 
-  @Published public private(set) var session: Session?
-
   public init(baseURL: URL, plugins: [String] = []) {
     self.baseUrl = baseURL
     self.httpClient = HTTPClient(baseURL: baseURL)
+    self.sessionStore = SessionStore(httpClient: self.httpClient)
   }
 
   public func getSession() async throws -> Session {
@@ -22,8 +26,6 @@ public class BetterAuthClient {
       route: .getSession,
       responseType: Session.self,
     )
-
-    self.session = session
 
     return session
   }
@@ -55,14 +57,16 @@ extension BetterAuthClient {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
+      
+      return try await client.sessionStore.withSessionRefresh {
+        let session = try await client.httpClient.request(
+          route: .signUpEmail,
+          body: body,
+          responseType: SignUpEmailResponse.self
+        )
 
-      let session = try await client.httpClient.request(
-        route: .signUpEmail,
-        body: body,
-        responseType: SignUpEmailResponse.self
-      )
-
-      return session
+        return session
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SignUpEmailRequest: Codable {
+public struct SignUpEmailRequest: Codable, Sendable {
   public let email: String
   public let password: String
   public let name: String
@@ -25,12 +25,12 @@ public struct SignUpEmailRequest: Codable {
   }
 }
 
-public struct SignUpEmailResponse: Codable {
+public struct SignUpEmailResponse: Codable, Sendable {
   public let user: User
   public let token: String
 }
 
-public struct SignInEmailRequest: Codable {
+public struct SignInEmailRequest: Codable, Sendable {
   public let email: String
   public let password: String
   public let callbackURL: String?
@@ -49,11 +49,11 @@ public struct SignInEmailRequest: Codable {
   }
 }
 
-public struct SignInEmailResponse: Codable {
+public struct SignInEmailResponse: Codable, Sendable {
   
 }
 
-public struct SignInSocialRequest: Codable {
+public struct SignInSocialRequest: Codable, Sendable {
   public let provider: String
   public let callbackURL: String?
   public let newUserCallbackURL: String?
@@ -64,7 +64,7 @@ public struct SignInSocialRequest: Codable {
   public let requestSignUp: Bool?
   public let loginHint: String?
 
-  public struct IDToken: Codable {
+  public struct IDToken: Codable, Sendable {
     public let token: String
     public let nonce: String?
     public let accessToken: String?
