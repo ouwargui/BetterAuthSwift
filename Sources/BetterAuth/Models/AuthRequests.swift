@@ -94,3 +94,7 @@ public struct SignInSocialRequest: Codable, Sendable {
     self.loginHint = loginHint
   }
 }
+
+public struct SignOutResponse: Codable, Sendable {
+  public let success: Bool
+}

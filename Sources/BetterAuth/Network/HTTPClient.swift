@@ -47,7 +47,7 @@ actor HTTPClient {
     body: B?
   ) async throws -> T {
     var url: URL {
-      if #available(macOS 13.0, *) {
+      if #available(macOS 13.0, iOS 16.0, *) {
         return baseURL.appending(path: path)
       } else {
         return baseURL.appendingPathComponent(path)
