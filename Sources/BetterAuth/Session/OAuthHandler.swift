@@ -1,9 +1,10 @@
 import Foundation
 import AuthenticationServices
 
+@MainActor
 class OAuthHandler: NSObject {
   private var webAuthSession: ASWebAuthenticationSession?
-  private var completion: ((Result<URL, Error>) -> Void)?
+  private var completion: ((Result<String, Error>) -> Void)?
   
   func extractScheme(from callbackURL: String?) throws -> String {
     guard let callbackURL = callbackURL,
@@ -14,8 +15,8 @@ class OAuthHandler: NSObject {
     
     return scheme
   }
-  
-  func authenticate(authURL: String, callbackURLScheme: String) async throws -> URL {
+
+  func authenticate(authURL: String, callbackURLScheme: String) async throws -> String {
     return try await withCheckedThrowingContinuation { continuation in
       self.completion = { result in
         continuation.resume(with: result)
@@ -33,19 +34,32 @@ class OAuthHandler: NSObject {
         if let error = error {
           self?.completion?(.failure(error))
         } else if let callbackURL = callbackURL {
-          self?.completion?(.success(callbackURL))
+          guard let cookie = self?.extractCookieFromCallback(callbackURL) else {
+            self?.completion?(.failure(BetterAuthSwiftError(message: "Failed to extract session cookie from callback URL")))
+            return
+          }
+          self?.completion?(.success(cookie))
         } else {
           self?.completion?(.failure(BetterAuthSwiftError(message: "No callback URL received")))
         }
-        
+
         self?.webAuthSession = nil
         self?.completion = nil
       }
       
       webAuthSession?.presentationContextProvider = self
       webAuthSession?.prefersEphemeralWebBrowserSession = false
-      print(webAuthSession?.canStart)
+      webAuthSession?.start()
     }
+  }
+  
+  private func extractCookieFromCallback(_ callbackURL: URL) -> String? {
+    guard let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false),
+          let queryItems = components.queryItems else {
+      return nil
+    }
+
+    return queryItems.first { $0.name == "cookie" }?.value
   }
 }
 

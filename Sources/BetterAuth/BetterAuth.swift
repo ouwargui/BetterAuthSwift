@@ -48,7 +48,6 @@ public class BetterAuthClient: ObservableObject {
 extension BetterAuthClient {
   public class SignIn {
     private weak var client: BetterAuthClient?
-    private var oauthHandler: OAuthHandler?
 
     init(client: BetterAuthClient) {
       self.client = client
@@ -87,14 +86,14 @@ extension BetterAuthClient {
         }
 
         if authResponse.redirect, let authURL = authResponse.url {
-          self.oauthHandler = OAuthHandler()
+          let handler = await OAuthHandler()
 
-          let callbackURL = try await oauthHandler!.authenticate(
+          let sessionCookie = try await handler.authenticate(
             authURL: authURL,
-            callbackURLScheme: try oauthHandler!.extractScheme(from: body.callbackURL)
+            callbackURLScheme: try handler.extractScheme(from: body.callbackURL)
           )
-          
-          self.oauthHandler = nil
+
+          try await client.httpClient.setCookie(sessionCookie)
         }
 
         return authResponse

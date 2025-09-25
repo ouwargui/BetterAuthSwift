@@ -15,6 +15,33 @@ actor HTTPClient {
     decoder.dateDecodingStrategy = .iso8601
   }
   
+  private func getHost() throws -> URL {
+    guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+      throw BetterAuthSwiftError(message: "Failed to parse baseURL")
+    }
+
+    components.path = ""
+    components.query = nil
+    components.fragment = nil
+
+    guard let hostURL = components.url else {
+      throw BetterAuthSwiftError(message: "Failed to construct host URL")
+    }
+
+    return hostURL
+  }
+
+  func setCookie(_ cookie: String) throws {
+    let host = try getHost()
+    let httpCookie = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": cookie], for: host)
+
+    guard let cookie = httpCookie.first else {
+      throw BetterAuthSwiftError(message: "Failed to get session cookie from callbackURL")
+    }
+
+    HTTPCookieStorage.shared.setCookie(cookie)
+  }
+
   func request<T: Decodable, B: Encodable>(
     route: BetterAuthRoute,
     body: B?,
