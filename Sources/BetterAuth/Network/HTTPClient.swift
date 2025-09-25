@@ -63,6 +63,8 @@ actor HTTPClient {
     }
 
     let (data, response) = try await session.data(for: request)
+    
+    print(data.json)
 
     guard let httpResponse = response as? HTTPURLResponse else {
       throw BetterAuthSwiftError(message: "Invalid response")

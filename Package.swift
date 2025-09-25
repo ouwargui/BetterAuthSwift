@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "BetterAuthSwift",
-    platforms: [.macOS(.v10_15), .iOS(.v13), .watchOS(.v4), .visionOS(.v1)],
+    platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v4), .visionOS(.v1)],
     products: [
         .library(
             name: "BetterAuth",

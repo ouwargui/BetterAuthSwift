@@ -98,6 +98,12 @@ public struct SignInSocialRequest: Codable, Sendable {
   }
 }
 
+public struct SignInSocialResponse: Codable, Sendable {
+  public let redirect: Bool
+  public let token: String?
+  public let url: String?
+}
+
 public struct SignOutResponse: Codable, Sendable {
   public let success: Bool
 }

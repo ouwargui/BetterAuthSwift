@@ -48,6 +48,7 @@ public class BetterAuthClient: ObservableObject {
 extension BetterAuthClient {
   public class SignIn {
     private weak var client: BetterAuthClient?
+    private var oauthHandler: OAuthHandler?
 
     init(client: BetterAuthClient) {
       self.client = client
@@ -67,7 +68,38 @@ extension BetterAuthClient {
       }
     }
 
-    public func social(with body: SignInSocialRequest) async {}
+    public func social(with body: SignInSocialRequest) async throws -> SignInSocialResponse {
+      guard let client = client else {
+        throw BetterAuthSwiftError(message: "Client deallocated")
+      }
+
+      return try await client.sessionStore.withSessionRefresh {
+        let authResponse = try await client.httpClient.request(
+          route: .signInSocial,
+          body: body,
+          responseType: SignInSocialResponse.self
+        )
+        
+        print(authResponse)
+
+        if body.idToken != nil {
+          return authResponse
+        }
+
+        if authResponse.redirect, let authURL = authResponse.url {
+          self.oauthHandler = OAuthHandler()
+
+          let callbackURL = try await oauthHandler!.authenticate(
+            authURL: authURL,
+            callbackURLScheme: try oauthHandler!.extractScheme(from: body.callbackURL)
+          )
+          
+          self.oauthHandler = nil
+        }
+
+        return authResponse
+      }
+    }
   }
 
   public class SignUp {

@@ -30,9 +30,7 @@ struct ContentView: View {
       if client.session != nil {
         Button {
           Task {
-            let res = try await client.signOut()
-
-            print(res)
+            try await client.signOut()
           }
         } label: {
           Text("Sign out")
@@ -51,6 +49,14 @@ struct ContentView: View {
           }
         } label: {
           Text("Sign up")
+        }
+        Button {
+          Task {
+            let res = try await client.signIn.social(with: .init(provider: "google", callbackURL: "betterauthswiftexample://"))
+            print(res)
+          }
+        } label: {
+          Text("Sign in with Google")
         }
       }
       
