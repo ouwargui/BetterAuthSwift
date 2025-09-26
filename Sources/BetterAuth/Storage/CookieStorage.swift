@@ -1,6 +1,6 @@
 import Foundation
 
-public class CookieStorage: HTTPCookieStorage, @unchecked Sendable {
+class CookieStorage: HTTPCookieStorage, @unchecked Sendable {
   private let keychain = KeychainStorage()
   private let cookieKey = "better-auth.persistent-cookies"
   private var cookieStore: [HTTPCookie] = []

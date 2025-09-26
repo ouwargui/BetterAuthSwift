@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-public class KeychainStorage {
+class KeychainStorage {
   private let service: String
   private let accessGroup: String?
 
@@ -99,7 +99,7 @@ public class KeychainStorage {
   }
 }
 
-public enum KeychainError: Error, LocalizedError {
+enum KeychainError: Error, LocalizedError {
   case saveError(OSStatus)
   case deleteError(OSStatus)
   case unexpectedError(OSStatus)

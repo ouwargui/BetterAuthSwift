@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: Default methods and session
 
-/// The main client for the BetterAuth API. It's an ``ObservableObject`` that updates when session changes.
+/// The main client for the BetterAuth API. It's an ObservableObject that updates when session changes.
 /// - Parameters:
 ///   - baseURL: The base URL of the BetterAuth API.
 ///   - plugins: The plugins to use.
@@ -13,7 +13,7 @@ public class BetterAuthClient: ObservableObject {
   private let httpClient: HTTPClient
   private let sessionStore: SessionStore
 
-  /// The current session. It's a ``@Published`` variable.
+  /// The current session. It's a @Published variable.
   public var session: Session? {
     sessionStore.current
   }
@@ -36,7 +36,7 @@ public class BetterAuthClient: ObservableObject {
       .store(in: &cancellables)
   }
 
-  /// Makes a request to ``/get-session``.
+  /// Makes a request to /get-session.
   /// - Returns: ``Session``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getSession() async throws -> Session? {
@@ -46,7 +46,7 @@ public class BetterAuthClient: ObservableObject {
     )
   }
 
-  /// Makes a request to ``/sign-out``.
+  /// Makes a request to /sign-out.
   /// - Returns: ``SignOutResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func signOut() async throws -> SignOutResponse {
@@ -61,7 +61,7 @@ public class BetterAuthClient: ObservableObject {
 
 // MARK: Rest of methods
 extension BetterAuthClient {
-  /// Makes a request to ``/forget-password``.
+  /// Makes a request to /forget-password.
   /// - Parameter body: ``ForgetPasswordRequest``
   /// - Returns: ``ForgetPasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -75,7 +75,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/reset-password``.
+  /// Makes a request to /reset-password.
   /// - Parameter body: ``ResetPasswordRequest``
   /// - Returns: ``ResetPasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -89,7 +89,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/verify-email``.
+  /// Makes a request to /verify-email.
   /// - Parameter body: ``VerifyEmailRequest``
   /// - Returns: ``VerifyEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -105,7 +105,7 @@ extension BetterAuthClient {
     }
   }
 
-  /// Makes a request to ``/send-verification-email``.
+  /// Makes a request to /send-verification-email.
   /// - Parameter body: ``SendVerificationEmailRequest``
   /// - Returns: ``SendVerificationEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -119,7 +119,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/change-email``.
+  /// Makes a request to /change-email.
   /// - Parameter body: ``ChangeEmailRequest``
   /// - Returns: ``ChangeEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -133,7 +133,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/change-password``.
+  /// Makes a request to /change-password.
   /// - Parameter body: ``ChangePasswordRequest``
   /// - Returns: ``ChangePasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -147,7 +147,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/update-user``.
+  /// Makes a request to /update-user.
   /// - Parameter body: ``UpdateUserRequest``
   /// - Returns: ``UpdateUserResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -163,7 +163,7 @@ extension BetterAuthClient {
     }
   }
 
-  /// Makes a request to ``/delete-user``.
+  /// Makes a request to /delete-user.
   /// - Parameter body: ``DeleteUserRequest``
   /// - Returns: ``DeleteUserResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -179,7 +179,7 @@ extension BetterAuthClient {
     }
   }
 
-  /// Makes a request to ``/request-password-reset``.
+  /// Makes a request to /request-password-reset.
   /// - Parameter body: ``RequestPasswordResetRequest``
   /// - Returns: ``RequestPasswordResetResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -193,7 +193,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/list-sessions``.
+  /// Makes a request to /list-sessions.
   /// - Returns: ``ListSessionResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listSessions() async throws -> ListSessionResponse {
@@ -203,7 +203,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/revoke-session``.
+  /// Makes a request to /revoke-session.
   /// - Parameter body: ``RevokeSessionRequest``
   /// - Returns: ``RevokeSessionResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -217,7 +217,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/revoke-sessions``.
+  /// Makes a request to /revoke-sessions.
   /// - Returns: ``RevokeSessionsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeSessions() async throws -> RevokeSessionsResponse {
@@ -227,7 +227,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/revoke-other-sessions``.
+  /// Makes a request to /revoke-other-sessions.
   /// - Returns: ``RevokeOtherSessionsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeOtherSessions() async throws -> RevokeOtherSessionsResponse
@@ -238,7 +238,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/link-social``.
+  /// Makes a request to /link-social.
   /// - Parameter body: ``LinkSocialRequest``
   /// - Returns: ``LinkSocialResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -252,7 +252,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/list-accounts``.
+  /// Makes a request to /list-accounts.
   /// - Returns: ``ListAccountsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listAccounts() async throws -> ListAccountsResponse {
@@ -262,7 +262,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/unlink-account``.
+  /// Makes a request to /unlink-account.
   /// - Parameter body: ``UnlinkAccountRequest``
   /// - Returns: ``UnlinkAccountResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -276,7 +276,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/refresh-token``.
+  /// Makes a request to /refresh-token.
   /// - Parameter body: ``RefreshTokenRequest``
   /// - Returns: ``RefreshTokenResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -290,7 +290,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/get-access-token``.
+  /// Makes a request to /get-access-token.
   /// - Parameter body: ``GetAccessTokenRequest``
   /// - Returns: ``GetAccessTokenResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -304,7 +304,7 @@ extension BetterAuthClient {
     )
   }
 
-  /// Makes a request to ``/account-info``.
+  /// Makes a request to /account-info.
   /// - Parameter body: ``AccountInfoRequest``
   /// - Returns: ``AccountInfoResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -329,7 +329,7 @@ extension BetterAuthClient {
       self.client = client
     }
 
-    /// Makes a request to ``/sign-in/email``.
+    /// Makes a request to /sign-in/email.
     /// - Parameter body: ``SignInEmailRequest``
     /// - Returns: ``SignInEmailResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -349,7 +349,7 @@ extension BetterAuthClient {
       }
     }
 
-    /// Makes a request to ``/sign-in/social``.
+    /// Makes a request to /sign-in/social.
     /// - Parameter body: ``SignInSocialRequest``
     /// - Returns: ``SignInSocialResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
@@ -395,7 +395,7 @@ extension BetterAuthClient {
       self.client = client
     }
 
-    /// Makes a request to ``/sign-up/email``.
+    /// Makes a request to /sign-up/email.
     /// - Parameter body: ``SignUpEmailRequest``
     /// - Returns: ``SignUpEmailResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
