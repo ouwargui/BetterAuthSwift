@@ -1,6 +1,6 @@
 import Foundation
 
-public class CookieStorage: HTTPCookieStorage {
+public class CookieStorage: HTTPCookieStorage, @unchecked Sendable {
   private let keychain = KeychainStorage()
   private let cookieKey = "better-auth.persistent-cookies"
   private var cookieStore: [HTTPCookie] = []
@@ -79,7 +79,6 @@ public class CookieStorage: HTTPCookieStorage {
   }
 
   public override func removeCookies(since date: Date) {
-    let initialCount = cookieStore.count
     cookieStore.removeAll()
     saveCookiesToKeychain()
   }

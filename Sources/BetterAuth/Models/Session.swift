@@ -8,6 +8,9 @@ public struct Session: Codable, Sendable {
 public struct SessionData: Codable, Sendable {
   public let id: String
   public let userId: String
+  public let token: String
+  public let ipAddress: String
+  public let userAgent: String
   public let expiresAt: Date
   public let createdAt: Date
   public let updatedAt: Date

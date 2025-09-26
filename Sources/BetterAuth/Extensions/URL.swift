@@ -16,4 +16,18 @@ extension URL {
 
     return hostURL
   }
+  
+  func getBaseURL() -> URL {
+    if #available(iOS 16.0, macOS 13.0, *) {
+      if self.path().isEmpty || self.path() == "/" {
+        return self.appending(path: "/api/auth")
+      }
+    } else {
+      if self.path.isEmpty || self.path == "/" {
+        return self.appendingPathComponent("/api/auth")
+      }
+    }
+
+    return self
+  }
 }

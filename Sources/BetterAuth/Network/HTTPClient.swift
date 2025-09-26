@@ -21,10 +21,15 @@ actor HTTPClient {
 
   func setCookie(_ cookie: String) throws {
     let host = try baseURL.getHost()
-    let httpCookie = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": cookie], for: host)
+    let httpCookie = HTTPCookie.cookies(
+      withResponseHeaderFields: ["Set-Cookie": cookie],
+      for: host
+    )
 
     guard let cookie = httpCookie.first else {
-      throw BetterAuthSwiftError(message: "Failed to get session cookie from callbackURL")
+      throw BetterAuthSwiftError(
+        message: "Failed to get session cookie from callbackURL"
+      )
     }
 
     cookieStorage.setCookie(cookie)
@@ -32,14 +37,29 @@ actor HTTPClient {
 
   func request<T: Decodable, B: Encodable>(
     route: BetterAuthRoute,
-    body: B?,
+    body: B,
     responseType: T.Type
   ) async throws -> T {
     try await request(
       path: route.path,
       method: route.method,
       responseType: responseType,
-      body: body
+      body: body,
+      query: (nil as Empty?)
+    )
+  }
+
+  func request<T: Decodable, Q: Encodable>(
+    route: BetterAuthRoute,
+    query: Q,
+    responseType: T.Type
+  ) async throws -> T {
+    try await request(
+      path: route.path,
+      method: route.method,
+      responseType: responseType,
+      body: (nil as Empty?),
+      query: query
     )
   }
 
@@ -51,15 +71,17 @@ actor HTTPClient {
       path: route.path,
       method: route.method,
       responseType: responseType,
-      body: (nil as Empty?)
+      body: (nil as Empty?),
+      query: (nil as Empty?)
     )
   }
 
-  private func request<T: Decodable, B: Encodable>(
+  private func request<T: Decodable, B: Encodable, Q: Encodable>(
     path: String,
     method: String,
     responseType: T.Type,
-    body: B?
+    body: B?,
+    query: Q?
   ) async throws -> T {
     var url: URL {
       if #available(macOS 13.0, iOS 16.0, *) {
@@ -77,6 +99,10 @@ actor HTTPClient {
     if let body = body {
       request.httpBody = try encoder.encode(body)
     }
+    
+    if let query = query {
+      request.addQueryItems(query.toQueryItems())
+    }
 
     let (data, response) = try await session.data(for: request)
 
@@ -86,12 +112,17 @@ actor HTTPClient {
 
     if httpResponse.statusCode >= 400 {
       let errorBody = try? decoder.decode(BetterAuthError.self, from: data)
-      throw errorBody ?? BetterAuthError(
-        code: nil,
-        message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode),
-        status: httpResponse.statusCode,
-        statusText: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
-      )
+      throw errorBody
+        ?? BetterAuthError(
+          code: nil,
+          message: HTTPURLResponse.localizedString(
+            forStatusCode: httpResponse.statusCode
+          ),
+          status: httpResponse.statusCode,
+          statusText: HTTPURLResponse.localizedString(
+            forStatusCode: httpResponse.statusCode
+          )
+        )
     }
 
     return try decoder.decode(T.self, from: data)

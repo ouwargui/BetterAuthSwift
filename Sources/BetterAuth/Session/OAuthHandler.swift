@@ -10,7 +10,7 @@ class OAuthHandler: NSObject {
     guard let callbackURL = callbackURL,
           let url = URL(string: callbackURL),
           let scheme = url.scheme else {
-      throw BetterAuthSwiftError(message: "Failed to create scheme from the callbackURL, received \(callbackURL)")
+      throw BetterAuthSwiftError(message: "Failed to create scheme from the callbackURL, received \(String(describing: callbackURL))")
     }
     
     return scheme
