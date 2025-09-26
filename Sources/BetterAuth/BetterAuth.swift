@@ -79,10 +79,8 @@ extension BetterAuthClient {
           body: body,
           responseType: SignInSocialResponse.self
         )
-        
-        print(authResponse)
 
-        if body.idToken != nil {
+        if let idToken = body.idToken {
           return authResponse
         }
 
@@ -113,7 +111,7 @@ extension BetterAuthClient {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
-      
+
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
           route: .signUpEmail,

@@ -77,13 +77,8 @@ actor HTTPClient {
     if let body = body {
       request.httpBody = try encoder.encode(body)
     }
-    
-    print(request.value(forHTTPHeaderField: "Cookie"))
 
     let (data, response) = try await session.data(for: request)
-
-    print(data.json)
-    print(cookieStorage.cookies)
 
     guard let httpResponse = response as? HTTPURLResponse else {
       throw BetterAuthSwiftError(message: "Invalid response")

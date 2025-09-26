@@ -73,6 +73,20 @@ public struct SignInSocialRequest: Codable, Sendable {
     public let accessToken: String?
     public let refreshToken: String?
     public let expiresAt: Date?
+
+    public init(
+      token: String,
+      nonce: String? = nil,
+      accessToken: String? = nil,
+      refreshToken: String? = nil,
+      expiresAt: Date? = nil
+    ) {
+      self.token = token
+      self.nonce = nonce
+      self.accessToken = accessToken
+      self.refreshToken = refreshToken
+      self.expiresAt = expiresAt
+    }
   }
 
   public init(
