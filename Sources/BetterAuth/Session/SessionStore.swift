@@ -1,16 +1,16 @@
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 class SessionStore: ObservableObject {
   @Published private(set) var current: Session?
   @Published private(set) var isLoading: Bool = false
-  
+
   private let httpClient: HTTPClient
-  
+
   init(httpClient: HTTPClient) {
     self.httpClient = httpClient
-    
+
     Task {
       await refreshSession()
     }
@@ -23,15 +23,17 @@ class SessionStore: ObservableObject {
   private func setLoading(_ loading: Bool) {
     self.isLoading = loading
   }
-  
-  func withSessionRefresh<T>(_ operation: () async throws -> T) async throws -> T {
+
+  func withSessionRefresh<T>(_ operation: () async throws -> T) async throws
+    -> T
+  {
     setLoading(true)
-    
+
     defer { setLoading(false) }
-    
+
     do {
       let result = try await operation()
-      
+
       await refreshSession()
 
       return result

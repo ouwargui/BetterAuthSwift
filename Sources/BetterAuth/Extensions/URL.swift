@@ -2,7 +2,9 @@ import Foundation
 
 extension URL {
   func getHost() throws -> URL {
-    guard var components = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+    guard
+      var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
+    else {
       throw BetterAuthSwiftError(message: "Failed to parse baseURL")
     }
 
@@ -16,7 +18,7 @@ extension URL {
 
     return hostURL
   }
-  
+
   func getBaseURL() -> URL {
     if #available(iOS 16.0, macOS 13.0, *) {
       if self.path().isEmpty || self.path() == "/" {

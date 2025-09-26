@@ -99,7 +99,7 @@ actor HTTPClient {
     if let body = body {
       request.httpBody = try encoder.encode(body)
     }
-    
+
     if let query = query {
       request.addQueryItems(query.toQueryItems())
     }

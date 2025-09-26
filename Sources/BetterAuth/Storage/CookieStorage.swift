@@ -62,12 +62,13 @@ class CookieStorage: HTTPCookieStorage, @unchecked Sendable {
   ) {
     cookies.forEach { cookie in
       cookieStore.removeAll {
-        $0.name == cookie.name && $0.domain == cookie.domain && $0.path == cookie.path
+        $0.name == cookie.name && $0.domain == cookie.domain
+          && $0.path == cookie.path
       }
-      
+
       cookieStore.append(cookie)
     }
-    
+
     saveCookiesToKeychain()
   }
 
