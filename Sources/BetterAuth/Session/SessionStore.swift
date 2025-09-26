@@ -6,9 +6,9 @@ class SessionStore: ObservableObject {
   @Published private(set) var current: Session?
   @Published private(set) var isLoading: Bool = false
 
-  private let httpClient: HTTPClient
+  private let httpClient: HTTPClientProtocol
 
-  init(httpClient: HTTPClient) {
+  init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
 
     Task {

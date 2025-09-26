@@ -1,7 +1,12 @@
 import Foundation
 import Security
 
-class KeychainStorage {
+public protocol StorageProtocol {
+  func get(key: String) -> String?
+  func save(key: String, value: String) throws -> Bool
+}
+
+public class KeychainStorage: StorageProtocol {
   private let service: String
   private let accessGroup: String?
 

@@ -3,7 +3,7 @@ import Testing
 
 @testable import BetterAuth
 
-@Test func urlReturnsCorrectBaseURL() async throws {
+@Test func urlReturnsCorrectBaseURL() async {
   var url = URL(string: "http://localhost:3001")!
 
   #expect(
@@ -24,4 +24,8 @@ import Testing
     url.getBaseURL().absoluteString == "http://localhost:3001/custom/path",
     "Expected base URL to be http://localhost:3001/custom/path, received \(url.getBaseURL())"
   )
+}
+
+@Test func getCookieReturnsTheBetterAuthCookie() async {
+  
 }

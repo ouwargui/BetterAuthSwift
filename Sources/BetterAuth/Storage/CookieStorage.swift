@@ -1,13 +1,41 @@
 import Foundation
 
-class CookieStorage: HTTPCookieStorage, @unchecked Sendable {
-  private let keychain = KeychainStorage()
+public protocol CookieStorageProtocol: HTTPCookieStorage {
+  func getBetterAuthCookie() -> HTTPCookie?
+  func setCookie(_ cookie: String, for url: URL) throws
+}
+
+public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol {
+  private let keychain: StorageProtocol
   private let cookieKey = "better-auth.persistent-cookies"
   private var cookieStore: [HTTPCookie] = []
 
-  public override init() {
+  public init(storage: StorageProtocol = KeychainStorage()) {
+    self.keychain = storage
     super.init()
     self.loadCookiesFromKeychain()
+  }
+
+  public func getBetterAuthCookie() -> HTTPCookie? {
+    return cookieStore.first { cookie in
+      cookie.name == cookieKey && !isExpired(cookie)
+    }
+  }
+
+  public func setCookie(_ cookie: String, for url: URL) throws {
+    let host = try url.getHost()
+    let httpCookie = HTTPCookie.cookies(
+      withResponseHeaderFields: ["Set-Cookie": cookie],
+      for: host
+    )
+
+    guard let cookie = httpCookie.first else {
+      throw BetterAuthSwiftError(
+        message: "Failed to get session cookie from callbackURL"
+      )
+    }
+
+    self.setCookie(cookie)
   }
 
   public override func storeCookies(

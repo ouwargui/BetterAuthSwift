@@ -2,40 +2,51 @@ import Foundation
 
 private struct Empty: Codable {}
 
-actor HTTPClient {
+public protocol HTTPClientProtocol: Sendable {
+  var cookieStorage: CookieStorageProtocol { get }
+  func request<T: Decodable & Sendable, B: Encodable & Sendable, Q: Encodable & Sendable>(
+    path: String,
+    method: String,
+    responseType: T.Type,
+    body: B?,
+    query: Q?
+  ) async throws -> T
+  func request<T: Decodable & Sendable>(
+    route: BetterAuthRoute,
+    responseType: T.Type
+  ) async throws -> T
+  func request<T: Decodable & Sendable, B: Encodable & Sendable>(
+    route: BetterAuthRoute,
+    body: B?,
+    responseType: T.Type
+  ) async throws -> T
+  func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
+    route: BetterAuthRoute,
+    query: Q?,
+    responseType: T.Type
+  ) async throws -> T
+}
+
+public actor HTTPClient: HTTPClientProtocol {
   private let baseURL: URL
   private let session: URLSession
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
-  private let cookieStorage = CookieStorage()
+  public let cookieStorage: CookieStorageProtocol
 
-  init(baseURL: URL) {
+  init(baseURL: URL, cookieStorage: CookieStorageProtocol = CookieStorage()) {
     self.baseURL = baseURL
+    self.cookieStorage = cookieStorage
+
     let config = URLSessionConfiguration.default
     config.httpCookieAcceptPolicy = .always
-    config.httpCookieStorage = cookieStorage
+    config.httpCookieStorage = self.cookieStorage
 
     self.session = URLSession(configuration: config)
     decoder.dateDecodingStrategy = .iso8601
   }
 
-  func setCookie(_ cookie: String) throws {
-    let host = try baseURL.getHost()
-    let httpCookie = HTTPCookie.cookies(
-      withResponseHeaderFields: ["Set-Cookie": cookie],
-      for: host
-    )
-
-    guard let cookie = httpCookie.first else {
-      throw BetterAuthSwiftError(
-        message: "Failed to get session cookie from callbackURL"
-      )
-    }
-
-    cookieStorage.setCookie(cookie)
-  }
-
-  func request<T: Decodable, B: Encodable>(
+  public func request<T: Decodable & Sendable, B: Encodable & Sendable>(
     route: BetterAuthRoute,
     body: B,
     responseType: T.Type
@@ -49,7 +60,7 @@ actor HTTPClient {
     )
   }
 
-  func request<T: Decodable, Q: Encodable>(
+  public func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
     route: BetterAuthRoute,
     query: Q,
     responseType: T.Type
@@ -63,7 +74,7 @@ actor HTTPClient {
     )
   }
 
-  func request<T: Decodable>(
+  public func request<T: Decodable & Sendable>(
     route: BetterAuthRoute,
     responseType: T.Type
   ) async throws -> T {
@@ -76,7 +87,7 @@ actor HTTPClient {
     )
   }
 
-  private func request<T: Decodable, B: Encodable, Q: Encodable>(
+  public func request<T: Decodable & Sendable, B: Encodable & Sendable, Q: Encodable & Sendable>(
     path: String,
     method: String,
     responseType: T.Type,

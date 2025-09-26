@@ -1,6 +1,6 @@
 import Foundation
 
-enum BetterAuthRoute {
+public enum BetterAuthRoute: Sendable {
   case signUpEmail
   case signInEmail
   case signInSocial

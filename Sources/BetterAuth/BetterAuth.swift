@@ -5,17 +5,22 @@ import Foundation
 
 /// The main client for the BetterAuth API. It's an ObservableObject that updates when session changes.
 /// - Parameters:
-///   - baseURL: The base URL of the BetterAuth API.
-///   - plugins: The plugins to use.
+///   - baseURL: The base URL of your BetterAuth API. Uses `/api/auth` path by default unless you send a different path.
+///   - httpClient: You can pass a custom implementation that conforms to ``HTTPClientProtocol``. It uses ``HTTPClient`` by default.
 @MainActor
 public class BetterAuthClient: ObservableObject {
   private let baseUrl: URL
-  private let httpClient: HTTPClient
+  private let httpClient: HTTPClientProtocol
   private let sessionStore: SessionStore
 
   /// The current session. It's a @Published variable.
-  public var session: Session? {
-    sessionStore.current
+  public var session: SessionData? {
+    sessionStore.current?.session
+  }
+
+  /// The current user. It's a @Published variable.
+  public var user: User? {
+    sessionStore.current?.user
   }
 
   public lazy var signIn = SignIn(client: self)
@@ -23,9 +28,9 @@ public class BetterAuthClient: ObservableObject {
 
   private var cancellables = Set<AnyCancellable>()
 
-  public init(baseURL: URL, plugins: [String] = []) {
+  public init(baseURL: URL, httpClient: HTTPClientProtocol? = nil) {
     self.baseUrl = baseURL.getBaseURL()
-    self.httpClient = HTTPClient(baseURL: self.baseUrl)
+    self.httpClient = httpClient ?? HTTPClient(baseURL: self.baseUrl)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
 
     sessionStore.objectWillChange
@@ -34,6 +39,11 @@ public class BetterAuthClient: ObservableObject {
         self?.objectWillChange.send()
       }
       .store(in: &cancellables)
+  }
+
+  /// Returns the Better Auth cookie
+  public func getCookie() -> HTTPCookie? {
+    return self.httpClient.cookieStorage.getBetterAuthCookie()
   }
 
   /// Makes a request to /get-session.
@@ -379,7 +389,10 @@ extension BetterAuthClient {
             callbackURLScheme: try handler.extractScheme(from: body.callbackURL)
           )
 
-          try await client.httpClient.setCookie(sessionCookie)
+          try await client.httpClient.cookieStorage.setCookie(
+            sessionCookie,
+            for: client.baseUrl
+          )
         }
 
         return authResponse

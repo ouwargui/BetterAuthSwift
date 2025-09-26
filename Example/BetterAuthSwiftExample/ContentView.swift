@@ -18,7 +18,7 @@ struct ContentView: View {
 
   var body: some View {
     VStack {
-      if let user = client.session?.user {
+      if let user = client.user {
         Spacer()
         Text("Hello, \(user.name)")
       }
