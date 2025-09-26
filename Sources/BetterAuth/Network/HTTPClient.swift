@@ -4,42 +4,30 @@ private struct Empty: Codable {}
 
 actor HTTPClient {
   private let baseURL: URL
-  private let session = URLSession.shared
+  private let session: URLSession
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
+  private let cookieStorage = CookieStorage()
 
   init(baseURL: URL) {
     self.baseURL = baseURL
-    self.session.configuration.httpCookieAcceptPolicy = .always
+    let config = URLSessionConfiguration.default
+    config.httpCookieAcceptPolicy = .always
+    config.httpCookieStorage = cookieStorage
 
+    self.session = URLSession(configuration: config)
     decoder.dateDecodingStrategy = .iso8601
-  }
-  
-  private func getHost() throws -> URL {
-    guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
-      throw BetterAuthSwiftError(message: "Failed to parse baseURL")
-    }
-
-    components.path = ""
-    components.query = nil
-    components.fragment = nil
-
-    guard let hostURL = components.url else {
-      throw BetterAuthSwiftError(message: "Failed to construct host URL")
-    }
-
-    return hostURL
   }
 
   func setCookie(_ cookie: String) throws {
-    let host = try getHost()
+    let host = try baseURL.getHost()
     let httpCookie = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": cookie], for: host)
 
     guard let cookie = httpCookie.first else {
       throw BetterAuthSwiftError(message: "Failed to get session cookie from callbackURL")
     }
 
-    HTTPCookieStorage.shared.setCookie(cookie)
+    cookieStorage.setCookie(cookie)
   }
 
   func request<T: Decodable, B: Encodable>(
@@ -84,14 +72,18 @@ actor HTTPClient {
     var request = URLRequest(url: url)
     request.httpMethod = method
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpShouldHandleCookies = true
 
     if let body = body {
       request.httpBody = try encoder.encode(body)
     }
+    
+    print(request.value(forHTTPHeaderField: "Cookie"))
 
     let (data, response) = try await session.data(for: request)
-    
+
     print(data.json)
+    print(cookieStorage.cookies)
 
     guard let httpResponse = response as? HTTPURLResponse else {
       throw BetterAuthSwiftError(message: "Invalid response")

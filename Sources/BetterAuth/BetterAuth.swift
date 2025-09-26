@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 
+@MainActor
 public class BetterAuthClient: ObservableObject {
   private let baseUrl: URL
   private let httpClient: HTTPClient
@@ -28,10 +29,10 @@ public class BetterAuthClient: ObservableObject {
       .store(in: &cancellables)
   }
 
-  public func getSession() async throws -> Session {
+  public func getSession() async throws -> Session? {
     return try await httpClient.request(
       route: .getSession,
-      responseType: Session.self,
+      responseType: Session?.self,
     )
   }
 

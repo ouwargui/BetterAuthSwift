@@ -38,6 +38,18 @@ struct ContentView: View {
       } else {
         Button {
           Task {
+            do {
+              let sess = try await client.getSession()
+              print(sess)
+            } catch {
+              print(error)
+            }
+          }
+        } label: {
+          Text("Get session")
+        }
+        Button {
+          Task {
             try await client.signIn.email(with: .init(email: email, password: password))
           }
         } label: {

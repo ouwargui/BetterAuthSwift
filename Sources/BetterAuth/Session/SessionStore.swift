@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class SessionStore: ObservableObject {
   @Published private(set) var current: Session?
   @Published private(set) var isLoading: Bool = false
@@ -9,6 +10,10 @@ class SessionStore: ObservableObject {
   
   init(httpClient: HTTPClient) {
     self.httpClient = httpClient
+    
+    Task {
+      await refreshSession()
+    }
   }
 
   private func update(_ session: Session?) {
@@ -42,7 +47,7 @@ class SessionStore: ObservableObject {
     do {
       let session = try await httpClient.request(
         route: .getSession,
-        responseType: Session.self,
+        responseType: Session.self
       )
 
       update(session)
