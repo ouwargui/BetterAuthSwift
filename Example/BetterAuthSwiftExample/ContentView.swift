@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://localhost:3001/api/auth")!
+    baseURL: URL(string: "http://localhost:3001")!
   )
   @State var email = "gui+\(UUID().uuidString)@test.com"
   @State var password: String = "12345678"
@@ -22,11 +22,6 @@ struct ContentView: View {
         Spacer()
         Text("Hello, \(user.name)")
       }
-
-      Spacer()
-
-      TextField("Email", text: $email)
-      TextField("Password", text: $password)
 
       Spacer()
 

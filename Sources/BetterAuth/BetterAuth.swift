@@ -19,7 +19,7 @@ public class BetterAuthClient: ObservableObject {
 
   public init(baseURL: URL, plugins: [String] = []) {
     self.baseUrl = baseURL.getBaseURL()
-    self.httpClient = HTTPClient(baseURL: baseURL)
+    self.httpClient = HTTPClient(baseURL: self.baseUrl)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
 
     sessionStore.objectWillChange
@@ -72,11 +72,13 @@ extension BetterAuthClient {
   public func verifyEmail(with body: VerifyEmailRequest) async throws
     -> VerifyEmailResponse
   {
-    return try await httpClient.request(
-      route: .verifyEmail,
-      query: body,
-      responseType: VerifyEmailResponse.self
-    )
+    return try await self.sessionStore.withSessionRefresh {
+      return try await httpClient.request(
+        route: .verifyEmail,
+        query: body,
+        responseType: VerifyEmailResponse.self
+      )
+    }
   }
 
   public func sendVerificationEmail(with body: SendVerificationEmailRequest)
@@ -112,21 +114,25 @@ extension BetterAuthClient {
   public func updateUser(with body: UpdateUserRequest) async throws
     -> UpdateUserResponse
   {
-    return try await httpClient.request(
-      route: .updateUser,
-      body: body,
-      responseType: UpdateUserResponse.self
-    )
+    return try await self.sessionStore.withSessionRefresh {
+      return try await httpClient.request(
+        route: .updateUser,
+        body: body,
+        responseType: UpdateUserResponse.self
+      )
+    }
   }
 
   public func deleteUser(with body: DeleteUserRequest) async throws
     -> DeleteUserResponse
   {
-    return try await httpClient.request(
-      route: .deleteUser,
-      body: body,
-      responseType: DeleteUserResponse.self
-    )
+    return try await self.sessionStore.withSessionRefresh {
+      return try await httpClient.request(
+        route: .deleteUser,
+        body: body,
+        responseType: DeleteUserResponse.self
+      )
+    }
   }
 
   public func requestPasswordReset(with body: RequestPasswordResetRequest)
