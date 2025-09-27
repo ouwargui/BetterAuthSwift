@@ -26,11 +26,6 @@ jobs:
           ~/.swiftly/bin/swiftly init --quiet-shell-followup && \
           . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" && \
           hash -r
-
-      - name: Install Swift 6.2
-        run: |
-          swiftly install 6.2 --post-install-file=post-install.sh
-
       - name: Build
         run: swift build -v
 
