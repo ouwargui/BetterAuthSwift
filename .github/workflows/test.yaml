@@ -21,11 +21,31 @@ jobs:
 
       - name: Setup swiftly
         run: |
-          curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg && \
-          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory && \
-          ~/.swiftly/bin/swiftly init --quiet-shell-followup && \
-          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" && \
-          hash -r
+          curl -O 'https://download.swift.org/swiftly/darwin/swiftly.pkg'
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          SWIFTLY_BIN_PATH="${HOME}/.swiftly/bin/swiftly"
+          SWIFTLY_ENV_PATH="${HOME}/.swiftly/env.sh"
+
+          "${SWIFTLY_BIN_PATH}" init --assume-yes --no-modify-profile --skip-install --quiet-shell-followup
+          . "${SWIFTLY_ENV_PATH}"
+          echo "SWIFTLY_HOME_DIR=${SWIFTLY_HOME_DIR}" >>"${GITHUB_ENV}"
+          echo "SWIFTLY_BIN_DIR=${SWIFTLY_BIN_DIR}" >>"${GITHUB_ENV}"
+          echo "${SWIFTLY_BIN_DIR}" >>"${GITHUB_PATH}"
+
+      - name: Install Swift 6.2
+        run: |
+          POST_INSTALL_FILE="${HOME}/.swiftly-postinstall-cmds.sh"
+          swiftly install --assume-yes --use --post-install-file "${POST_INSTALL_FILE}" "6.2"
+          if [[ -f "${POST_INSTALL_FILE}" ]]; then
+            export DEBIAN_FRONTEND=noninteractive # prevent Debian/Ubuntu installs from hanging on tzdata
+            if [[ "$(id -un)" == 'root' ]]; then
+              . "${POST_INSTALL_FILE}"
+            else
+              sudo bash -c ". '${POST_INSTALL_FILE}'"
+            fi
+            rm "${POST_INSTALL_FILE}"
+          fi
+
       - name: Build
         run: swift build -v
 
