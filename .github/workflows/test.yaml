@@ -19,9 +19,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: vapor/swiftly-action@v0.2
-        with:
-          toolchain: "6.2"
+      - name: Setup swiftly
+        run: |
+          curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg && \
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory && \
+          ~/.swiftly/bin/swiftly init --quiet-shell-followup && \
+          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" && \
+          hash -r
+
+      - name: Install Swift 6.2
+        run: |
+          swiftly install 6.2 --post-install-file=post-install.sh
 
       - name: Build
         run: swift build -v
