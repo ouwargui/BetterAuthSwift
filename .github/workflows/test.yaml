@@ -16,12 +16,12 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 10
     steps:
-      - uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "6.2"
-
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - uses: vapor/swiftly-action@v0.2
+        with:
+          toolchain: "6.2"
 
       - name: Build
         run: swift build -v
