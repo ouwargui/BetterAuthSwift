@@ -5,20 +5,43 @@ public protocol CookieStorageProtocol: HTTPCookieStorage {
   func setCookie(_ cookie: String, for url: URL) throws
 }
 
-public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, @unchecked Sendable {
+public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
+  @unchecked Sendable
+{
   private let keychain: StorageProtocol
   private let cookieKey = "better-auth.persistent-cookies"
-  private var cookieStore: [HTTPCookie] = []
+  private let lock = NSLock()
+  private var _cookieStore: [HTTPCookie] = []
 
-  public init(storage: StorageProtocol = KeychainStorage()) {
+  public init(storage: StorageProtocol) {
     self.keychain = storage
     super.init()
     self.loadCookiesFromKeychain()
   }
 
+  internal override init() {
+    self.keychain = KeychainStorage()
+    super.init()
+    self.loadCookiesFromKeychain()
+  }
+
+  private func withLock<T>(_ action: () -> T) -> T {
+    lock.lock()
+    defer { lock.unlock() }
+    return action()
+  }
+
+  private func withLock(_ action: () -> Void) {
+    lock.lock()
+    defer { lock.unlock() }
+    action()
+  }
+
   public func getBetterAuthCookie() -> HTTPCookie? {
-    return cookieStore.first { cookie in
-      cookie.name == cookieKey && !isExpired(cookie)
+    return withLock {
+      _cookieStore.first { cookie in
+        cookie.name == cookieKey && !isExpired(cookie)
+      }
     }
   }
 
@@ -63,22 +86,27 @@ public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, @unchecked
   }
 
   public override var cookies: [HTTPCookie]? {
-    return cookieStore.filter { !isExpired($0) }
+    return withLock {
+      _cookieStore.filter { !isExpired($0) }
+    }
   }
 
   public override func cookies(for URL: URL) -> [HTTPCookie]? {
-    return cookieStore.filter { cookie in
-      return !isExpired(cookie) && shouldSendCookie(cookie, for: URL)
+    return withLock {
+      _cookieStore.filter { cookie in
+        return !isExpired(cookie) && shouldSendCookie(cookie, for: URL)
+      }
     }
   }
 
   public override func setCookie(_ cookie: HTTPCookie) {
-    cookieStore.removeAll {
-      $0.name == cookie.name && $0.domain == cookie.domain
-        && $0.path == cookie.path
+    withLock {
+      _cookieStore.removeAll {
+        $0.name == cookie.name && $0.domain == cookie.domain
+          && $0.path == cookie.path
+      }
+      _cookieStore.append(cookie)
     }
-
-    cookieStore.append(cookie)
 
     saveCookiesToKeychain()
   }
@@ -88,38 +116,47 @@ public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, @unchecked
     for URL: URL?,
     mainDocumentURL: URL?
   ) {
-    cookies.forEach { cookie in
-      cookieStore.removeAll {
-        $0.name == cookie.name && $0.domain == cookie.domain
-          && $0.path == cookie.path
+    withLock {
+      for cookie in cookies {
+        _cookieStore.removeAll {
+          $0.name == cookie.name && $0.domain == cookie.domain
+            && $0.path == cookie.path
+        }
+        _cookieStore.append(cookie)
       }
-
-      cookieStore.append(cookie)
     }
 
     saveCookiesToKeychain()
   }
 
   public override func deleteCookie(_ cookie: HTTPCookie) {
-    cookieStore.removeAll {
-      $0.name == cookie.name && $0.domain == cookie.domain
+    withLock {
+      _cookieStore.removeAll {
+        $0.name == cookie.name && $0.domain == cookie.domain
+      }
     }
+
     saveCookiesToKeychain()
   }
 
   public override func removeCookies(since date: Date) {
-    cookieStore.removeAll()
+    withLock {
+      _cookieStore.removeAll()
+    }
+
     saveCookiesToKeychain()
   }
 
   private func saveCookiesToKeychain() {
+    let currentCookies = withLock { _cookieStore }
+
     do {
       let cookieData = try JSONEncoder().encode(
-        cookieStore.map(CookieData.init)
+        currentCookies.map(CookieData.init)
       )
       let jsonString = String(data: cookieData, encoding: .utf8) ?? ""
       let _ = try keychain.save(key: cookieKey, value: jsonString)
-      print("CookieStorage: Saved \(cookieStore.count) cookies to keychain")
+      print("CookieStorage: Saved \(currentCookies.count) cookies to keychain")
     } catch {
       print("CookieStorage: Failed to save cookies")
     }
@@ -138,12 +175,14 @@ public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, @unchecked
         from: data
       )
 
-      cookieStore = cookieDataArray.compactMap { $0.toHTTPCookie() }
+      let loadedCookies = cookieDataArray.compactMap { $0.toHTTPCookie() }
+      let validCookies = loadedCookies.filter { !isExpired($0) }
 
-      let initialCount = cookieStore.count
-      cookieStore.removeAll { isExpired($0) }
+      withLock {
+        _cookieStore = validCookies
+      }
 
-      if initialCount != cookieStore.count {
+      if loadedCookies.count != validCookies.count {
         saveCookiesToKeychain()
       }
     } catch {

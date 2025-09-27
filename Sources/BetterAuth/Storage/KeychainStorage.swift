@@ -6,7 +6,7 @@ public protocol StorageProtocol {
   func save(key: String, value: String) throws -> Bool
 }
 
-public class KeychainStorage: StorageProtocol {
+internal class KeychainStorage: StorageProtocol {
   private let service: String
   private let accessGroup: String?
 

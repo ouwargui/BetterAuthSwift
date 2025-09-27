@@ -70,7 +70,7 @@ struct ContentView: View {
               Text("Sign up")
             }.buttonStyle(.glass)
           }
-          
+
           VStack {
             Button {
               Task {
@@ -111,10 +111,11 @@ struct ContentView: View {
                       idToken: .init(token: identityToken)
                     )
                   )
-                  print(res)
 
                 case .failure(let error):
-                  print("sign in with apple failed \(error.localizedDescription)")
+                  print(
+                    "sign in with apple failed \(error.localizedDescription)"
+                  )
                 }
 
               }
