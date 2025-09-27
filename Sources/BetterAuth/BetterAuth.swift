@@ -389,7 +389,7 @@ extension BetterAuthClient {
             callbackURLScheme: try handler.extractScheme(from: body.callbackURL)
           )
 
-          try await client.httpClient.cookieStorage.setCookie(
+          try client.httpClient.cookieStorage.setCookie(
             sessionCookie,
             for: client.baseUrl
           )

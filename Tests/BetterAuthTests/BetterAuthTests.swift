@@ -26,6 +26,32 @@ import Testing
   )
 }
 
-@Test func getCookieReturnsTheBetterAuthCookie() async {
-  
+@Test func betterAuthClientGetCookieReturnsTheBetterAuthCookie() async throws {
+  let baseURL = URL(string: "http://localhost:3001")!
+
+  let cookieStorage = CookieStorage(storage: InMemoryStorage())
+
+  let cookieName = "better-auth.persistent-cookies"
+  let cookieValue = "abc123"
+  let cookieString = "\(cookieName)=\(cookieValue); Path=/"
+  try cookieStorage.setCookie(cookieString, for: baseURL)
+
+  let client = await MainActor.run {
+    BetterAuthClient(
+      baseURL: baseURL,
+      httpClient: MockHTTPClient(cookieStorage: cookieStorage)
+    )
+  }
+
+  let returnedCookie = await MainActor.run { client.getCookie() }
+
+  #expect(returnedCookie != nil, "Expected a cookie to be returned")
+  #expect(
+    returnedCookie?.name == cookieName,
+    "Expected cookie with correct name"
+  )
+  #expect(
+    returnedCookie?.value == cookieValue,
+    "Expected cookie with correct value"
+  )
 }

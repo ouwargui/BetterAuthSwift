@@ -5,7 +5,7 @@ public protocol CookieStorageProtocol: HTTPCookieStorage {
   func setCookie(_ cookie: String, for url: URL) throws
 }
 
-public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol {
+public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, @unchecked Sendable {
   private let keychain: StorageProtocol
   private let cookieKey = "better-auth.persistent-cookies"
   private var cookieStore: [HTTPCookie] = []
@@ -118,7 +118,7 @@ public class CookieStorage: HTTPCookieStorage, CookieStorageProtocol {
         cookieStore.map(CookieData.init)
       )
       let jsonString = String(data: cookieData, encoding: .utf8) ?? ""
-      try keychain.save(key: cookieKey, value: jsonString)
+      let _ = try keychain.save(key: cookieKey, value: jsonString)
       print("CookieStorage: Saved \(cookieStore.count) cookies to keychain")
     } catch {
       print("CookieStorage: Failed to save cookies")
