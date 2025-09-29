@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    tags: ["v*"]
-  pull_request:
-    branches: ["main"]
 
 permissions:
   contents: read
@@ -25,241 +22,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Select Xcode version
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "26.0"
 
-      - name: Setup swiftly
-        run: |
-          curl -O 'https://download.swift.org/swiftly/darwin/swiftly.pkg'
-          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
-          SWIFTLY_BIN_PATH="${HOME}/.swiftly/bin/swiftly"
-          SWIFTLY_ENV_PATH="${HOME}/.swiftly/env.sh"
-
-          "${SWIFTLY_BIN_PATH}" init --assume-yes --no-modify-profile --skip-install --quiet-shell-followup
-          . "${SWIFTLY_ENV_PATH}"
-          echo "SWIFTLY_HOME_DIR=${SWIFTLY_HOME_DIR}" >>"${GITHUB_ENV}"
-          echo "SWIFTLY_BIN_DIR=${SWIFTLY_BIN_DIR}" >>"${GITHUB_ENV}"
-          echo "${SWIFTLY_BIN_DIR}" >>"${GITHUB_PATH}"
-
-      - name: Install Swift 6.2
-        run: |
-          POST_INSTALL_FILE="${HOME}/.swiftly-postinstall-cmds.sh"
-          swiftly install --assume-yes --use --post-install-file "${POST_INSTALL_FILE}" "6.2"
-          if [[ -f "${POST_INSTALL_FILE}" ]]; then
-            export DEBIAN_FRONTEND=noninteractive # prevent Debian/Ubuntu installs from hanging on tzdata
-            if [[ "$(id -un)" == 'root' ]]; then
-              . "${POST_INSTALL_FILE}"
-            else
-              sudo bash -c ". '${POST_INSTALL_FILE}'"
-            fi
-            rm "${POST_INSTALL_FILE}"
-          fi
-
-      - name: Determine version and path
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
-            echo "is_release=true" >> $GITHUB_OUTPUT
-          else
-            echo "version=main" >> $GITHUB_OUTPUT
-            echo "is_release=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create output directories
-        run: |
-          mkdir -p docs
-          mkdir -p docs-build
-
-      - name: Build Documentation Archive
+      - name: Build Documentation
         run: |
           swift package generate-documentation \
             --target BetterAuth \
             --disable-indexing
 
-      - name: Process Documentation Archive
-        run: |
-          # Find the generated .doccarchive
+          # Find and transform the documentation
           DOCC_ARCHIVE=$(find .build -name "*.doccarchive" -type d | head -1)
+          echo "Found archive: $DOCC_ARCHIVE"
 
-          if [ -z "$DOCC_ARCHIVE" ]; then
-            echo "Error: No .doccarchive found"
-            exit 1
-          fi
-
-          echo "Found documentation archive at: $DOCC_ARCHIVE"
-
-          # Convert to static HTML
+          mkdir -p docs
           xcrun docc process-archive transform-for-static-hosting \
             "$DOCC_ARCHIVE" \
-            --output-path docs-build \
-            --hosting-base-path "BetterAuthSwift/${{ steps.version.outputs.version }}"
-
-      - name: Setup docs directory structure
-        run: |
-          mkdir -p "docs/${{ steps.version.outputs.version }}"
-          cp -r docs-build/* "docs/${{ steps.version.outputs.version }}/"
-
-      - name: Download existing docs (for versioning)
-        if: steps.version.outputs.is_release == 'true'
-        continue-on-error: true
-        run: |
-          # Try to download existing GitHub Pages content
-          curl -L -f -o existing-docs.tar.gz \
-            "https://github.com/${{ github.repository }}/archive/gh-pages.tar.gz" \
-            2>/dev/null || echo "No existing gh-pages branch found"
-
-          if [ -f existing-docs.tar.gz ]; then
-            mkdir -p temp-existing
-            tar -xzf existing-docs.tar.gz --strip-components=1 -C temp-existing/ 2>/dev/null || true
-            # Copy existing version directories but don't overwrite current version
-            for dir in temp-existing/v*/; do
-              if [ -d "$dir" ]; then
-                version_name=$(basename "$dir")
-                if [ "$version_name" != "${{ steps.version.outputs.version }}" ]; then
-                  cp -r "$dir" "docs/"
-                fi
-              fi
-            done
-            # Copy main if we're building a release
-            if [ -d "temp-existing/main" ] && [ "${{ steps.version.outputs.is_release }}" == "true" ]; then
-              cp -r temp-existing/main docs/
-            fi
-            rm -rf temp-existing existing-docs.tar.gz
-          fi
-
-      - name: Create version index
-        run: |
-          cat > docs/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>BetterAuth Swift Documentation</title>
-              <style>
-                  body { 
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-                      max-width: 900px; 
-                      margin: 0 auto; 
-                      padding: 2rem; 
-                      line-height: 1.6;
-                      background: #f8f9fa;
-                  }
-                  .container {
-                      background: white;
-                      padding: 2rem;
-                      border-radius: 12px;
-                      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                  }
-                  .version-card {
-                      border: 1px solid #e1e5e9;
-                      border-radius: 8px;
-                      padding: 1.5rem;
-                      margin: 1rem 0;
-                      background: #ffffff;
-                      transition: transform 0.2s, box-shadow 0.2s;
-                  }
-                  .version-card:hover {
-                      transform: translateY(-2px);
-                      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                  }
-                  .version-card h3 { 
-                      margin-top: 0; 
-                      color: #1a1a1a;
-                      display: flex;
-                      align-items: center;
-                  }
-                  .version-link {
-                      display: inline-block;
-                      padding: 0.75rem 1.5rem;
-                      background: #007aff;
-                      color: white;
-                      text-decoration: none;
-                      border-radius: 8px;
-                      margin-top: 1rem;
-                      font-weight: 500;
-                      transition: background 0.2s;
-                  }
-                  .version-link:hover { 
-                      background: #0056b3; 
-                  }
-                  .latest-badge, .dev-badge {
-                      color: white;
-                      padding: 0.25rem 0.75rem;
-                      border-radius: 12px;
-                      font-size: 0.8rem;
-                      margin-left: 1rem;
-                      font-weight: 600;
-                  }
-                  .latest-badge {
-                      background: #28a745;
-                  }
-                  .dev-badge {
-                      background: #ffc107;
-                      color: #000;
-                  }
-                  h1 {
-                      color: #1a1a1a;
-                      margin-bottom: 0.5rem;
-                  }
-                  .subtitle {
-                      color: #666;
-                      margin-bottom: 2rem;
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <h1>📚 BetterAuth Swift Documentation</h1>
-                  <p class="subtitle">Choose a version to view the documentation</p>
-          EOF
-
-          # Add development version if it exists
-          if [ -d "docs/main" ]; then
-            cat >> docs/index.html << 'EOF'
-              <div class="version-card">
-                  <h3>🚀 Development<span class="dev-badge">Latest</span></h3>
-                  <p>Latest development version with the newest features and changes.</p>
-                  <a href="./main/documentation/betterauth/" class="version-link">View Documentation</a>
-              </div>
-          EOF
-          fi
-
-          # Add version cards for each released version (sorted in reverse order)
-          for version_dir in $(ls -1 docs/ | grep "^v" | sort -V -r); do
-            if [ -d "docs/$version_dir" ]; then
-              # Check if this is the latest release
-              LATEST_BADGE=""
-              if [ -z "$LATEST_VERSION_ADDED" ]; then
-                LATEST_BADGE='<span class="latest-badge">Latest Release</span>'
-                LATEST_VERSION_ADDED="true"
-              fi
-              
-              cat >> docs/index.html << EOF
-              <div class="version-card">
-                  <h3>📦 $version_dir$LATEST_BADGE</h3>
-                  <p>Released version $version_dir - Stable and production ready.</p>
-                  <a href="./$version_dir/documentation/betterauth/" class="version-link">View Documentation</a>
-              </div>
-          EOF
-            fi
-          done
-
-          cat >> docs/index.html << 'EOF'
-                  
-                  <hr style="margin: 3rem 0; border: none; border-top: 1px solid #e1e5e9;">
-                  <p style="text-align: center; color: #666;"><small>Generated automatically from the BetterAuth Swift repository</small></p>
-              </div>
-          </body>
-          </html>
-          EOF
+            --output-path docs \
+            --hosting-base-path BetterAuthSwift
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
@@ -267,7 +50,7 @@ jobs:
           path: ./docs
 
   deploy:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

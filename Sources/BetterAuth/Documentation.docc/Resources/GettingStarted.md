@@ -9,7 +9,7 @@ Learn how to integrate BetterAuthSwift into your project.
 Add BetterAuthSwift to your project using Xcode:
 
 1. In Xcode, select **File → Add Package Dependencies**
-2. Enter the repository URL: `https://github.com/yourusername/BetterAuthSwift.git`
+2. Enter the repository URL: `https://github.com/ouwargui/BetterAuthSwift.git`
 3. Select the version you want to use
 
 Or add it to your `Package.swift`:
