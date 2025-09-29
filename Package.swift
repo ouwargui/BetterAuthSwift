@@ -11,9 +11,13 @@ let package = Package(
             targets: ["BetterAuth"]
         )
     ],
+    dependencies: [
+      .package(url: "https://github.com/swiftlang/swift-docc-plugin", .upToNextMajor(from: "1.4.5")),
+    ],
     targets: [
         .target(
-            name: "BetterAuth"
+            name: "BetterAuth",
+            dependencies: []
         ),
         .testTarget(
             name: "BetterAuthTests",
