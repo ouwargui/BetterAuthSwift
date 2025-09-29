@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build-docs:
-    runs-on: macos-26
+    runs-on: macos-latest
     timeout-minutes: 15
 
     steps:
@@ -67,44 +67,75 @@ jobs:
             VERSION=${GITHUB_REF#refs/tags/}
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
             echo "is_release=true" >> $GITHUB_OUTPUT
-            echo "docs_path=./${VERSION}" >> $GITHUB_OUTPUT
           else
             echo "version=main" >> $GITHUB_OUTPUT
             echo "is_release=false" >> $GITHUB_OUTPUT
-            echo "docs_path=./main" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build Documentation
+      - name: Create output directories
+        run: |
+          mkdir -p docs
+          mkdir -p docs-build
+
+      - name: Build Documentation Archive
         run: |
           swift package generate-documentation \
             --target BetterAuth \
-            --disable-indexing \
-            --transform-for-static-hosting \
-            --hosting-base-path BetterAuthSwift/${{ steps.version.outputs.version }} \
-            --output-path ./docs-temp
+            --disable-indexing
+
+      - name: Process Documentation Archive
+        run: |
+          # Find the generated .doccarchive
+          DOCC_ARCHIVE=$(find .build -name "*.doccarchive" -type d | head -1)
+
+          if [ -z "$DOCC_ARCHIVE" ]; then
+            echo "Error: No .doccarchive found"
+            exit 1
+          fi
+
+          echo "Found documentation archive at: $DOCC_ARCHIVE"
+
+          # Convert to static HTML
+          xcrun docc process-archive transform-for-static-hosting \
+            "$DOCC_ARCHIVE" \
+            --output-path docs-build \
+            --hosting-base-path "BetterAuthSwift/${{ steps.version.outputs.version }}"
 
       - name: Setup docs directory structure
         run: |
-          mkdir -p docs/${{ steps.version.outputs.version }}
-          cp -r docs-temp/* docs/${{ steps.version.outputs.version }}/
+          mkdir -p "docs/${{ steps.version.outputs.version }}"
+          cp -r docs-build/* "docs/${{ steps.version.outputs.version }}/"
 
       - name: Download existing docs (for versioning)
         if: steps.version.outputs.is_release == 'true'
         continue-on-error: true
         run: |
-          # Download existing GitHub Pages content
-          curl -L -o existing-docs.tar.gz \
-            "https://api.github.com/repos/${{ github.repository }}/tarball/gh-pages" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3.raw"
+          # Try to download existing GitHub Pages content
+          curl -L -f -o existing-docs.tar.gz \
+            "https://github.com/${{ github.repository }}/archive/gh-pages.tar.gz" \
+            2>/dev/null || echo "No existing gh-pages branch found"
 
           if [ -f existing-docs.tar.gz ]; then
-            tar -xzf existing-docs.tar.gz --strip-components=1 -C docs/ 2>/dev/null || true
+            mkdir -p temp-existing
+            tar -xzf existing-docs.tar.gz --strip-components=1 -C temp-existing/ 2>/dev/null || true
+            # Copy existing version directories but don't overwrite current version
+            for dir in temp-existing/v*/; do
+              if [ -d "$dir" ]; then
+                version_name=$(basename "$dir")
+                if [ "$version_name" != "${{ steps.version.outputs.version }}" ]; then
+                  cp -r "$dir" "docs/"
+                fi
+              fi
+            done
+            # Copy main if we're building a release
+            if [ -d "temp-existing/main" ] && [ "${{ steps.version.outputs.is_release }}" == "true" ]; then
+              cp -r temp-existing/main docs/
+            fi
+            rm -rf temp-existing existing-docs.tar.gz
           fi
 
       - name: Create version index
         run: |
-          mkdir -p docs
           cat > docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
@@ -114,80 +145,121 @@ jobs:
               <title>BetterAuth Swift Documentation</title>
               <style>
                   body { 
-                      font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-                      max-width: 800px; 
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+                      max-width: 900px; 
                       margin: 0 auto; 
                       padding: 2rem; 
                       line-height: 1.6;
+                      background: #f8f9fa;
+                  }
+                  .container {
+                      background: white;
+                      padding: 2rem;
+                      border-radius: 12px;
+                      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                   }
                   .version-card {
                       border: 1px solid #e1e5e9;
                       border-radius: 8px;
                       padding: 1.5rem;
                       margin: 1rem 0;
-                      background: #f8f9fa;
+                      background: #ffffff;
+                      transition: transform 0.2s, box-shadow 0.2s;
                   }
-                  .version-card h3 { margin-top: 0; }
+                  .version-card:hover {
+                      transform: translateY(-2px);
+                      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                  }
+                  .version-card h3 { 
+                      margin-top: 0; 
+                      color: #1a1a1a;
+                      display: flex;
+                      align-items: center;
+                  }
                   .version-link {
                       display: inline-block;
-                      padding: 0.5rem 1rem;
+                      padding: 0.75rem 1.5rem;
                       background: #007aff;
                       color: white;
                       text-decoration: none;
-                      border-radius: 6px;
-                      margin-top: 0.5rem;
+                      border-radius: 8px;
+                      margin-top: 1rem;
+                      font-weight: 500;
+                      transition: background 0.2s;
                   }
-                  .version-link:hover { background: #0056b3; }
+                  .version-link:hover { 
+                      background: #0056b3; 
+                  }
+                  .latest-badge, .dev-badge {
+                      color: white;
+                      padding: 0.25rem 0.75rem;
+                      border-radius: 12px;
+                      font-size: 0.8rem;
+                      margin-left: 1rem;
+                      font-weight: 600;
+                  }
                   .latest-badge {
                       background: #28a745;
-                      color: white;
-                      padding: 0.25rem 0.5rem;
-                      border-radius: 4px;
-                      font-size: 0.8rem;
-                      margin-left: 0.5rem;
+                  }
+                  .dev-badge {
+                      background: #ffc107;
+                      color: #000;
+                  }
+                  h1 {
+                      color: #1a1a1a;
+                      margin-bottom: 0.5rem;
+                  }
+                  .subtitle {
+                      color: #666;
+                      margin-bottom: 2rem;
                   }
               </style>
           </head>
           <body>
-              <h1>BetterAuth Swift Documentation</h1>
-              <p>Choose a version to view the documentation:</p>
-              
+              <div class="container">
+                  <h1>📚 BetterAuth Swift Documentation</h1>
+                  <p class="subtitle">Choose a version to view the documentation</p>
+          EOF
+
+          # Add development version if it exists
+          if [ -d "docs/main" ]; then
+            cat >> docs/index.html << 'EOF'
               <div class="version-card">
-                  <h3>Development <span class="latest-badge">Latest</span></h3>
+                  <h3>🚀 Development<span class="dev-badge">Latest</span></h3>
                   <p>Latest development version with the newest features and changes.</p>
                   <a href="./main/documentation/betterauth/" class="version-link">View Documentation</a>
               </div>
           EOF
-
-          # Add version cards for each released version
-          if [ -d "docs" ]; then
-            for version_dir in docs/v*; do
-              if [ -d "$version_dir" ]; then
-                version=$(basename "$version_dir")
-                cat >> docs/index.html << EOF
-              <div class="version-card">
-                  <h3>$version</h3>
-                  <p>Released version $version</p>
-                  <a href="./$version/documentation/betterauth/" class="version-link">View Documentation</a>
-              </div>
-          EOF
-              fi
-            done
           fi
 
-          cat >> docs/index.html << 'EOF'
+          # Add version cards for each released version (sorted in reverse order)
+          for version_dir in $(ls -1 docs/ | grep "^v" | sort -V -r); do
+            if [ -d "docs/$version_dir" ]; then
+              # Check if this is the latest release
+              LATEST_BADGE=""
+              if [ -z "$LATEST_VERSION_ADDED" ]; then
+                LATEST_BADGE='<span class="latest-badge">Latest Release</span>'
+                LATEST_VERSION_ADDED="true"
+              fi
               
-              <hr style="margin: 2rem 0;">
-              <p><small>Generated automatically from the BetterAuth Swift repository.</small></p>
+              cat >> docs/index.html << EOF
+              <div class="version-card">
+                  <h3>📦 $version_dir$LATEST_BADGE</h3>
+                  <p>Released version $version_dir - Stable and production ready.</p>
+                  <a href="./$version_dir/documentation/betterauth/" class="version-link">View Documentation</a>
+              </div>
+          EOF
+            fi
+          done
+
+          cat >> docs/index.html << 'EOF'
+                  
+                  <hr style="margin: 3rem 0; border: none; border-top: 1px solid #e1e5e9;">
+                  <p style="text-align: center; color: #666;"><small>Generated automatically from the BetterAuth Swift repository</small></p>
+              </div>
           </body>
           </html>
           EOF
-
-      - name: Set up latest symlink
-        if: steps.version.outputs.is_release != 'true'
-        run: |
-          cd docs
-          ln -sf main latest
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
