@@ -1,3 +1,4 @@
+import BetterAuth
 import Foundation
 
 public struct TwoFactorEnableRequest: Codable, Sendable {
@@ -22,7 +23,7 @@ public struct TwoFactorEnableResponse: Codable, Sendable {
 
 public struct TwoFactorDisableRequest: Codable, Sendable {
   public let password: String
-  
+
   public init(password: String) {
     self.password = password
   }
@@ -30,8 +31,152 @@ public struct TwoFactorDisableRequest: Codable, Sendable {
 
 public struct TwoFactorDisableResponse: Codable, Sendable {
   public let status: Bool
-  
+
   public init(status: Bool) {
     self.status = status
+  }
+}
+
+public struct TwoFactorGenerateBackupCodesRequest: Codable, Sendable {
+  public let password: String
+
+  public init(password: String) {
+    self.password = password
+  }
+}
+
+public struct TwoFactorGenerateBackupCodesResponse: Codable, Sendable {
+  public let backupCodes: [String]
+  public let status: Bool
+
+  public init(backupCodes: [String], status: Bool) {
+    self.backupCodes = backupCodes
+    self.status = status
+  }
+}
+
+public struct TwoFactorGetTotpURIRequest: Codable, Sendable {
+  public let password: String
+
+  public init(password: String) {
+    self.password = password
+  }
+}
+
+public struct TwoFactorGetTotpURIResponse: Codable, Sendable {
+  public let totpURI: String
+
+  public init(totpURI: String) {
+    self.totpURI = totpURI
+  }
+}
+
+public struct TwoFactorSendOTPRequest: Codable, Sendable {
+  public let trustDevice: Bool?
+
+  public init(trustDevice: Bool? = nil) {
+    self.trustDevice = trustDevice
+  }
+}
+
+public struct TwoFactorSendOTPResponse: Codable, Sendable {
+  public let status: Bool
+
+  public init(status: Bool) {
+    self.status = status
+  }
+}
+
+public struct TwoFactorVerifyBackupCodeRequest: Codable, Sendable {
+  public let code: String
+  public let disableSession: Bool?
+  public let trustDevice: Bool?
+
+  public init(code: String, disableSession: Bool?, trustDevice: Bool?) {
+    self.code = code
+    self.disableSession = disableSession
+    self.trustDevice = trustDevice
+  }
+}
+
+public struct TwoFactorVerifyBackupCodeResponse: Codable, Sendable {
+  public let token: String?
+  public let user: User
+
+  public init(token: String?, user: User) {
+    self.token = token
+    self.user = user
+  }
+}
+
+public struct TwoFactorVerifyOTPRequest: Codable, Sendable {
+  public let code: String
+  public let trustDevice: Bool?
+
+  public init(code: String, trustDevice: Bool?) {
+    self.code = code
+    self.trustDevice = trustDevice
+  }
+}
+
+public struct TwoFactorVerifyOTPResponse: Codable, Sendable {
+  public let token: String
+  public let user: User
+
+  public init(token: String, user: User) {
+    self.token = token
+    self.user = user
+  }
+}
+
+public struct TwoFactorVerifyTOTPRequest: Codable, Sendable {
+  public let code: String
+  public let trustDevice: Bool?
+
+  public init(code: String, trustDevice: Bool?) {
+    self.code = code
+    self.trustDevice = trustDevice
+  }
+}
+
+public struct TwoFactorVerifyTOTPResponse: Codable, Sendable {
+  public let token: String
+  public let user: User
+
+  public init(token: String, user: User) {
+    self.token = token
+    self.user = user
+  }
+}
+
+public struct TwoFactorRequires2FAResponse: Codable, Sendable {
+  public let twoFactorRedirect: Bool
+
+  public init(twoFactorRedirect: Bool) {
+    self.twoFactorRedirect = twoFactorRedirect
+  }
+}
+
+public enum TwoFactorSignInEmailResponse: Codable, Sendable {
+  case user(User)
+  case requires2FA(TwoFactorRequires2FAResponse)
+
+  public init(from decoder: Decoder) throws {
+    if let user = try? User(from: decoder) {
+      self = .user(user)
+      return
+    }
+
+    if let twoFA = try? TwoFactorRequires2FAResponse(from: decoder) {
+      self = .requires2FA(twoFA)
+      return
+    }
+
+    throw DecodingError.dataCorrupted(
+      DecodingError.Context(
+        codingPath: decoder.codingPath,
+        debugDescription: "Could not decode as User or Requires2FA"
+      )
+    )
   }
 }

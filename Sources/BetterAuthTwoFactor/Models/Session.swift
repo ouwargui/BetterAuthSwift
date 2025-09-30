@@ -1,5 +1,5 @@
-import Foundation
 import BetterAuth
+import Foundation
 
 extension User {
   public var twoFactorEnabled: Bool? {

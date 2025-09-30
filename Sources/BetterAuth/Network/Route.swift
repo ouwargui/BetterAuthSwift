@@ -2,7 +2,6 @@ import Foundation
 
 public protocol AuthRoutable: Sendable {
   var path: String { get }
-  var triggerSessionRefresh: Bool { get }
   var method: String { get }
 }
 
@@ -85,15 +84,6 @@ public enum BetterAuthRoute: AuthRoutable {
       return "/get-access-token"
     case .accountInfo:
       return "/account-info"
-    }
-  }
-
-  public var triggerSessionRefresh: Bool {
-    switch self {
-    case .signInEmail, .signUpEmail, .signOut, .signInSocial:
-      return true
-    default:
-      return false
     }
   }
 

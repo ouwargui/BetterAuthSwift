@@ -335,7 +335,7 @@ extension BetterAuthClient {
 extension BetterAuthClient {
   @MainActor
   public class SignIn {
-    private weak var client: BetterAuthClient?
+    package weak var client: BetterAuthClient?
 
     init(client: BetterAuthClient) {
       self.client = client
@@ -404,7 +404,7 @@ extension BetterAuthClient {
 
   @MainActor
   public class SignUp {
-    private weak var client: BetterAuthClient?
+    package weak var client: BetterAuthClient?
 
     init(client: BetterAuthClient) {
       self.client = client

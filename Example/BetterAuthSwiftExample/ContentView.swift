@@ -69,9 +69,19 @@ struct ContentView: View {
           HStack(spacing: 10) {
             Button {
               Task {
-                try await client.signIn.email(
-                  with: .init(email: email, password: password)
-                )
+                do {
+                  let res: TwoFactorSignInEmailResponse = try await client.signIn.email(
+                    with: .init(email: email, password: password)
+                  )
+                  switch res {
+                  case .requires2FA(let a):
+                    print(a)
+                  case .user(let b):
+                    print(b)
+                  }
+                } catch {
+                  print(error)
+                }
               }
             } label: {
               Text("Sign in")

@@ -135,6 +135,8 @@ public actor HTTPClient: HTTPClientProtocol {
           )
         )
     }
+    
+    print(data.json)
 
     return try decoder.decode(T.self, from: data)
   }
