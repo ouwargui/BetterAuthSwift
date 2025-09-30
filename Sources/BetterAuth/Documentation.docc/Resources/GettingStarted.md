@@ -1,12 +1,12 @@
 # Getting Started
 
-Learn how to integrate BetterAuthSwift into your project.
+Learn how to integrate Better Auth Swift into your project.
 
 ## Installation
 
 ### Swift Package Manager (SPM)
 
-Add BetterAuthSwift to your project using Xcode:
+Add Better Auth Swift to your project using Xcode:
 
 1. In Xcode, select **File → Add Package Dependencies**
 2. Enter the repository URL: `https://github.com/ouwargui/BetterAuthSwift.git`

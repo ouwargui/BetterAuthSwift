@@ -1,10 +1,10 @@
-#  Signing in with Apple
+# Signing in with Apple
 
 Learn how to use the `idToken` flow to natively sign with Apple
 
 ## 1. Setup the server
 
-Follow the steps on the official [BetterAuth docs](https://www.better-auth.com/docs/authentication/apple) until the "usage" step.
+Follow the steps on the official [Better Auth docs](https://www.better-auth.com/docs/authentication/apple) until the "usage" step.
 
 ## 2. Add the `Sign in with Apple` entitlement to your app
 

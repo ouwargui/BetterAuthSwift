@@ -11,7 +11,7 @@
 
 ## Installation
 
-Before starting, make sure to check the [BetterAuth docs](https://www.better-auth.com/docs/) first.
+Before starting, make sure to check the [Better Auth docs](https://www.better-auth.com/docs/) first.
 
 ### Swift Package Manager (SPM)
 
@@ -80,7 +80,7 @@ struct MyApp: App {
 
 ## More information
 
-Visit the [BetterAuthSwift docs](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauth/) for more information.
+Visit the [Better Auth Swift docs](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauth/) for more information.
 
 ## Why
 
