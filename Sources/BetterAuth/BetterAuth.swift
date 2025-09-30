@@ -9,9 +9,9 @@ import Foundation
 ///   - httpClient: You can pass a custom implementation that conforms to ``HTTPClientProtocol``. It uses ``HTTPClient`` by default.
 @MainActor
 public class BetterAuthClient: ObservableObject {
-  private let baseUrl: URL
-  private let httpClient: HTTPClientProtocol
-  private let sessionStore: SessionStore
+  package let baseUrl: URL
+  package let httpClient: HTTPClientProtocol
+  package let sessionStore: SessionStore
 
   /// The current session. It's a @Published variable.
   public var session: SessionData? {
@@ -51,7 +51,7 @@ public class BetterAuthClient: ObservableObject {
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getSession() async throws -> Session? {
     return try await httpClient.request(
-      route: .getSession,
+      route: BetterAuthRoute.getSession,
       responseType: Session?.self,
     )
   }
@@ -62,7 +62,7 @@ public class BetterAuthClient: ObservableObject {
   public func signOut() async throws -> SignOutResponse {
     return try await sessionStore.withSessionRefresh {
       return try await httpClient.request(
-        route: .signOut,
+        route: BetterAuthRoute.signOut,
         responseType: SignOutResponse.self
       )
     }
@@ -79,7 +79,7 @@ extension BetterAuthClient {
     -> ForgetPasswordResponse
   {
     return try await httpClient.request(
-      route: .forgetPassword,
+      route: BetterAuthRoute.forgetPassword,
       body: body,
       responseType: ForgetPasswordResponse.self
     )
@@ -93,7 +93,7 @@ extension BetterAuthClient {
     -> ResetPasswordResponse
   {
     return try await httpClient.request(
-      route: .resetPassword,
+      route: BetterAuthRoute.resetPassword,
       body: body,
       responseType: ResetPasswordResponse.self
     )
@@ -108,7 +108,7 @@ extension BetterAuthClient {
   {
     return try await self.sessionStore.withSessionRefresh {
       return try await httpClient.request(
-        route: .verifyEmail,
+        route: BetterAuthRoute.verifyEmail,
         query: body,
         responseType: VerifyEmailResponse.self
       )
@@ -123,7 +123,7 @@ extension BetterAuthClient {
     async throws -> SendVerificationEmailResponse
   {
     return try await httpClient.request(
-      route: .sendVerificationEmail,
+      route: BetterAuthRoute.sendVerificationEmail,
       body: body,
       responseType: SendVerificationEmailResponse.self
     )
@@ -137,7 +137,7 @@ extension BetterAuthClient {
     -> ChangeEmailResponse
   {
     return try await httpClient.request(
-      route: .changeEmail,
+      route: BetterAuthRoute.changeEmail,
       body: body,
       responseType: ChangeEmailResponse.self
     )
@@ -151,7 +151,7 @@ extension BetterAuthClient {
     -> ChangePasswordResponse
   {
     return try await httpClient.request(
-      route: .changePassword,
+      route: BetterAuthRoute.changePassword,
       body: body,
       responseType: ChangePasswordResponse.self
     )
@@ -166,7 +166,7 @@ extension BetterAuthClient {
   {
     return try await self.sessionStore.withSessionRefresh {
       return try await httpClient.request(
-        route: .updateUser,
+        route: BetterAuthRoute.updateUser,
         body: body,
         responseType: UpdateUserResponse.self
       )
@@ -182,7 +182,7 @@ extension BetterAuthClient {
   {
     return try await self.sessionStore.withSessionRefresh {
       return try await httpClient.request(
-        route: .deleteUser,
+        route: BetterAuthRoute.deleteUser,
         body: body,
         responseType: DeleteUserResponse.self
       )
@@ -197,7 +197,7 @@ extension BetterAuthClient {
     async throws -> RequestPasswordResetResponse
   {
     return try await httpClient.request(
-      route: .requestPasswordReset,
+      route: BetterAuthRoute.requestPasswordReset,
       body: body,
       responseType: RequestPasswordResetResponse.self
     )
@@ -208,7 +208,7 @@ extension BetterAuthClient {
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listSessions() async throws -> ListSessionResponse {
     return try await httpClient.request(
-      route: .listSessions,
+      route: BetterAuthRoute.listSessions,
       responseType: ListSessionResponse.self
     )
   }
@@ -221,7 +221,7 @@ extension BetterAuthClient {
     -> RevokeSessionResponse
   {
     return try await httpClient.request(
-      route: .revokeSession,
+      route: BetterAuthRoute.revokeSession,
       body: body,
       responseType: RevokeSessionResponse.self
     )
@@ -232,7 +232,7 @@ extension BetterAuthClient {
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeSessions() async throws -> RevokeSessionsResponse {
     return try await httpClient.request(
-      route: .revokeSessions,
+      route: BetterAuthRoute.revokeSessions,
       responseType: RevokeSessionsResponse.self
     )
   }
@@ -243,7 +243,7 @@ extension BetterAuthClient {
   public func revokeOtherSessions() async throws -> RevokeOtherSessionsResponse
   {
     return try await httpClient.request(
-      route: .revokeOtherSessions,
+      route: BetterAuthRoute.revokeOtherSessions,
       responseType: RevokeOtherSessionsResponse.self
     )
   }
@@ -256,7 +256,7 @@ extension BetterAuthClient {
     -> LinkSocialResponse
   {
     return try await httpClient.request(
-      route: .linkSocial,
+      route: BetterAuthRoute.linkSocial,
       body: body,
       responseType: LinkSocialResponse.self
     )
@@ -267,7 +267,7 @@ extension BetterAuthClient {
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listAccounts() async throws -> ListAccountsResponse {
     return try await httpClient.request(
-      route: .listAccounts,
+      route: BetterAuthRoute.listAccounts,
       responseType: ListAccountsResponse.self
     )
   }
@@ -280,7 +280,7 @@ extension BetterAuthClient {
     -> UnlinkAccountResponse
   {
     return try await httpClient.request(
-      route: .unlinkAccount,
+      route: BetterAuthRoute.unlinkAccount,
       body: body,
       responseType: UnlinkAccountResponse.self
     )
@@ -294,7 +294,7 @@ extension BetterAuthClient {
     -> RefreshTokenResponse
   {
     return try await httpClient.request(
-      route: .refreshToken,
+      route: BetterAuthRoute.refreshToken,
       body: body,
       responseType: RefreshTokenResponse.self
     )
@@ -308,7 +308,7 @@ extension BetterAuthClient {
     -> GetAccessTokenResponse
   {
     return try await httpClient.request(
-      route: .getAccessToken,
+      route: BetterAuthRoute.getAccessToken,
       body: body,
       responseType: GetAccessTokenResponse.self
     )
@@ -322,7 +322,7 @@ extension BetterAuthClient {
     -> AccountInfoResponse
   {
     return try await httpClient.request(
-      route: .accountInfo,
+      route: BetterAuthRoute.accountInfo,
       body: body,
       responseType: AccountInfoResponse.self
     )
@@ -352,7 +352,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: .signInEmail,
+          route: BetterAuthRoute.signInEmail,
           body: body,
           responseType: SignInEmailResponse.self
         )
@@ -372,7 +372,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         let authResponse = try await client.httpClient.request(
-          route: .signInSocial,
+          route: BetterAuthRoute.signInSocial,
           body: body,
           responseType: SignInSocialResponse.self
         )
@@ -421,7 +421,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: .signUpEmail,
+          route: BetterAuthRoute.signUpEmail,
           body: body,
           responseType: SignUpEmailResponse.self
         )

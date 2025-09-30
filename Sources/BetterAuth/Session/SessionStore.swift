@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 @MainActor
-class SessionStore: ObservableObject {
+package class SessionStore: ObservableObject {
   @Published private(set) var current: Session?
   @Published private(set) var isLoading: Bool = false
 

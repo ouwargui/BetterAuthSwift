@@ -1,6 +1,12 @@
 import Foundation
 
-public enum BetterAuthRoute: Sendable {
+public protocol AuthRoutable: Sendable {
+  var path: String { get }
+  var triggerSessionRefresh: Bool { get }
+  var method: String { get }
+}
+
+public enum BetterAuthRoute: AuthRoutable {
   case signUpEmail
   case signInEmail
   case signInSocial
@@ -27,7 +33,7 @@ public enum BetterAuthRoute: Sendable {
   case getAccessToken
   case accountInfo
 
-  var path: String {
+  public var path: String {
     switch self {
     case .getSession:
       return "/get-session"
@@ -82,7 +88,7 @@ public enum BetterAuthRoute: Sendable {
     }
   }
 
-  var triggerSessionRefresh: Bool {
+  public var triggerSessionRefresh: Bool {
     switch self {
     case .signInEmail, .signUpEmail, .signOut, .signInSocial:
       return true
@@ -91,7 +97,7 @@ public enum BetterAuthRoute: Sendable {
     }
   }
 
-  var method: String {
+  public var method: String {
     switch self {
     case .signInEmail, .signUpEmail, .signOut, .signInSocial, .forgetPassword,
       .sendVerificationEmail, .changeEmail, .changePassword, .updateUser,

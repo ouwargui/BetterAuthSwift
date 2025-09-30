@@ -12,16 +12,16 @@ public protocol HTTPClientProtocol: Sendable {
     query: Q?
   ) async throws -> T
   func request<T: Decodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     responseType: T.Type
   ) async throws -> T
   func request<T: Decodable & Sendable, B: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     body: B?,
     responseType: T.Type
   ) async throws -> T
   func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     query: Q?,
     responseType: T.Type
   ) async throws -> T
@@ -47,7 +47,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func request<T: Decodable & Sendable, B: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     body: B,
     responseType: T.Type
   ) async throws -> T {
@@ -61,7 +61,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     query: Q,
     responseType: T.Type
   ) async throws -> T {
@@ -75,7 +75,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func request<T: Decodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     responseType: T.Type
   ) async throws -> T {
     try await request(
