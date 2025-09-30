@@ -7,6 +7,7 @@
 
 import AuthenticationServices
 import BetterAuth
+import BetterAuthTwoFactor
 import SwiftUI
 
 struct ContentView: View {
@@ -21,6 +22,7 @@ struct ContentView: View {
       if let user = client.user {
         Spacer()
         Text("Hello, \(user.name)")
+        Text("2fa enabled? \(user.twoFactorEnabled?.description ?? "nil")")
       }
 
       Spacer()
@@ -39,6 +41,20 @@ struct ContentView: View {
           } label: {
             Text("Get session")
           }.buttonStyle(.glass)
+          
+          Button {
+            Task {
+              if client.user?.twoFactorEnabled == true {
+                let res = try await client.twoFactor.disable(with: .init(password: password))
+                print(res)
+              } else {
+                let res = try await client.twoFactor.enable(with: .init(password: password))
+                print(res)
+              }
+            }
+          } label: {
+            Text("2FA")
+          }
 
           Button {
             Task {

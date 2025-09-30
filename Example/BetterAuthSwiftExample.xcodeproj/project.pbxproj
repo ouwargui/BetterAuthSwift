@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A186B3892E833AEB001671AD /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A186B3882E833AEB001671AD /* BetterAuth */; };
+		A1D8242C2E8B8A4F00049493 /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1D8242B2E8B8A4F00049493 /* BetterAuth */; };
+		A1D8242E2E8B8A4F00049493 /* BetterAuthTwoFactor in Frameworks */ = {isa = PBXBuildFile; productRef = A1D8242D2E8B8A4F00049493 /* BetterAuthTwoFactor */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1D8242E2E8B8A4F00049493 /* BetterAuthTwoFactor in Frameworks */,
+				A1D8242C2E8B8A4F00049493 /* BetterAuth in Frameworks */,
 				A186B3892E833AEB001671AD /* BetterAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,6 +88,8 @@
 			name = BetterAuthSwiftExample;
 			packageProductDependencies = (
 				A186B3882E833AEB001671AD /* BetterAuth */,
+				A1D8242B2E8B8A4F00049493 /* BetterAuth */,
+				A1D8242D2E8B8A4F00049493 /* BetterAuthTwoFactor */,
 			);
 			productName = BetterAuthSwiftExample;
 			productReference = A186E3F02E833A4200757E13 /* BetterAuthSwiftExample.app */;
@@ -409,6 +415,14 @@
 		A186B3882E833AEB001671AD /* BetterAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BetterAuth;
+		};
+		A1D8242B2E8B8A4F00049493 /* BetterAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuth;
+		};
+		A1D8242D2E8B8A4F00049493 /* BetterAuthTwoFactor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthTwoFactor;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

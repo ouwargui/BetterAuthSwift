@@ -4,7 +4,7 @@ public struct TwoFactorEnableRequest: Codable, Sendable {
   public let password: String
   public let issuer: String?
 
-  public init(password: String, issuer: String?) {
+  public init(password: String, issuer: String? = nil) {
     self.password = password
     self.issuer = issuer
   }

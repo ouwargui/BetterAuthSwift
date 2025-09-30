@@ -16,7 +16,7 @@ package class SessionStore: ObservableObject {
     }
   }
 
-  private func update(_ session: Session?) {
+  package func update(_ session: Session?) {
     self.current = session
   }
 
@@ -24,7 +24,7 @@ package class SessionStore: ObservableObject {
     self.isLoading = loading
   }
 
-  func withSessionRefresh<T>(_ operation: () async throws -> T) async throws
+  package func withSessionRefresh<T>(_ operation: () async throws -> T) async throws
     -> T
   {
     setLoading(true)
@@ -48,7 +48,7 @@ package class SessionStore: ObservableObject {
   private func refreshSession() async {
     do {
       let session = try await httpClient.request(
-        route: .getSession,
+        route: BetterAuthRoute.getSession,
         responseType: Session.self
       )
 

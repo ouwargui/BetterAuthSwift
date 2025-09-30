@@ -21,13 +21,15 @@ extension BetterAuthClient {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.request(
-        route: BetterAuthTwoFactorRoute.twoFactorEnable,
-        body: body,
-        responseType: TwoFactorEnableResponse.self
-      )
+      return try await client.sessionStore.withSessionRefresh {
+        return try await client.httpClient.request(
+          route: BetterAuthTwoFactorRoute.twoFactorEnable,
+          body: body,
+          responseType: TwoFactorEnableResponse.self
+        )
+      }
     }
-    
+
     public func disable(with body: TwoFactorDisableRequest) async throws
       -> TwoFactorDisableResponse
     {
@@ -35,11 +37,13 @@ extension BetterAuthClient {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.request(
-        route: BetterAuthTwoFactorRoute.twoFactorDisable,
-        body: body,
-        responseType: TwoFactorDisableResponse.self
-      )
+      return try await client.sessionStore.withSessionRefresh {
+        return try await client.httpClient.request(
+          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          body: body,
+          responseType: TwoFactorDisableResponse.self
+        )
+      }
     }
   }
 }

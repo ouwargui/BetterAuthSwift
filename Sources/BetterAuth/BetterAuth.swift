@@ -50,10 +50,12 @@ public class BetterAuthClient: ObservableObject {
   /// - Returns: ``Session``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getSession() async throws -> Session? {
-    return try await httpClient.request(
+    let res = try await httpClient.request(
       route: BetterAuthRoute.getSession,
       responseType: Session?.self,
     )
+    self.sessionStore.update(res)
+    return res
   }
 
   /// Makes a request to /sign-out.

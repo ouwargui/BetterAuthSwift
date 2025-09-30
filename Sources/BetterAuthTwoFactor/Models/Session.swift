@@ -2,5 +2,7 @@ import Foundation
 import BetterAuth
 
 extension User {
-  public let twoFactorEnabled: Bool
+  public var twoFactorEnabled: Bool? {
+    return pluginData?["twoFactorEnabled"]?.value as? Bool
+  }
 }
