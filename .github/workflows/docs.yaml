@@ -28,21 +28,47 @@ jobs:
         with:
           xcode-version: "26.0"
 
+      - name: Setup swiftly
+        run: |
+          curl -O 'https://download.swift.org/swiftly/darwin/swiftly.pkg'
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          SWIFTLY_BIN_PATH="${HOME}/.swiftly/bin/swiftly"
+          SWIFTLY_ENV_PATH="${HOME}/.swiftly/env.sh"
+
+          "${SWIFTLY_BIN_PATH}" init --assume-yes --no-modify-profile --skip-install --quiet-shell-followup
+          . "${SWIFTLY_ENV_PATH}"
+          echo "SWIFTLY_HOME_DIR=${SWIFTLY_HOME_DIR}" >>"${GITHUB_ENV}"
+          echo "SWIFTLY_BIN_DIR=${SWIFTLY_BIN_DIR}" >>"${GITHUB_ENV}"
+          echo "${SWIFTLY_BIN_DIR}" >>"${GITHUB_PATH}"
+
+      - name: Install Swift snapshot
+        run: |
+          POST_INSTALL_FILE="${HOME}/.swiftly-postinstall-cmds.sh"
+          swiftly install --assume-yes --use --post-install-file "${POST_INSTALL_FILE}" "main-snapshot"
+          if [[ -f "${POST_INSTALL_FILE}" ]]; then
+            export DEBIAN_FRONTEND=noninteractive # prevent Debian/Ubuntu installs from hanging on tzdata
+            if [[ "$(id -un)" == 'root' ]]; then
+              . "${POST_INSTALL_FILE}"
+            else
+              sudo bash -c ". '${POST_INSTALL_FILE}'"
+            fi
+            rm "${POST_INSTALL_FILE}"
+          fi
+
+      - name: Fix generate docs
+        run: |
+          sh ./scripts/fix_generate_docs.sh
+
       - name: Build Documentation
         run: |
-          swift package generate-documentation \
+          swift package --allow-writing-to-directory ./docs generate-documentation \
+            --enable-experimental-combined-documentation \
             --target BetterAuth \
-            --disable-indexing
-
-          # Find and transform the documentation
-          DOCC_ARCHIVE=$(find .build -name "*.doccarchive" -type d | head -1)
-          echo "Found archive: $DOCC_ARCHIVE"
-
-          mkdir -p docs
-          xcrun docc process-archive transform-for-static-hosting \
-            "$DOCC_ARCHIVE" \
-            --output-path docs \
-            --hosting-base-path BetterAuthSwift
+            --target BetterAuthTwoFactor \
+            --disable-indexing \
+            --transform-for-static-hosting \
+            --hosting-base-path BetterAuthSwift \
+            --output-path ./docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
