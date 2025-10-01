@@ -23,10 +23,10 @@ actor MockHTTPClient: HTTPClientProtocol {
   }
 
   func request<T: Decodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     responseType: T.Type
   ) async throws -> T {
-    if route == .getSession {
+    if route.path == BetterAuthRoute.getSession.path {
       let now = Date()
       let user = User(
         id: "user_1",
@@ -56,7 +56,7 @@ actor MockHTTPClient: HTTPClientProtocol {
   }
 
   func request<T: Decodable & Sendable, B: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     body: B?,
     responseType: T.Type
   ) async throws -> T {
@@ -64,7 +64,7 @@ actor MockHTTPClient: HTTPClientProtocol {
   }
 
   func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
-    route: BetterAuthRoute,
+    route: AuthRoutable,
     query: Q?,
     responseType: T.Type
   ) async throws -> T {
