@@ -81,6 +81,51 @@ struct MyApp: App {
 }
 ```
 
+## Adding a plugin
+
+### 1. Link the plugin to your target
+
+1. In Xcode, select **File → Add Package Dependencies**
+2. Enter the repository URL: `https://github.com/ouwargui/BetterAuthSwift.git`
+3. Click on **Add package**
+4. Choose the plugins you want to use and add them to your target
+
+Or add it to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(
+      url: "https://github.com/ouwargui/BetterAuthSwift.git",
+      .upToNextMajor(from: "0.1.0")
+    )
+],
+targets: [
+    .target(
+      name: "MyApp",
+      dependencies: [
+        .product(name: "BetterAuth", package: "BetterAuthSwift"),
+        .product(name: "BetterAuthTwoFactor", package: "BetterAuthSwift"),
+      ]
+    )
+]
+```
+
+### 2. Use the plugin
+
+```swift
+import BetterAuth
+import BetterAuthTwoFactor
+
+let client = BetterAuthClient(
+  baseURL: URL(string: "https://your-api.com")!
+)
+
+if let user = client.user,
+   let twoFactorEnabled = user.twoFactorEnabled {
+      print(twoFactorEnabled) // true or false
+   }
+```
+
 ## Supported plugins
 
 ### Authentication
