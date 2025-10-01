@@ -1,5 +1,12 @@
 import Foundation
 
+/**
+  This protocol is used to define the routes for the BetterAuth API.
+
+  Usually you'll find a corresponding enum for each plugin that conforms to this protocol.
+
+  ``BetterAuthRoute`` or  `BetterAuth<Plugin>Route`
+*/
 public protocol AuthRoutable: Sendable {
   var path: String { get }
   var method: String { get }
