@@ -78,6 +78,55 @@ struct MyApp: App {
 }
 ```
 
+## Supported plugins
+
+### Authentication
+
+- [x] Two Factor
+- [ ] Username
+- [ ] Anonymous
+- [ ] Phone Number
+- [ ] Magic Link
+- [ ] Email OTP
+- [ ] Passkey
+- [ ] Generic OAuth
+- [ ] One Tap
+- [ ] Sign In With Ethereum
+
+### Authorization
+
+- [ ] Admin
+- [ ] API Key
+- [ ] MCP
+- [ ] Organization
+
+### Enterprise
+
+- [ ] OIDC Provider
+- [ ] SSO
+
+### Utility
+
+- [ ] Bearer
+- [ ] Device Authorization
+- [ ] New
+- [ ] Captcha
+- [ ] Have I Been Pwned
+- [ ] Last Login Method
+- [ ] Multi Session
+- [ ] OAuth Proxy
+- [ ] One-Time Token
+- [ ] Open API
+- [ ] JWT
+
+### 3rd party
+
+- [ ] Stripe
+- [ ] Polar
+- [ ] Autumn Billing
+- [ ] Dodo Payments
+- [ ] Dub
+
 ## More information
 
 Visit the [Better Auth Swift docs](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauth/) for more information.
