@@ -1,6 +1,6 @@
 # ``BetterAuthTwoFactor``
 
-Better Auth Two Factor plugin.
+Better Auth Two Factor plugin
 
 ## Overview
 
