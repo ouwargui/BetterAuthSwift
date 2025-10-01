@@ -27,7 +27,7 @@ Or add it to your `Package.swift`:
 dependencies: [
     .package(
       url: "https://github.com/ouwargui/BetterAuthSwift.git",
-      .upToNextMajor(from: "0.3.0")
+      .upToNextMajor(from: "0.1.0")
     )
 ]
 ```
