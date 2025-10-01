@@ -52,7 +52,7 @@ public struct User: Codable, Sendable {
 
   package let pluginData: [String: AnyCodable]?
 
-  public init(
+  package init(
     id: String,
     email: String,
     name: String,
@@ -70,6 +70,25 @@ public struct User: Codable, Sendable {
     self.createdAt = createdAt
     self.updatedAt = updatedAt
     self.pluginData = pluginData
+  }
+
+  public init(
+    id: String,
+    email: String,
+    name: String,
+    image: String?,
+    emailVerified: Bool,
+    createdAt: Date,
+    updatedAt: Date,
+  ) {
+    self.id = id
+    self.email = email
+    self.name = name
+    self.image = image
+    self.emailVerified = emailVerified
+    self.createdAt = createdAt
+    self.updatedAt = updatedAt
+    self.pluginData = nil
   }
 
   private enum CodingKeys: String, CodingKey, CaseIterable {

@@ -23,7 +23,7 @@
 ///
 ///     let encoder = JSONEncoder()
 ///     let json = try! encoder.encode(dictionary)
-@frozen public struct AnyEncodable: Encodable {
+@frozen package struct AnyEncodable: Encodable {
   public let value: Any
 
   public init(_ value: Any?) {

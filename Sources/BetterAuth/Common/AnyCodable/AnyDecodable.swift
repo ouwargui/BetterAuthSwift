@@ -25,7 +25,7 @@
 ///
 ///     let decoder = JSONDecoder()
 ///     let dictionary = try! decoder.decode([String: AnyDecodable].self, from: json)
-@frozen public struct AnyDecodable: Decodable {
+@frozen package struct AnyDecodable: Decodable {
   public let value: Any
 
   public init(_ value: Any?) {

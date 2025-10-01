@@ -1,6 +1,6 @@
 import Foundation
 
-extension Data {
+package extension Data {
   var json: NSString? {
     guard
       let jsonObject = try? JSONSerialization.jsonObject(
