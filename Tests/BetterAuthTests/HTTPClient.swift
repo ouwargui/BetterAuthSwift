@@ -18,17 +18,17 @@ actor MockHTTPClient: HTTPClientProtocol {
     responseType: T.Type,
     body: B?,
     query: Q?
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     throw BetterAuthSwiftError(message: "Not implemented")
   }
 
   func request<T: Decodable & Sendable>(
     route: AuthRoutable,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     if route.path == BetterAuthRoute.getSession.path {
       let now = Date()
-      let user = User(
+      let user = SessionUser(
         id: "user_1",
         email: "test@example.com",
         name: "Test User",
@@ -49,7 +49,7 @@ actor MockHTTPClient: HTTPClientProtocol {
       )
       let session = Session(session: sessionData, user: user)
       let data = try JSONEncoder().encode(session)
-      return try JSONDecoder().decode(T.self, from: data)
+      return try JSONDecoder().decode(APIResource<T>.self, from: data)
     }
 
     throw BetterAuthSwiftError(message: "Not implemented in test")
@@ -59,7 +59,7 @@ actor MockHTTPClient: HTTPClientProtocol {
     route: AuthRoutable,
     body: B?,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     throw BetterAuthSwiftError(message: "Not implemented in test")
   }
 
@@ -67,7 +67,7 @@ actor MockHTTPClient: HTTPClientProtocol {
     route: AuthRoutable,
     query: Q?,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     throw BetterAuthSwiftError(message: "Not implemented in test")
   }
 }
