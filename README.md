@@ -6,8 +6,14 @@
     <br />
     <br />
       <a href="https://ouwargui.github.io/BetterAuthSwift/documentation/betterauth/"><strong>Docs</strong></a>
+    <br />
   </p>
 </p>
+
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fouwargui%2FBetterAuthSwift%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ouwargui/BetterAuthSwift)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fouwargui%2FBetterAuthSwift%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ouwargui/BetterAuthSwift)
+[![Test](https://github.com/ouwargui/BetterAuthSwift/actions/workflows/test.yaml/badge.svg)](https://github.com/ouwargui/BetterAuthSwift/actions/workflows/test.yaml)
+[![Documentation](https://github.com/ouwargui/BetterAuthSwift/actions/workflows/docs.yaml/badge.svg)](https://github.com/ouwargui/BetterAuthSwift/actions/workflows/docs.yaml)
 
 ## Installation
 
