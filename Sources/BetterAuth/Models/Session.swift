@@ -1,10 +1,20 @@
 import Foundation
 
+struct SessionProxy: Codable, Sendable {
+  let session: SessionData
+  let user: User
+
+  init(session: SessionData, user: User) {
+    self.session = session
+    self.user = user
+  }
+}
+
 public struct Session: Codable, Sendable {
   public let session: SessionData
-  public let user: User
+  public let user: SessionUser
 
-  public init(session: SessionData, user: User) {
+  public init(session: SessionData, user: SessionUser) {
     self.session = session
     self.user = user
   }
@@ -41,7 +51,17 @@ public struct SessionData: Codable, Sendable {
   }
 }
 
-public struct User: Codable, Sendable {
+package protocol UserProtocol: Codable, Sendable {
+  var id: String { get }
+  var email: String { get }
+  var name: String { get }
+  var image: String? { get }
+  var emailVerified: Bool { get }
+  var createdAt: Date { get }
+  var updatedAt: Date { get }
+}
+
+public struct User: UserProtocol {
   public let id: String
   public let email: String
   public let name: String
@@ -50,6 +70,33 @@ public struct User: Codable, Sendable {
   public let createdAt: Date
   public let updatedAt: Date
 
+  public init(
+    id: String,
+    email: String,
+    name: String,
+    image: String?,
+    emailVerified: Bool,
+    createdAt: Date,
+    updatedAt: Date,
+  ) {
+    self.id = id
+    self.email = email
+    self.name = name
+    self.image = image
+    self.emailVerified = emailVerified
+    self.createdAt = createdAt
+    self.updatedAt = updatedAt
+  }
+}
+
+public struct SessionUser: UserProtocol {
+  public let id: String
+  public let email: String
+  public let name: String
+  public let image: String?
+  public let emailVerified: Bool
+  public let createdAt: Date
+  public let updatedAt: Date
   package let pluginData: [String: AnyCodable]?
 
   package init(
@@ -72,23 +119,17 @@ public struct User: Codable, Sendable {
     self.pluginData = pluginData
   }
 
-  public init(
-    id: String,
-    email: String,
-    name: String,
-    image: String?,
-    emailVerified: Bool,
-    createdAt: Date,
-    updatedAt: Date,
-  ) {
-    self.id = id
-    self.email = email
-    self.name = name
-    self.image = image
-    self.emailVerified = emailVerified
-    self.createdAt = createdAt
-    self.updatedAt = updatedAt
-    self.pluginData = nil
+  internal init(_ user: UserProtocol, metadata: [String: AnyCodable]?) {
+    self.init(
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      image: user.image,
+      emailVerified: user.emailVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      pluginData: metadata
+    )
   }
 
   private enum CodingKeys: String, CodingKey, CaseIterable {

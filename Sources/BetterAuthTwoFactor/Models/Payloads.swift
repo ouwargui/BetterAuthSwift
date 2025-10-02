@@ -148,35 +148,3 @@ public struct TwoFactorVerifyTOTPResponse: Codable, Sendable {
     self.user = user
   }
 }
-
-public struct TwoFactorRequires2FAResponse: Codable, Sendable {
-  public let twoFactorRedirect: Bool
-
-  public init(twoFactorRedirect: Bool) {
-    self.twoFactorRedirect = twoFactorRedirect
-  }
-}
-
-public enum TwoFactorSignInEmailResponse: Codable, Sendable {
-  case user(User)
-  case requires2FA(TwoFactorRequires2FAResponse)
-
-  public init(from decoder: Decoder) throws {
-    if let user = try? User(from: decoder) {
-      self = .user(user)
-      return
-    }
-
-    if let twoFA = try? TwoFactorRequires2FAResponse(from: decoder) {
-      self = .requires2FA(twoFA)
-      return
-    }
-
-    throw DecodingError.dataCorrupted(
-      DecodingError.Context(
-        codingPath: decoder.codingPath,
-        debugDescription: "Could not decode as User or Requires2FA"
-      )
-    )
-  }
-}

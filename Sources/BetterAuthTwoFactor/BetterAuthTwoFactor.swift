@@ -1,35 +1,6 @@
 import BetterAuth
 import Foundation
 
-extension BetterAuthClient.SignIn {
-  /// Makes a request to **/sign-in/email**.
-  ///
-  ///  When using the Two Factor plugin, you'll need to add a type annotation to the variable you're assigning the result to.
-  ///
-  ///  ```swift
-  ///  let res: TwoFactorSignInEmailResponse = client.signIn.email(with: body)
-  ///  ```
-  ///
-  /// - Parameter body: ``SignInEmailRequest``
-  /// - Returns: ``TwoFactorSignInEmailResponse``
-  /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func email(with body: SignInEmailRequest) async throws
-    -> TwoFactorSignInEmailResponse
-  {
-    guard let client = self.client else {
-      throw BetterAuthSwiftError(message: "Client deallocated")
-    }
-
-    return try await client.sessionStore.withSessionRefresh {
-      return try await client.httpClient.request(
-        route: BetterAuthRoute.signInEmail,
-        body: body,
-        responseType: TwoFactorSignInEmailResponse.self
-      )
-    }
-  }
-}
-
 extension BetterAuthClient {
   public var twoFactor: TwoFactor {
     TwoFactor(client: self)
@@ -49,7 +20,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorEnableResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func enable(with body: TwoFactorEnableRequest) async throws
-      -> TwoFactorEnableResponse
+      -> APIResource<TwoFactorEnableResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -70,7 +41,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorDisableResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func disable(with body: TwoFactorDisableRequest) async throws
-      -> TwoFactorDisableResponse
+      -> APIResource<TwoFactorDisableResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -93,7 +64,7 @@ extension BetterAuthClient {
     public func generateBackupCodes(
       with body: TwoFactorGenerateBackupCodesRequest
     ) async throws
-      -> TwoFactorGenerateBackupCodesResponse
+      -> APIResource<TwoFactorGenerateBackupCodesResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -114,7 +85,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorGetTotpURIResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func getTotpURI(with body: TwoFactorGetTotpURIRequest) async throws
-      -> TwoFactorGetTotpURIResponse
+      -> APIResource<TwoFactorGetTotpURIResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -135,7 +106,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorSendOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func sendOtp(with body: TwoFactorSendOTPRequest) async throws
-      -> TwoFactorSendOTPResponse
+      -> APIResource<TwoFactorSendOTPResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -157,7 +128,7 @@ extension BetterAuthClient {
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyBackupCode(with body: TwoFactorVerifyBackupCodeRequest)
       async throws
-      -> TwoFactorVerifyBackupCodeResponse
+      -> APIResource<TwoFactorVerifyBackupCodeResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -178,7 +149,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorVerifyOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyOtp(with body: TwoFactorVerifyOTPRequest) async throws
-      -> TwoFactorVerifyOTPResponse
+      -> APIResource<TwoFactorVerifyOTPResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -199,7 +170,7 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorVerifyTOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyTotp(with body: TwoFactorVerifyTOTPRequest) async throws
-      -> TwoFactorVerifyTOTPResponse
+      -> APIResource<TwoFactorVerifyTOTPResponse>
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")

@@ -24,7 +24,8 @@ package class SessionStore: ObservableObject {
     self.isLoading = loading
   }
 
-  package func withSessionRefresh<T>(_ operation: () async throws -> T) async throws
+  package func withSessionRefresh<T>(_ operation: () async throws -> T)
+    async throws
     -> T
   {
     setLoading(true)
@@ -49,10 +50,15 @@ package class SessionStore: ObservableObject {
     do {
       let session = try await httpClient.request(
         route: BetterAuthRoute.getSession,
-        responseType: Session.self
+        responseType: SessionProxy.self
       )
 
-      update(session)
+      update(
+        .init(
+          session: session.data.session,
+          user: .init(session.data.user, metadata: session.context.meta)
+        )
+      )
     } catch {
       update(nil)
     }

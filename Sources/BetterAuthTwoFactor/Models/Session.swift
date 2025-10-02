@@ -1,8 +1,9 @@
 import BetterAuth
 import Foundation
 
-extension User {
+extension SessionUser {
   public var twoFactorEnabled: Bool? {
-    return pluginData?["twoFactorEnabled"]?.value as? Bool
+    return pluginData?[TwoFactorPluginData.twoFactorEnabled.pluginFieldName]?
+      .value as? Bool
   }
 }

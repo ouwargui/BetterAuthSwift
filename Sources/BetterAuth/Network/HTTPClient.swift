@@ -10,21 +10,21 @@ public protocol HTTPClientProtocol: Sendable {
     responseType: T.Type,
     body: B?,
     query: Q?
-  ) async throws -> T
+  ) async throws -> APIResource<T>
   func request<T: Decodable & Sendable>(
     route: AuthRoutable,
     responseType: T.Type
-  ) async throws -> T
+  ) async throws -> APIResource<T>
   func request<T: Decodable & Sendable, B: Encodable & Sendable>(
     route: AuthRoutable,
     body: B?,
     responseType: T.Type
-  ) async throws -> T
+  ) async throws -> APIResource<T>
   func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
     route: AuthRoutable,
     query: Q?,
     responseType: T.Type
-  ) async throws -> T
+  ) async throws -> APIResource<T>
 }
 
 public actor HTTPClient: HTTPClientProtocol {
@@ -50,7 +50,7 @@ public actor HTTPClient: HTTPClientProtocol {
     route: AuthRoutable,
     body: B,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     try await request(
       path: route.path,
       method: route.method,
@@ -64,7 +64,7 @@ public actor HTTPClient: HTTPClientProtocol {
     route: AuthRoutable,
     query: Q,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     try await request(
       path: route.path,
       method: route.method,
@@ -77,7 +77,7 @@ public actor HTTPClient: HTTPClientProtocol {
   public func request<T: Decodable & Sendable>(
     route: AuthRoutable,
     responseType: T.Type
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     try await request(
       path: route.path,
       method: route.method,
@@ -93,7 +93,7 @@ public actor HTTPClient: HTTPClientProtocol {
     responseType: T.Type,
     body: B?,
     query: Q?
-  ) async throws -> T {
+  ) async throws -> APIResource<T> {
     var url: URL {
       if #available(macOS 13.0, iOS 16.0, *) {
         return baseURL.appending(path: path)
@@ -136,6 +136,6 @@ public actor HTTPClient: HTTPClientProtocol {
         )
     }
 
-    return try decoder.decode(T.self, from: data)
+    return try decoder.decode(APIResource<T>.self, from: data)
   }
 }
