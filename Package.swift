@@ -11,6 +11,7 @@ let package = Package(
       targets: ["BetterAuth"]
     ),
     .library(name: "BetterAuthTwoFactor", targets: ["BetterAuthTwoFactor"]),
+    .library(name: "BetterAuthUsername", targets: ["BetterAuthUsername"])
   ],
   dependencies: [
     .package(
@@ -25,6 +26,10 @@ let package = Package(
     ),
     .target(
       name: "BetterAuthTwoFactor",
+      dependencies: ["BetterAuth"]
+    ),
+    .target(
+      name: "BetterAuthUsername",
       dependencies: ["BetterAuth"]
     ),
     .testTarget(

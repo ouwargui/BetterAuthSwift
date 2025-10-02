@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A170F2632E8E3A9B007D88B6 /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2622E8E3A9B007D88B6 /* BetterAuth */; };
+		A170F2652E8E3A9B007D88B6 /* BetterAuthTwoFactor in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2642E8E3A9B007D88B6 /* BetterAuthTwoFactor */; };
+		A170F2672E8E3A9B007D88B6 /* BetterAuthUsername in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2662E8E3A9B007D88B6 /* BetterAuthUsername */; };
 		A186B3892E833AEB001671AD /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A186B3882E833AEB001671AD /* BetterAuth */; };
 		A1D8242C2E8B8A4F00049493 /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1D8242B2E8B8A4F00049493 /* BetterAuth */; };
 		A1D8242E2E8B8A4F00049493 /* BetterAuthTwoFactor in Frameworks */ = {isa = PBXBuildFile; productRef = A1D8242D2E8B8A4F00049493 /* BetterAuthTwoFactor */; };
@@ -42,8 +45,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A170F2672E8E3A9B007D88B6 /* BetterAuthUsername in Frameworks */,
+				A170F2652E8E3A9B007D88B6 /* BetterAuthTwoFactor in Frameworks */,
 				A1D8242E2E8B8A4F00049493 /* BetterAuthTwoFactor in Frameworks */,
 				A1D8242C2E8B8A4F00049493 /* BetterAuth in Frameworks */,
+				A170F2632E8E3A9B007D88B6 /* BetterAuth in Frameworks */,
 				A186B3892E833AEB001671AD /* BetterAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,6 +96,9 @@
 				A186B3882E833AEB001671AD /* BetterAuth */,
 				A1D8242B2E8B8A4F00049493 /* BetterAuth */,
 				A1D8242D2E8B8A4F00049493 /* BetterAuthTwoFactor */,
+				A170F2622E8E3A9B007D88B6 /* BetterAuth */,
+				A170F2642E8E3A9B007D88B6 /* BetterAuthTwoFactor */,
+				A170F2662E8E3A9B007D88B6 /* BetterAuthUsername */,
 			);
 			productName = BetterAuthSwiftExample;
 			productReference = A186E3F02E833A4200757E13 /* BetterAuthSwiftExample.app */;
@@ -412,6 +421,18 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A170F2622E8E3A9B007D88B6 /* BetterAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuth;
+		};
+		A170F2642E8E3A9B007D88B6 /* BetterAuthTwoFactor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthTwoFactor;
+		};
+		A170F2662E8E3A9B007D88B6 /* BetterAuthUsername */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthUsername;
+		};
 		A186B3882E833AEB001671AD /* BetterAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BetterAuth;

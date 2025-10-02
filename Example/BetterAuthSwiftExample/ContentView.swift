@@ -8,6 +8,7 @@
 import AuthenticationServices
 import BetterAuth
 import BetterAuthTwoFactor
+import BetterAuthUsername
 import SwiftUI
 
 struct ContentView: View {
@@ -32,8 +33,8 @@ struct ContentView: View {
           Button {
             Task {
               do {
-                let sess = try await client.getSession()
-                print(sess ?? "nil")
+                let res = try await client.getSession()
+                print(res.data ?? "nil")
               } catch {
                 print(error)
               }
@@ -41,14 +42,18 @@ struct ContentView: View {
           } label: {
             Text("Get session")
           }.buttonStyle(.glass)
-          
+
           Button {
             Task {
               if client.user?.twoFactorEnabled == true {
-                let res = try await client.twoFactor.disable(with: .init(password: password))
+                let res = try await client.twoFactor.disable(
+                  with: .init(password: password)
+                )
                 print(res)
               } else {
-                let res = try await client.twoFactor.enable(with: .init(password: password))
+                let res = try await client.twoFactor.enable(
+                  with: .init(password: password)
+                )
                 print(res)
               }
             }
@@ -70,14 +75,11 @@ struct ContentView: View {
             Button {
               Task {
                 do {
-                  let res: TwoFactorSignInEmailResponse = try await client.signIn.email(
+                  let res = try await client.signIn.email(
                     with: .init(email: email, password: password)
                   )
-                  switch res {
-                  case .requires2FA(let a):
-                    print(a)
-                  case .user(let b):
-                    print(b)
+                  if let twoFactorEnabled = res.context.twoFactorEnabled {
+                    print(twoFactorEnabled)
                   }
                 } catch {
                   print(error)
@@ -131,7 +133,7 @@ struct ContentView: View {
                     return
                   }
 
-                  let res = try await client.signIn.social(
+                  let _ = try await client.signIn.social(
                     with: .init(
                       provider: "apple",
                       idToken: .init(token: identityToken)
