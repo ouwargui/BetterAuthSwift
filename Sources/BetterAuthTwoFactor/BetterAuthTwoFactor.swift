@@ -28,7 +28,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorEnable,
+          route: BetterAuthTwoFactorRoute.enable,
           body: body,
           responseType: TwoFactorEnableResponse.self
         )
@@ -49,7 +49,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.disable,
           body: body,
           responseType: TwoFactorDisableResponse.self
         )
@@ -72,7 +72,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.generateBackupCodes,
           body: body,
           responseType: TwoFactorGenerateBackupCodesResponse.self
         )
@@ -93,7 +93,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.getTotpURI,
           body: body,
           responseType: TwoFactorGetTotpURIResponse.self
         )
@@ -114,7 +114,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.sendOTP,
           body: body,
           responseType: TwoFactorSendOTPResponse.self
         )
@@ -136,7 +136,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.verifyBackupCode,
           body: body,
           responseType: TwoFactorVerifyBackupCodeResponse.self
         )
@@ -157,7 +157,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.verifyOTP,
           body: body,
           responseType: TwoFactorVerifyOTPResponse.self
         )
@@ -178,7 +178,7 @@ extension BetterAuthClient {
 
       return try await client.sessionStore.withSessionRefresh {
         return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+          route: BetterAuthTwoFactorRoute.verifyTOTP,
           body: body,
           responseType: TwoFactorVerifyTOTPResponse.self
         )
