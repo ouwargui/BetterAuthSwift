@@ -1,8 +1,8 @@
 import BetterAuth
 
 public enum BetterAuthTwoFactorRoute: AuthRoutable {
-  case twoFactorEnable
-  case twoFactorDisable
+  case enable
+  case disable
   case generateBackupCodes
   case getTotpURI
   case sendOTP
@@ -12,9 +12,9 @@ public enum BetterAuthTwoFactorRoute: AuthRoutable {
 
   public var path: String {
     switch self {
-    case .twoFactorEnable:
+    case .enable:
       "/two-factor/enable"
-    case .twoFactorDisable:
+    case .disable:
       "/two-factor/disable"
     case .generateBackupCodes:
       "/two-factor/generate-backup-codes"
@@ -33,7 +33,7 @@ public enum BetterAuthTwoFactorRoute: AuthRoutable {
 
   public var method: String {
     switch self {
-    case .twoFactorEnable, .twoFactorDisable, .generateBackupCodes, .getTotpURI,
+    case .enable, .disable, .generateBackupCodes, .getTotpURI,
       .sendOTP, .verifyBackupCode, .verifyOTP, .verifyTOTP:
       "POST"
     }
