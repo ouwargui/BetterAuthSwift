@@ -1,13 +1,5 @@
 import Foundation
 
-public struct MetaKey<T: Decodable & Sendable>: Hashable, Sendable,
-  ExpressibleByStringLiteral
-{
-  public let rawValue: String
-  public init(_ rawValue: String) { self.rawValue = rawValue }
-  public init(stringLiteral value: StringLiteralType) { self.rawValue = value }
-}
-
 public struct MiddlewareActions: Hashable, Sendable, ExpressibleByStringLiteral {
   public let name: String
 

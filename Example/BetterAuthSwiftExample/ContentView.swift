@@ -13,18 +13,20 @@ import SwiftUI
 
 extension String {
   static func randomString(length: Int) -> String {
-    let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    return String((0..<length).map { _ in characters.randomElement()! }).lowercased()
+    let characters =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    return String((0..<length).map { _ in characters.randomElement()! })
+      .lowercased()
   }
 }
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
     baseURL: URL(string: "http://localhost:3001")!,
-    plugins: [TwoFactorPlugin()]
+    plugins: [TwoFactorPlugin(), UsernamePlugin()]
   )
-  @State var email = "gui+\(UUID().uuidString)@test.com"
-  @State var username = "gui\(String.randomString(length: 5))"
+  @State var email = "\(UUID().uuidString)@test.com"
+  @State var username = "\(String.randomString(length: 5))"
   @State var password: String = "12345678"
 
   var body: some View {
@@ -91,14 +93,14 @@ struct ContentView: View {
                   let res = try await client.signIn.email(
                     with: .init(email: email, password: password)
                   )
-                  
+
                   switch res.twoFactorResponse {
                   case .twoFactorRedirect(let twoFA):
                     print(twoFA)
                   case .success(let res):
                     print(res)
                   }
-                  
+
                   if let res = res.data {
                     print(res.token)
                   }
