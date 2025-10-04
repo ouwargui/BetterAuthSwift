@@ -59,12 +59,26 @@ jobs:
         run: |
           sh ./scripts/fix_generate_docs.sh
 
+      - name: Get targets
+        id: targets
+        run: |
+          TARGET_ARGS=""
+          while IFS= read -r target; do
+            if [[ -n "${target}" ]]; then
+              echo "Found target: ${target}"
+              TARGET_ARGS="${TARGET_ARGS} --target ${target}"
+            fi
+          done < <(./scripts/get_targets.sh)
+
+          TARGET_ARGS=$(echo "${TARGET_ARGS}" | sed 's/^[[:space:]]*//')
+          echo "target_args=${TARGET_ARGS}" >> $GITHUB_OUTPUT
+          echo "Generated arguments: ${TARGET_ARGS}"
+
       - name: Build Documentation
         run: |
           swift package --allow-writing-to-directory ./docs generate-documentation \
             --enable-experimental-combined-documentation \
-            --target BetterAuth \
-            --target BetterAuthTwoFactor \
+            ${{ steps.targets.outputs.target_args }} \
             --disable-indexing \
             --transform-for-static-hosting \
             --hosting-base-path BetterAuthSwift \
