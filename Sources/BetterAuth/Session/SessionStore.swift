@@ -1,4 +1,5 @@
 import Combine
+import OSLog
 import Foundation
 
 @MainActor
@@ -7,6 +8,7 @@ package class SessionStore: ObservableObject {
   @Published private(set) var isLoading: Bool = false
 
   private let httpClient: HTTPClientProtocol
+  private let logger = Logger(subsystem: "com.betterauth", category: "SessionStore")
 
   init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
@@ -18,6 +20,11 @@ package class SessionStore: ObservableObject {
 
   package func update(_ session: Session?) {
     self.current = session
+    guard let session = session else {
+      logger.debug("Session updated: nil")
+      return
+    }
+    logger.debug("Session updated: \(session)")
   }
 
   private func setLoading(_ loading: Bool) {
@@ -43,22 +50,20 @@ package class SessionStore: ObservableObject {
         update(nil)
       }
       throw error
+    } catch {
+      throw error
     }
   }
 
   private func refreshSession() async {
     do {
-      let session = try await httpClient.request(
-        route: BetterAuthRoute.getSession,
-        responseType: SessionProxy.self
-      )
-
-      update(
-        .init(
-          session: session.data.session,
-          user: .init(session.data.user, metadata: session.context.meta)
+      let session: APIResource<Session?, EmptyContext> =
+        try await httpClient.perform(
+          route: BetterAuthRoute.getSession,
+          responseType: Session?.self
         )
-      )
+
+      update(session.data)
     } catch {
       update(nil)
     }

@@ -148,3 +148,13 @@ public struct TwoFactorVerifyTOTPResponse: Codable, Sendable {
     self.user = user
   }
 }
+
+public typealias TwoFactorRedirect = Bool
+
+public struct TwoFactorSignInResponse: Codable, Sendable {
+  public let twoFactorRedirect: TwoFactorRedirect
+
+  public init(twoFactorRedirect: TwoFactorRedirect) {
+    self.twoFactorRedirect = twoFactorRedirect
+  }
+}

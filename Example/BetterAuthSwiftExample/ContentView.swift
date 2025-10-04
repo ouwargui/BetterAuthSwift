@@ -11,11 +11,20 @@ import BetterAuthTwoFactor
 import BetterAuthUsername
 import SwiftUI
 
+extension String {
+  static func randomString(length: Int) -> String {
+    let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    return String((0..<length).map { _ in characters.randomElement()! }).lowercased()
+  }
+}
+
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://localhost:3001")!
+    baseURL: URL(string: "http://localhost:3001")!,
+    plugins: [TwoFactorPlugin()]
   )
   @State var email = "gui+\(UUID().uuidString)@test.com"
+  @State var username = "gui\(String.randomString(length: 5))"
   @State var password: String = "12345678"
 
   var body: some View {
@@ -45,16 +54,20 @@ struct ContentView: View {
 
           Button {
             Task {
-              if client.user?.twoFactorEnabled == true {
-                let res = try await client.twoFactor.disable(
-                  with: .init(password: password)
-                )
-                print(res)
-              } else {
-                let res = try await client.twoFactor.enable(
-                  with: .init(password: password)
-                )
-                print(res)
+              do {
+                if client.user?.twoFactorEnabled == true {
+                  let res = try await client.twoFactor.disable(
+                    with: .init(password: password)
+                  )
+                  print(res)
+                } else {
+                  let res = try await client.twoFactor.enable(
+                    with: .init(password: password)
+                  )
+                  print(res)
+                }
+              } catch {
+                print(error)
               }
             }
           } label: {
@@ -78,8 +91,19 @@ struct ContentView: View {
                   let res = try await client.signIn.email(
                     with: .init(email: email, password: password)
                   )
-                  if let twoFactorEnabled = res.context.twoFactorEnabled {
-                    print(twoFactorEnabled)
+                  
+                  switch res.twoFactorResponse {
+                  case .twoFactorRedirect(let twoFA):
+                    print(twoFA)
+                  case .success(let res):
+                    print(res)
+                  }
+                  
+                  if let res = res.data {
+                    print(res.token)
+                  }
+                  if let twoFactorRedirect = res.context.twoFactorRedirect {
+                    print(twoFactorRedirect)
                   }
                 } catch {
                   print(error)
@@ -90,12 +114,35 @@ struct ContentView: View {
             }.buttonStyle(.glass)
             Button {
               Task {
+                let res = try await client.signIn.username(
+                  with: .init(username: username, password: password)
+                )
+              }
+            } label: {
+              Text("Sign in username")
+            }.buttonStyle(.glass)
+            Button {
+              Task {
                 try await client.signUp.email(
                   with: .init(email: email, password: password, name: "Gui")
                 )
               }
             } label: {
-              Text("Sign up")
+              Text("Sign up email")
+            }.buttonStyle(.glass)
+            Button {
+              Task {
+                try await client.signUp.email(
+                  with: .init(
+                    email: email,
+                    password: password,
+                    name: "Gui",
+                    username: username
+                  )
+                )
+              }
+            } label: {
+              Text("Sign up username")
             }.buttonStyle(.glass)
           }
 
@@ -133,7 +180,7 @@ struct ContentView: View {
                     return
                   }
 
-                  let _ = try await client.signIn.social(
+                  _ = try await client.signIn.social(
                     with: .init(
                       provider: "apple",
                       idToken: .init(token: identityToken)

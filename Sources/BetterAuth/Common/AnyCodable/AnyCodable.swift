@@ -9,7 +9,7 @@
 ///
 /// - SeeAlso: `AnyEncodable`
 /// - SeeAlso: `AnyDecodable`
-@frozen package struct AnyCodable: Codable {
+@frozen public struct AnyCodable: Codable {
   public let value: Any
 
   public init(_ value: Any?) {

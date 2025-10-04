@@ -1,39 +1,46 @@
 import Foundation
+import OSLog
 
-public struct BetterAuthContext: Codable, Sendable {
-  package let meta: [String: AnyCodable]
-  
-  package init(meta: [String : AnyCodable]) {
-    self.meta = meta
-  }
-}
-
-public struct APIResource<T: Codable & Sendable>: Codable, Sendable {
+public struct APIResource<T: Codable & Sendable, C: Codable & Sendable>:
+  Codable, Sendable
+{
   public let data: T
-  public let context: BetterAuthContext
+  public let context: BetterAuthContext<C>
+  private let logger = Logger(
+    subsystem: "com.betterauth",
+    category: "APIResource"
+  )
 
-  init(data: T, context: BetterAuthContext) {
+  package init(data: T, context: BetterAuthContext<C>) {
     self.data = data
     self.context = context
   }
 
   public init(from decoder: Decoder) throws {
     self.data = try T(from: decoder)
-
-    let encoder = JSONEncoder()
-    let tData = try encoder.encode(self.data)
-    let tDict =
-      try JSONSerialization.jsonObject(with: tData) as? [String: Any] ?? [:]
-    let tKeys = Set(tDict.keys)
-
-    let container = try decoder.container(keyedBy: DynamicCodingKeys.self)
     var metadata: [String: AnyCodable] = [:]
 
-    for key in container.allKeys {
-      if !tKeys.contains(key.stringValue) {
+    do {
+      let encoder = JSONEncoder()
+      let tData = try encoder.encode(self.data)
+
+      let tKeys: Set<String>
+      if let dict = try? JSONDecoder().decode(
+        [String: AnyCodable].self,
+        from: tData
+      ) {
+        tKeys = Set(dict.keys)
+      } else {
+        tKeys = []
+      }
+
+      let container = try decoder.container(keyedBy: DynamicCodingKeys.self)
+      for key in container.allKeys where !tKeys.contains(key.stringValue) {
         let value = try container.decode(AnyCodable.self, forKey: key)
         metadata[key.stringValue] = value
       }
+    } catch {
+      logger.debug("Failed to decode metadata: \(error)")
     }
 
     self.context = .init(meta: metadata)
@@ -64,5 +71,13 @@ public struct APIResource<T: Codable & Sendable>: Codable, Sendable {
       self.stringValue = String(intValue)
       self.intValue = intValue
     }
+  }
+}
+
+extension APIResource {
+  package init<U: Codable & Sendable>(
+    from source: APIResource<PluginOptional<U>, C>
+  ) where T == U? {
+    self.init(data: source.data.value, context: source.context)
   }
 }
