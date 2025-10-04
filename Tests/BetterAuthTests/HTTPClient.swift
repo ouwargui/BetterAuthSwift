@@ -2,30 +2,32 @@ import BetterAuth
 import Foundation
 
 actor MockHTTPClient: HTTPClientProtocol {
+  let baseURL: URL
+  let plugins: [AuthPlugin]
   let cookieStorage: CookieStorageProtocol
 
-  init(cookieStorage: CookieStorageProtocol) {
-    self.cookieStorage = cookieStorage
+  init(
+    baseURL: URL,
+    plugins: [AuthPlugin],
+    cookieStorage: (CookieStorageProtocol)?
+  ) {
+    self.baseURL = baseURL
+    self.plugins = plugins
+    self.cookieStorage =
+      cookieStorage ?? BetterAuth.CookieStorage(storage: InMemoryStorage())
   }
 
-  func request<
-    T: Decodable & Sendable,
-    B: Encodable & Sendable,
-    Q: Encodable & Sendable
-  >(
-    path: String,
-    method: String,
-    responseType: T.Type,
-    body: B?,
-    query: Q?
-  ) async throws -> APIResource<T> {
-    throw BetterAuthSwiftError(message: "Not implemented")
-  }
-
-  func request<T: Decodable & Sendable>(
-    route: AuthRoutable,
+  func perform<T, C>(
+    action: BetterAuth.MiddlewareActions?,
+    route: any BetterAuth.AuthRoutable,
+    body: (any Encodable)?,
+    query: (any Encodable)?,
     responseType: T.Type
-  ) async throws -> APIResource<T> {
+  ) async throws -> BetterAuth.APIResource<T, C>
+  where
+    T: Decodable, T: Encodable, T: Sendable, C: Decodable, C: Encodable,
+    C: Sendable
+  {
     if route.path == BetterAuthRoute.getSession.path {
       let now = Date()
       let user = SessionUser(
@@ -49,25 +51,54 @@ actor MockHTTPClient: HTTPClientProtocol {
       )
       let session = Session(session: sessionData, user: user)
       let data = try JSONEncoder().encode(session)
-      return try JSONDecoder().decode(APIResource<T>.self, from: data)
+      return try JSONDecoder().decode(APIResource<T, C>.self, from: data)
     }
-
-    throw BetterAuthSwiftError(message: "Not implemented in test")
+    
+    throw BetterAuthSwiftError(message: "Not implemented")
   }
 
-  func request<T: Decodable & Sendable, B: Encodable & Sendable>(
-    route: AuthRoutable,
-    body: B?,
-    responseType: T.Type
-  ) async throws -> APIResource<T> {
-    throw BetterAuthSwiftError(message: "Not implemented in test")
+  func perform<T, C>(route: any BetterAuth.AuthRoutable, responseType: T.Type)
+    async throws -> BetterAuth.APIResource<T, C>
+  where
+    T: Decodable, T: Encodable, T: Sendable, C: Decodable, C: Encodable,
+    C: Sendable
+  {
+    throw BetterAuthSwiftError(message: "Not implemented")
   }
 
-  func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
-    route: AuthRoutable,
-    query: Q?,
+  func perform<T, C>(
+    action: BetterAuth.MiddlewareActions,
+    route: any BetterAuth.AuthRoutable,
     responseType: T.Type
-  ) async throws -> APIResource<T> {
-    throw BetterAuthSwiftError(message: "Not implemented in test")
+  ) async throws -> BetterAuth.APIResource<T, C>
+  where
+    T: Decodable, T: Encodable, T: Sendable, C: Decodable, C: Encodable,
+    C: Sendable
+  {
+    throw BetterAuthSwiftError(message: "Not implemented")
+  }
+
+  func perform<T, C>(
+    route: any BetterAuth.AuthRoutable,
+    body: any Encodable,
+    responseType: T.Type
+  ) async throws -> BetterAuth.APIResource<T, C>
+  where
+    T: Decodable, T: Encodable, T: Sendable, C: Decodable, C: Encodable,
+    C: Sendable
+  {
+    throw BetterAuthSwiftError(message: "Not implemented")
+  }
+
+  func perform<T, C>(
+    route: any BetterAuth.AuthRoutable,
+    query: any Encodable,
+    responseType: T.Type
+  ) async throws -> BetterAuth.APIResource<T, C>
+  where
+    T: Decodable, T: Encodable, T: Sendable, C: Decodable, C: Encodable,
+    C: Sendable
+  {
+    throw BetterAuthSwiftError(message: "Not implemented")
   }
 }
