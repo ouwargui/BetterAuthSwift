@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import Security
 
 public protocol StorageProtocol {
@@ -9,6 +10,10 @@ public protocol StorageProtocol {
 internal class KeychainStorage: StorageProtocol {
   private let service: String
   private let accessGroup: String?
+  private let logger = Logger(
+    subsystem: "com.betterauth",
+    category: "KeychainStorage"
+  )
 
   public init(service: String = "BetterAuth", accessGroup: String? = nil) {
     self.service = service
@@ -58,7 +63,7 @@ internal class KeychainStorage: StorageProtocol {
 
     guard status == errSecSuccess else {
       if status != errSecItemNotFound {
-        print("Keychain read error: \(status)")
+        logger.error("Keychain read error: \(status)")
       }
       return nil
     }
@@ -166,17 +171,17 @@ extension KeychainStorage {
   extension KeychainStorage {
     public func printAllItems() {
       let keys = getAllKeys()
-      print("=== Keychain Items for service '\(service)' ===")
+      logger.debug("=== Keychain Items for service '\(self.service)' ===")
 
       if keys.isEmpty {
-        print("No items found")
+        logger.debug("No items found")
       } else {
         for key in keys {
           let value = get(key: key) ?? "[Data]"
           print("\(key): \(value)")
         }
       }
-      print("=== End Keychain Items ===")
+      logger.debug("=== End Keychain Items ===")
     }
   }
 #endif

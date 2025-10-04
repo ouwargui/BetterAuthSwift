@@ -12,6 +12,7 @@ public class BetterAuthClient: ObservableObject {
   package let baseUrl: URL
   package let httpClient: HTTPClientProtocol
   package let sessionStore: SessionStore
+  package let plugins: [AuthPlugin]
 
   /// The current session. It's a @Published variable.
   public var session: SessionData? {
@@ -28,10 +29,16 @@ public class BetterAuthClient: ObservableObject {
 
   private var cancellables = Set<AnyCancellable>()
 
-  public init(baseURL: URL, httpClient: HTTPClientProtocol? = nil) {
+  public init(
+    baseURL: URL,
+    plugins: [AuthPlugin] = [],
+    httpClient: HTTPClientProtocol? = nil
+  ) {
     self.baseUrl = baseURL.getBaseURL()
-    self.httpClient = httpClient ?? HTTPClient(baseURL: self.baseUrl)
+    self.httpClient =
+      httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
+    self.plugins = plugins
 
     sessionStore.objectWillChange
       .receive(on: DispatchQueue.main)
@@ -46,11 +53,13 @@ public class BetterAuthClient: ObservableObject {
     return self.httpClient.cookieStorage.getBetterAuthCookie()
   }
 
+  public typealias GetSession = APIResource<Session?, EmptyContext>
+
   /// Makes a request to /get-session.
   /// - Returns: ``Session``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func getSession() async throws -> APIResource<Session?> {
-    let res = try await httpClient.request(
+  public func getSession() async throws -> GetSession {
+    let res: GetSession = try await httpClient.perform(
       route: BetterAuthRoute.getSession,
       responseType: Session?.self,
     )
@@ -58,12 +67,14 @@ public class BetterAuthClient: ObservableObject {
     return res
   }
 
+  public typealias SignOut = APIResource<SignOutResponse, EmptyContext>
+
   /// Makes a request to /sign-out.
   /// - Returns: ``SignOutResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func signOut() async throws -> APIResource<SignOutResponse> {
-    return try await sessionStore.withSessionRefresh {
-      return try await httpClient.request(
+  public func signOut() async throws -> SignOut {
+    return try await self.sessionStore.withSessionRefresh {
+      return try await httpClient.perform(
         route: BetterAuthRoute.signOut,
         responseType: SignOutResponse.self
       )
@@ -73,43 +84,53 @@ public class BetterAuthClient: ObservableObject {
 
 // MARK: Rest of methods
 extension BetterAuthClient {
+  public typealias ForgetPassword = APIResource<
+    ForgetPasswordResponse, EmptyContext
+  >
+
   /// Makes a request to /forget-password.
   /// - Parameter body: ``ForgetPasswordRequest``
   /// - Returns: ``ForgetPasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func forgetPassword(with body: ForgetPasswordRequest) async throws
-    -> APIResource<ForgetPasswordResponse>
+    -> ForgetPassword
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.forgetPassword,
       body: body,
       responseType: ForgetPasswordResponse.self
     )
   }
 
+  public typealias ResetPassword = APIResource<
+    ResetPasswordResponse, EmptyContext
+  >
+
   /// Makes a request to /reset-password.
   /// - Parameter body: ``ResetPasswordRequest``
   /// - Returns: ``ResetPasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func resetPassword(with body: ResetPasswordRequest) async throws
-    -> APIResource<ResetPasswordResponse>
+    -> ResetPassword
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.resetPassword,
       body: body,
       responseType: ResetPasswordResponse.self
     )
   }
 
+  public typealias VerifyEmail = APIResource<VerifyEmailResponse, EmptyContext>
+
   /// Makes a request to /verify-email.
   /// - Parameter body: ``VerifyEmailRequest``
   /// - Returns: ``VerifyEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func verifyEmail(with body: VerifyEmailRequest) async throws
-    -> APIResource<VerifyEmailResponse>
+    -> VerifyEmail
   {
     return try await self.sessionStore.withSessionRefresh {
-      return try await httpClient.request(
+      return try await httpClient.perform(
         route: BetterAuthRoute.verifyEmail,
         query: body,
         responseType: VerifyEmailResponse.self
@@ -117,57 +138,69 @@ extension BetterAuthClient {
     }
   }
 
+  public typealias SendVerificationEmail = APIResource<
+    SendVerificationEmailResponse, EmptyContext
+  >
+
   /// Makes a request to /send-verification-email.
   /// - Parameter body: ``SendVerificationEmailRequest``
   /// - Returns: ``SendVerificationEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func sendVerificationEmail(with body: SendVerificationEmailRequest)
-    async throws -> APIResource<SendVerificationEmailResponse>
+    async throws -> SendVerificationEmail
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.sendVerificationEmail,
       body: body,
       responseType: SendVerificationEmailResponse.self
     )
   }
 
+  public typealias ChangeEmail = APIResource<ChangeEmailResponse, EmptyContext>
+
   /// Makes a request to /change-email.
   /// - Parameter body: ``ChangeEmailRequest``
   /// - Returns: ``ChangeEmailResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func changeEmail(with body: ChangeEmailRequest) async throws
-    -> APIResource<ChangeEmailResponse>
+    -> ChangeEmail
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.changeEmail,
       body: body,
       responseType: ChangeEmailResponse.self
     )
   }
 
+  public typealias ChangePassword = APIResource<
+    ChangePasswordResponse, EmptyContext
+  >
+
   /// Makes a request to /change-password.
   /// - Parameter body: ``ChangePasswordRequest``
   /// - Returns: ``ChangePasswordResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func changePassword(with body: ChangePasswordRequest) async throws
-    -> APIResource<ChangePasswordResponse>
+    -> ChangePassword
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.changePassword,
       body: body,
       responseType: ChangePasswordResponse.self
     )
   }
 
+  public typealias UpdateUser = APIResource<UpdateUserResponse, EmptyContext>
+
   /// Makes a request to /update-user.
   /// - Parameter body: ``UpdateUserRequest``
   /// - Returns: ``UpdateUserResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func updateUser(with body: UpdateUserRequest) async throws
-    -> APIResource<UpdateUserResponse>
+    -> UpdateUser
   {
     return try await self.sessionStore.withSessionRefresh {
-      return try await httpClient.request(
+      return try await httpClient.perform(
         route: BetterAuthRoute.updateUser,
         body: body,
         responseType: UpdateUserResponse.self
@@ -175,15 +208,17 @@ extension BetterAuthClient {
     }
   }
 
+  public typealias DeleteUser = APIResource<DeleteUserResponse, EmptyContext>
+
   /// Makes a request to /delete-user.
   /// - Parameter body: ``DeleteUserRequest``
   /// - Returns: ``DeleteUserResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func deleteUser(with body: DeleteUserRequest) async throws
-    -> APIResource<DeleteUserResponse>
+    -> DeleteUser
   {
     return try await self.sessionStore.withSessionRefresh {
-      return try await httpClient.request(
+      return try await httpClient.perform(
         route: BetterAuthRoute.deleteUser,
         body: body,
         responseType: DeleteUserResponse.self
@@ -191,142 +226,173 @@ extension BetterAuthClient {
     }
   }
 
+  public typealias RequestPasswordReset = APIResource<
+    RequestPasswordResetResponse, EmptyContext
+  >
+
   /// Makes a request to /request-password-reset.
   /// - Parameter body: ``RequestPasswordResetRequest``
   /// - Returns: ``RequestPasswordResetResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func requestPasswordReset(with body: RequestPasswordResetRequest)
-    async throws -> APIResource<RequestPasswordResetResponse>
+    async throws -> RequestPasswordReset
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.requestPasswordReset,
       body: body,
       responseType: RequestPasswordResetResponse.self
     )
   }
 
+  public typealias ListSessions = APIResource<ListSessionResponse, EmptyContext>
+
   /// Makes a request to /list-sessions.
   /// - Returns: ``ListSessionResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func listSessions() async throws -> APIResource<ListSessionResponse> {
-    return try await httpClient.request(
+  public func listSessions() async throws -> ListSessions {
+    return try await httpClient.perform(
       route: BetterAuthRoute.listSessions,
       responseType: ListSessionResponse.self
     )
   }
+
+  public typealias RevokeSession = APIResource<
+    RevokeSessionResponse, EmptyContext
+  >
 
   /// Makes a request to /revoke-session.
   /// - Parameter body: ``RevokeSessionRequest``
   /// - Returns: ``RevokeSessionResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeSession(with body: RevokeSessionRequest) async throws
-    -> APIResource<RevokeSessionResponse>
+    -> RevokeSession
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.revokeSession,
       body: body,
       responseType: RevokeSessionResponse.self
     )
   }
+  public typealias RevokeSessions = APIResource<
+    RevokeSessionsResponse, EmptyContext
+  >
 
   /// Makes a request to /revoke-sessions.
   /// - Returns: ``RevokeSessionsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func revokeSessions() async throws -> APIResource<
-    RevokeSessionsResponse
-  > {
-    return try await httpClient.request(
+  public func revokeSessions() async throws -> RevokeSessions {
+    return try await httpClient.perform(
       route: BetterAuthRoute.revokeSessions,
       responseType: RevokeSessionsResponse.self
     )
   }
+  public typealias RevokeOtherSessions = APIResource<
+    RevokeOtherSessionsResponse, EmptyContext
+  >
 
   /// Makes a request to /revoke-other-sessions.
   /// - Returns: ``RevokeOtherSessionsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func revokeOtherSessions() async throws -> APIResource<
-    RevokeOtherSessionsResponse
-  > {
-    return try await httpClient.request(
+  public func revokeOtherSessions() async throws -> RevokeOtherSessions {
+    return try await httpClient.perform(
       route: BetterAuthRoute.revokeOtherSessions,
       responseType: RevokeOtherSessionsResponse.self
     )
   }
+
+  public typealias LinkSocial = APIResource<LinkSocialResponse, EmptyContext>
 
   /// Makes a request to /link-social.
   /// - Parameter body: ``LinkSocialRequest``
   /// - Returns: ``LinkSocialResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func linkSocial(with body: LinkSocialRequest) async throws
-    -> APIResource<LinkSocialResponse>
+    -> LinkSocial
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.linkSocial,
       body: body,
       responseType: LinkSocialResponse.self
     )
   }
+  public typealias ListAccounts = APIResource<
+    ListAccountsResponse, EmptyContext
+  >
 
   /// Makes a request to /list-accounts.
   /// - Returns: ``ListAccountsResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-  public func listAccounts() async throws -> APIResource<ListAccountsResponse> {
-    return try await httpClient.request(
+  public func listAccounts() async throws -> ListAccounts {
+    return try await httpClient.perform(
       route: BetterAuthRoute.listAccounts,
       responseType: ListAccountsResponse.self
     )
   }
+
+  public typealias UnlinkAccount = APIResource<
+    UnlinkAccountResponse, EmptyContext
+  >
 
   /// Makes a request to /unlink-account.
   /// - Parameter body: ``UnlinkAccountRequest``
   /// - Returns: ``UnlinkAccountResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func unlinkAccount(with body: UnlinkAccountRequest) async throws
-    -> APIResource<UnlinkAccountResponse>
+    -> UnlinkAccount
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.unlinkAccount,
       body: body,
       responseType: UnlinkAccountResponse.self
     )
   }
 
+  public typealias RefreshToken = APIResource<
+    RefreshTokenResponse, EmptyContext
+  >
+
   /// Makes a request to /refresh-token.
   /// - Parameter body: ``RefreshTokenRequest``
   /// - Returns: ``RefreshTokenResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func refreshToken(with body: RefreshTokenRequest) async throws
-    -> APIResource<RefreshTokenResponse>
+    -> RefreshToken
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.refreshToken,
       body: body,
       responseType: RefreshTokenResponse.self
     )
   }
 
+  public typealias GetAccessToken = APIResource<
+    GetAccessTokenResponse, EmptyContext
+  >
+
   /// Makes a request to /get-access-token.
   /// - Parameter body: ``GetAccessTokenRequest``
   /// - Returns: ``GetAccessTokenResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getAccessToken(with body: GetAccessTokenRequest) async throws
-    -> APIResource<GetAccessTokenResponse>
+    -> GetAccessToken
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.getAccessToken,
       body: body,
       responseType: GetAccessTokenResponse.self
     )
   }
 
+  public typealias AccountInfo = APIResource<AccountInfoResponse, EmptyContext>
+
   /// Makes a request to /account-info.
   /// - Parameter body: ``AccountInfoRequest``
   /// - Returns: ``AccountInfoResponse``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func accountInfo(with body: AccountInfoRequest) async throws
-    -> APIResource<AccountInfoResponse>
+    -> AccountInfo
   {
-    return try await httpClient.request(
+    return try await httpClient.perform(
       route: BetterAuthRoute.accountInfo,
       body: body,
       responseType: AccountInfoResponse.self
@@ -344,43 +410,57 @@ extension BetterAuthClient {
       self.client = client
     }
 
+    public typealias SignInEmail = APIResource<
+      SignInEmailResponse?, SignInContext
+    >
+
     /// Makes a request to /sign-in/email.
     /// - Parameter body: ``SignInEmailRequest``
     /// - Returns: ``SignInEmailResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func email(with body: SignInEmailRequest) async throws
-      -> APIResource<SignInEmailResponse>
+      -> SignInEmail
     {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthRoute.signInEmail,
-          body: body,
-          responseType: SignInEmailResponse.self
-        )
+        let res:
+          APIResource<PluginOptional<SignInEmailResponse>, SignInContext> =
+            try await client.httpClient.perform(
+              action: .signInEmail,
+              route: BetterAuthRoute.signInEmail,
+              body: body,
+              query: nil,
+              responseType: PluginOptional<SignInEmailResponse>.self
+            )
+        return .init(from: res)
       }
     }
+
+    public typealias SignInSocial = APIResource<
+      SignInSocialResponse, EmptyContext
+    >
 
     /// Makes a request to /sign-in/social.
     /// - Parameter body: ``SignInSocialRequest``
     /// - Returns: ``SignInSocialResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func social(with body: SignInSocialRequest) async throws
-      -> APIResource<SignInSocialResponse>
+      -> SignInSocial
     {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        let authResponse = try await client.httpClient.request(
-          route: BetterAuthRoute.signInSocial,
-          body: body,
-          responseType: SignInSocialResponse.self
-        )
+        let authResponse: SignInSocial =
+          try await client.httpClient.perform(
+            route: BetterAuthRoute.signInSocial,
+            body: body,
+            responseType: SignInSocialResponse.self
+          )
 
         if body.idToken != nil {
           return authResponse
@@ -413,19 +493,23 @@ extension BetterAuthClient {
       self.client = client
     }
 
+    public typealias SignUpEmail = APIResource<
+      SignUpEmailResponse, EmptyContext
+    >
+
     /// Makes a request to /sign-up/email.
     /// - Parameter body: ``SignUpEmailRequest``
     /// - Returns: ``SignUpEmailResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func email(with body: SignUpEmailRequest) async throws
-      -> APIResource<SignUpEmailResponse>
+      -> SignUpEmail
     {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
+        return try await client.httpClient.perform(
           route: BetterAuthRoute.signUpEmail,
           body: body,
           responseType: SignUpEmailResponse.self

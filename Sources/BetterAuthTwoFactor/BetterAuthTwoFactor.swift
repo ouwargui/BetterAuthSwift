@@ -14,26 +14,34 @@ extension BetterAuthClient {
       self.client = client
     }
 
+    public typealias TwoFactorEnable = APIResource<
+      TwoFactorEnableResponse, EmptyContext
+    >
+
     /// Makes a request to **/two-factor/enable**.
     ///
     /// - Parameter body: ``TwoFactorEnableRequest``
     /// - Returns: ``TwoFactorEnableResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func enable(with body: TwoFactorEnableRequest) async throws
-      -> APIResource<TwoFactorEnableResponse>
+      -> TwoFactorEnable
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorEnable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.enable,
           body: body,
           responseType: TwoFactorEnableResponse.self
         )
       }
     }
+
+    public typealias TwoFactorDisable = APIResource<
+      TwoFactorDisableResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/disable**.
     ///
@@ -41,20 +49,24 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorDisableResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func disable(with body: TwoFactorDisableRequest) async throws
-      -> APIResource<TwoFactorDisableResponse>
+      -> TwoFactorDisable
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.disable,
           body: body,
           responseType: TwoFactorDisableResponse.self
         )
       }
     }
+
+    public typealias TwoFactorGenerateBackupCodes = APIResource<
+      TwoFactorGenerateBackupCodesResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/generate-backup-codes**.
     ///
@@ -64,20 +76,24 @@ extension BetterAuthClient {
     public func generateBackupCodes(
       with body: TwoFactorGenerateBackupCodesRequest
     ) async throws
-      -> APIResource<TwoFactorGenerateBackupCodesResponse>
+      -> TwoFactorGenerateBackupCodes
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.generateBackupCodes,
           body: body,
           responseType: TwoFactorGenerateBackupCodesResponse.self
         )
       }
     }
+
+    public typealias TwoFactorGetTotpURI = APIResource<
+      TwoFactorGetTotpURIResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/get-totp-uri**.
     ///
@@ -85,20 +101,24 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorGetTotpURIResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func getTotpURI(with body: TwoFactorGetTotpURIRequest) async throws
-      -> APIResource<TwoFactorGetTotpURIResponse>
+      -> TwoFactorGetTotpURI
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.getTotpURI,
           body: body,
           responseType: TwoFactorGetTotpURIResponse.self
         )
       }
     }
+
+    public typealias TwoFactorSendOTP = APIResource<
+      TwoFactorSendOTPResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/send-otp**.
     ///
@@ -106,20 +126,24 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorSendOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func sendOtp(with body: TwoFactorSendOTPRequest) async throws
-      -> APIResource<TwoFactorSendOTPResponse>
+      -> TwoFactorSendOTP
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.sendOTP,
           body: body,
           responseType: TwoFactorSendOTPResponse.self
         )
       }
     }
+
+    public typealias TwoFactorVerifyBackupCode = APIResource<
+      TwoFactorVerifyBackupCodeResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/verify-backup-code**.
     ///
@@ -128,20 +152,24 @@ extension BetterAuthClient {
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyBackupCode(with body: TwoFactorVerifyBackupCodeRequest)
       async throws
-      -> APIResource<TwoFactorVerifyBackupCodeResponse>
+      -> TwoFactorVerifyBackupCode
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.verifyBackupCode,
           body: body,
           responseType: TwoFactorVerifyBackupCodeResponse.self
         )
       }
     }
+
+    public typealias TwoFactorVerifyOTP = APIResource<
+      TwoFactorVerifyOTPResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/verify-otp**.
     ///
@@ -149,20 +177,24 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorVerifyOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyOtp(with body: TwoFactorVerifyOTPRequest) async throws
-      -> APIResource<TwoFactorVerifyOTPResponse>
+      -> TwoFactorVerifyOTP
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.verifyOTP,
           body: body,
           responseType: TwoFactorVerifyOTPResponse.self
         )
       }
     }
+
+    public typealias TwoFactorVerifyTOTP = APIResource<
+      TwoFactorVerifyTOTPResponse, EmptyContext
+    >
 
     /// Makes a request to **/two-factor/verify-totp**.
     ///
@@ -170,15 +202,15 @@ extension BetterAuthClient {
     /// - Returns: ``TwoFactorVerifyTOTPResponse``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func verifyTotp(with body: TwoFactorVerifyTOTPRequest) async throws
-      -> APIResource<TwoFactorVerifyTOTPResponse>
+      -> TwoFactorVerifyTOTP
     {
       guard let client = self.client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
       return try await client.sessionStore.withSessionRefresh {
-        return try await client.httpClient.request(
-          route: BetterAuthTwoFactorRoute.twoFactorDisable,
+        return try await client.httpClient.perform(
+          route: BetterAuthTwoFactorRoute.verifyTOTP,
           body: body,
           responseType: TwoFactorVerifyTOTPResponse.self
         )

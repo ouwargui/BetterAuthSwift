@@ -1,16 +1,6 @@
 import Foundation
 
-struct SessionProxy: Codable, Sendable {
-  let session: SessionData
-  let user: User
-
-  init(session: SessionData, user: User) {
-    self.session = session
-    self.user = user
-  }
-}
-
-public struct Session: Codable, Sendable {
+public struct Session: Codable, Sendable, Loggable {
   public let session: SessionData
   public let user: SessionUser
 
@@ -20,7 +10,7 @@ public struct Session: Codable, Sendable {
   }
 }
 
-public struct SessionData: Codable, Sendable {
+public struct SessionData: Codable, Sendable, Loggable {
   public let id: String
   public let userId: String
   public let token: String
@@ -51,7 +41,7 @@ public struct SessionData: Codable, Sendable {
   }
 }
 
-package protocol UserProtocol: Codable, Sendable {
+package protocol UserProtocol: Codable, Sendable, Loggable {
   var id: String { get }
   var email: String { get }
   var name: String { get }
@@ -97,7 +87,7 @@ public struct SessionUser: UserProtocol {
   public let emailVerified: Bool
   public let createdAt: Date
   public let updatedAt: Date
-  package let pluginData: [String: AnyCodable]?
+  package let pluginData: [String: AnyCodable]
 
   package init(
     id: String,
@@ -107,7 +97,7 @@ public struct SessionUser: UserProtocol {
     emailVerified: Bool,
     createdAt: Date,
     updatedAt: Date,
-    pluginData: [String: AnyCodable]? = nil
+    pluginData: [String: AnyCodable] = [:]
   ) {
     self.id = id
     self.email = email
@@ -119,7 +109,7 @@ public struct SessionUser: UserProtocol {
     self.pluginData = pluginData
   }
 
-  internal init(_ user: UserProtocol, metadata: [String: AnyCodable]?) {
+  internal init(_ user: UserProtocol, metadata: [String: AnyCodable] = [:]) {
     self.init(
       id: user.id,
       email: user.email,
@@ -161,7 +151,7 @@ public struct SessionUser: UserProtocol {
       }
     }
 
-    pluginData = unknownFields.isEmpty ? nil : unknownFields
+    pluginData = unknownFields.isEmpty ? [:] : unknownFields
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -175,12 +165,10 @@ public struct SessionUser: UserProtocol {
     try container.encode(createdAt, forKey: .createdAt)
     try container.encode(updatedAt, forKey: .updatedAt)
 
-    if let pluginData = pluginData {
-      var dynamicContainer = encoder.container(keyedBy: DynamicCodingKeys.self)
-      for (key, value) in pluginData {
-        let codingKey = DynamicCodingKeys(stringValue: key)!
-        try dynamicContainer.encode(value, forKey: codingKey)
-      }
+    var dynamicContainer = encoder.container(keyedBy: DynamicCodingKeys.self)
+    for (key, value) in pluginData {
+      let codingKey = DynamicCodingKeys(stringValue: key)!
+      try dynamicContainer.encode(value, forKey: codingKey)
     }
   }
 

@@ -39,7 +39,7 @@ import Testing
   let client = await MainActor.run {
     BetterAuthClient(
       baseURL: baseURL,
-      httpClient: MockHTTPClient(cookieStorage: cookieStorage)
+      httpClient: MockHTTPClient(baseURL: baseURL, plugins: [], cookieStorage: cookieStorage)
     )
   }
 

@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 public protocol CookieStorageProtocol: HTTPCookieStorage {
   func getBetterAuthCookie() -> HTTPCookie?
@@ -12,6 +13,7 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
   private let cookieKey = "better-auth.persistent-cookies"
   private let lock = NSLock()
   private var _cookieStore: [HTTPCookie] = []
+  private let logger = Logger(subsystem: "com.betterauth", category: "CookieStorage")
 
   public init(storage: StorageProtocol) {
     self.keychain = storage
@@ -156,9 +158,9 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
       )
       let jsonString = String(data: cookieData, encoding: .utf8) ?? ""
       let _ = try keychain.save(key: cookieKey, value: jsonString)
-      print("CookieStorage: Saved \(currentCookies.count) cookies to keychain")
+      logger.debug("Saved \(currentCookies.count) cookies to keychain")
     } catch {
-      print("CookieStorage: Failed to save cookies")
+      logger.error("Failed to save cookies")
     }
   }
 
@@ -186,7 +188,7 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
         saveCookiesToKeychain()
       }
     } catch {
-      print("Failed to load cookies")
+      logger.error("Failed to load cookies")
     }
   }
 

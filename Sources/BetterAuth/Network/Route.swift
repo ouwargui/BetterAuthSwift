@@ -1,12 +1,10 @@
 import Foundation
 
-/**
-  This protocol is used to define the routes for the BetterAuth API.
-
-  Usually you'll find a corresponding enum for each plugin that conforms to this protocol.
-
-  ``BetterAuthRoute`` or  `BetterAuth<Plugin>Route`
-*/
+/// This protocol is used to define the routes for the BetterAuth API.
+///
+/// Usually you'll find a corresponding enum for each plugin that conforms to this protocol.
+///
+/// ``BetterAuthRoute`` or  `BetterAuth<Plugin>Route`
 public protocol AuthRoutable: Sendable {
   var path: String { get }
   var method: String { get }
@@ -33,7 +31,6 @@ public enum BetterAuthRoute: AuthRoutable {
   case revokeOtherSessions
   case linkSocial
   case listAccounts
-  case deleteUserCallback
   case unlinkAccount
   case refreshToken
   case getAccessToken
@@ -81,8 +78,6 @@ public enum BetterAuthRoute: AuthRoutable {
       return "/link-social"
     case .listAccounts:
       return "/list-accounts"
-    case .deleteUserCallback:
-      return "/delete-user/callback"
     case .unlinkAccount:
       return "/unlink-account"
     case .refreshToken:
@@ -103,7 +98,7 @@ public enum BetterAuthRoute: AuthRoutable {
       .getAccessToken, .accountInfo, .resetPassword:
       return "POST"
     case .getSession, .verifyEmail, .listSessions,
-      .listAccounts, .deleteUserCallback:
+      .listAccounts:
       return "GET"
     }
   }

@@ -1,30 +1,38 @@
 import Foundation
 
-private struct Empty: Codable {}
-
 public protocol HTTPClientProtocol: Sendable {
   var cookieStorage: CookieStorageProtocol { get }
-  func request<T: Decodable & Sendable, B: Encodable & Sendable, Q: Encodable & Sendable>(
-    path: String,
-    method: String,
-    responseType: T.Type,
-    body: B?,
-    query: Q?
-  ) async throws -> APIResource<T>
-  func request<T: Decodable & Sendable>(
+  init(
+    baseURL: URL,
+    plugins: [AuthPlugin],
+    cookieStorage: CookieStorageProtocol?
+  )
+  func perform<T: Decodable & Sendable, C: Codable & Sendable>(
+    action: MiddlewareActions?,
+    route: AuthRoutable,
+    body: Encodable?,
+    query: Encodable?,
+    responseType: T.Type
+  ) async throws -> APIResource<T, C>
+  func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     route: AuthRoutable,
     responseType: T.Type
-  ) async throws -> APIResource<T>
-  func request<T: Decodable & Sendable, B: Encodable & Sendable>(
+  ) async throws -> APIResource<T, C>
+  func perform<T: Decodable & Sendable, C: Codable & Sendable>(
+    action: MiddlewareActions,
     route: AuthRoutable,
-    body: B?,
     responseType: T.Type
-  ) async throws -> APIResource<T>
-  func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
+  ) async throws -> APIResource<T, C>
+  func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     route: AuthRoutable,
-    query: Q?,
+    body: Encodable,
     responseType: T.Type
-  ) async throws -> APIResource<T>
+  ) async throws -> APIResource<T, C>
+  func perform<T: Decodable & Sendable, C: Codable & Sendable>(
+    route: AuthRoutable,
+    query: Encodable,
+    responseType: T.Type
+  ) async throws -> APIResource<T, C>
 }
 
 public actor HTTPClient: HTTPClientProtocol {
@@ -32,10 +40,16 @@ public actor HTTPClient: HTTPClientProtocol {
   private let session: URLSession
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
+  private let plugins: [AuthPlugin]
   public let cookieStorage: CookieStorageProtocol
 
-  init(baseURL: URL, cookieStorage: CookieStorageProtocol = CookieStorage()) {
+  package init(
+    baseURL: URL,
+    plugins: [AuthPlugin] = [],
+    cookieStorage: CookieStorageProtocol = CookieStorage()
+  ) {
     self.baseURL = baseURL
+    self.plugins = plugins
     self.cookieStorage = cookieStorage
 
     let config = URLSessionConfiguration.default
@@ -46,96 +60,154 @@ public actor HTTPClient: HTTPClientProtocol {
     decoder.dateDecodingStrategy = .iso8601
   }
 
-  public func request<T: Decodable & Sendable, B: Encodable & Sendable>(
-    route: AuthRoutable,
-    body: B,
+  public init(
+    baseURL: URL,
+    plugins: [AuthPlugin] = [],
+    cookieStorage: CookieStorageProtocol?
+  ) {
+    self.baseURL = baseURL
+    self.plugins = plugins
+    self.cookieStorage = cookieStorage ?? CookieStorage()
+
+    let config = URLSessionConfiguration.default
+    config.httpCookieAcceptPolicy = .always
+    config.httpCookieStorage = self.cookieStorage
+
+    self.session = URLSession(configuration: config)
+    decoder.dateDecodingStrategy = .iso8601
+  }
+
+  private func performWillSend(
+    action: MiddlewareActions?,
+    request: inout HTTPRequestContext
+  ) async throws {
+    guard let action = action else { return }
+    for plugin in plugins {
+      try await plugin.willSend(action, request: &request)
+    }
+  }
+
+  private func performDidReceive(
+    action: MiddlewareActions?,
+    response: inout HTTPResponseContext
+  ) async throws {
+    guard let action = action else { return }
+    for plugin in plugins {
+      try await plugin.didReceive(action, response: &response)
+    }
+  }
+
+  public func perform<T, C>(route: AuthRoutable, responseType: T.Type)
+    async throws -> APIResource<T, C>
+  {
+    return try await self.perform(
+      action: nil,
+      route: route,
+      body: nil,
+      query: nil,
+      responseType: responseType
+    )
+  }
+
+  public func perform<T, C>(
+    action: MiddlewareActions,
+    route: any AuthRoutable,
     responseType: T.Type
-  ) async throws -> APIResource<T> {
-    try await request(
-      path: route.path,
-      method: route.method,
-      responseType: responseType,
+  ) async throws -> APIResource<T, C> {
+    return try await self.perform(
+      action: action,
+      route: route,
+      body: nil,
+      query: nil,
+      responseType: responseType
+    )
+  }
+
+  public func perform<T, C>(
+    route: any AuthRoutable,
+    body: any Encodable,
+    responseType: T.Type
+  ) async throws -> APIResource<T, C> {
+    return try await self.perform(
+      action: nil,
+      route: route,
       body: body,
-      query: (nil as Empty?)
+      query: nil,
+      responseType: responseType
     )
   }
 
-  public func request<T: Decodable & Sendable, Q: Encodable & Sendable>(
-    route: AuthRoutable,
-    query: Q,
+  public func perform<T, C>(
+    route: any AuthRoutable,
+    query: any Encodable,
     responseType: T.Type
-  ) async throws -> APIResource<T> {
-    try await request(
+  ) async throws -> APIResource<T, C> {
+    return try await self.perform(
+      action: nil,
+      route: route,
+      body: nil,
+      query: query,
+      responseType: responseType
+    )
+  }
+
+  public func perform<T: Decodable & Sendable, C: Codable & Sendable>(
+    action: MiddlewareActions?,
+    route: any AuthRoutable,
+    body: (any Encodable)?,
+    query: (any Encodable)?,
+    responseType: T.Type
+  ) async throws -> APIResource<T, C> {
+    var reqCtx = HTTPRequestContext(
       path: route.path,
       method: route.method,
-      responseType: responseType,
-      body: (nil as Empty?),
-      query: query
+      headers: [:],
+      body: body.map(AnyEncodable.init),
+      query: query.map(AnyEncodable.init)
     )
-  }
 
-  public func request<T: Decodable & Sendable>(
-    route: AuthRoutable,
-    responseType: T.Type
-  ) async throws -> APIResource<T> {
-    try await request(
-      path: route.path,
-      method: route.method,
-      responseType: responseType,
-      body: (nil as Empty?),
-      query: (nil as Empty?)
-    )
-  }
+    try await performWillSend(action: action, request: &reqCtx)
 
-  public func request<T: Decodable & Sendable, B: Encodable & Sendable, Q: Encodable & Sendable>(
-    path: String,
-    method: String,
-    responseType: T.Type,
-    body: B?,
-    query: Q?
-  ) async throws -> APIResource<T> {
-    var url: URL {
-      if #available(macOS 13.0, iOS 16.0, *) {
-        return baseURL.appending(path: path)
-      } else {
-        return baseURL.appendingPathComponent(path)
-      }
-    }
-
-    var request = URLRequest(url: url)
-    request.httpMethod = method
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpShouldHandleCookies = true
-
-    if let body = body {
-      request.httpBody = try encoder.encode(body)
-    }
-
-    if let query = query {
-      request.addQueryItems(query.toQueryItems())
-    }
+    let request = try reqCtx.buildUrlRequest(baseURL: baseURL, encoder: encoder)
 
     let (data, response) = try await session.data(for: request)
-
     guard let httpResponse = response as? HTTPURLResponse else {
       throw BetterAuthSwiftError(message: "Invalid response")
     }
 
-    if httpResponse.statusCode >= 400 {
-      let errorBody = try? decoder.decode(BetterAuthError.self, from: data)
-      throw errorBody
-        ?? BetterAuthError(
-          code: nil,
-          message: HTTPURLResponse.localizedString(
-            forStatusCode: httpResponse.statusCode
-          ),
-          status: httpResponse.statusCode,
-          statusText: HTTPURLResponse.localizedString(
-            forStatusCode: httpResponse.statusCode
-          )
-        )
+    guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 400 else {
+      let coreError = try? decoder.decode(CoreError.self, from: data)
+      if let coreError = coreError {
+        throw BetterAuthError(coreError: coreError, response: httpResponse)
+      }
+
+      throw BetterAuthSwiftError(
+        message:
+          "HTTP request failed with status code \(httpResponse.statusCode)"
+      )
     }
 
-    return try decoder.decode(APIResource<T>.self, from: data)
+    var respCtx = HTTPResponseContext(
+      urlResponse: httpResponse,
+      bodyData: data,
+      meta: [:]
+    )
+
+    try await performDidReceive(action: action, response: &respCtx)
+
+    let decoded = try decoder.decode(
+      APIResource<T, C>.self,
+      from: respCtx.bodyData
+    )
+
+    var mergedMeta = decoded.context.meta
+    for (k, v) in respCtx.meta {
+      mergedMeta[k] = v
+    }
+    let resource = APIResource<T, C>(
+      data: decoded.data,
+      context: BetterAuthContext(meta: mergedMeta)
+    )
+    return resource
   }
 }
