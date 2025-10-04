@@ -1,11 +1,6 @@
 import BetterAuth
 import Foundation
 
-extension MetaKey where T == TwoFactorRedirect {
-  public static let twoFactorRedirect: MetaKey<TwoFactorRedirect> =
-    "twoFactorRedirect"
-}
-
 extension BetterAuthContext where C == SignInContext {
   public var twoFactorRedirect: TwoFactorRedirect? {
     self.meta[TwoFactorPluginData.twoFactorRedirect.pluginFieldName]?.value

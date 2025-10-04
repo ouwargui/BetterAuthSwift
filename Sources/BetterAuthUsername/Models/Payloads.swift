@@ -32,7 +32,7 @@ public struct UsernameSignUpEmailRequest: Codable, Sendable {
   }
 }
 
-public struct SignInUsernameRequest: Codable, Sendable {
+public struct UsernameSignInUsernameRequest: Codable, Sendable {
   public let username: String
   public let password: String
   public let callbackURL: String?
@@ -51,7 +51,7 @@ public struct SignInUsernameRequest: Codable, Sendable {
   }
 }
 
-public struct SignInUsernameResponse: Codable, Sendable, UserProtocol {
+public struct UsernameSignInUsernameResponse: Codable, Sendable, UserProtocol {
   public let id: String
   public let email: String
   public let name: String
@@ -79,5 +79,21 @@ public struct SignInUsernameResponse: Codable, Sendable, UserProtocol {
     self.createdAt = createdAt
     self.updatedAt = updatedAt
     self.username = username
+  }
+}
+
+public struct UsernameIsUsernameAvailableRequest: Codable, Sendable {
+  public let username: String
+
+  public init(username: String) {
+    self.username = username
+  }
+}
+
+public struct UsernameIsUsernameAvailableResponse: Codable, Sendable {
+  public let available: Bool
+
+  public init(available: Bool) {
+    self.available = available
   }
 }

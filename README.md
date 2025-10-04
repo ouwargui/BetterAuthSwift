@@ -34,7 +34,7 @@ Or add it to your `Package.swift`:
 dependencies: [
     .package(
       url: "https://github.com/ouwargui/BetterAuthSwift.git",
-      .upToNextMajor(from: "0.1.0") // always use a tag version instead of main, since main is not stable
+      .upToNextMajor(from: "1.0.0") // always use a tag version instead of main, since main is not stable
     )
 ]
 ```
@@ -58,7 +58,7 @@ let response = try? await client.signIn.email(with: .init(
   email: "user@example.com",
   password: "securepassword"
 ))
-print(response.user.name)
+print(response.data.user.name)
 
 // Session is a @Published variable
 print(client.session?.token)
@@ -86,6 +86,36 @@ struct MyApp: App {
     }
   }
 }
+
+struct ContentView: View {
+  @EnvironmentObject private var authClient: BetterAuthClient
+
+  var body: some View {
+    if let user = authClient.user {
+      Text("Hello, \(user.name)")
+    }
+
+    if let session = authClient.session {
+      Button {
+        Task {
+          try await authClient.signOut()
+        }
+      }
+      label: {
+        Text("Sign out")
+      }
+    } else {
+      Button {
+        Task {
+          try await authClient.signIn.email(with: .init(email: "user@example.com", password: "securepassword"))
+        }
+      }
+      label: {
+        Text("Sign in")
+      }
+    }
+  }
+}
 ```
 
 ## Adding a plugin
@@ -103,7 +133,7 @@ Or add it to your `Package.swift`:
 dependencies: [
     .package(
       url: "https://github.com/ouwargui/BetterAuthSwift.git",
-      .upToNextMajor(from: "0.1.0")
+      .upToNextMajor(from: "1.0.0")
     )
 ],
 targets: [
@@ -137,8 +167,8 @@ if let user = client.user,
 
 ### Authentication
 
-- [x] Two Factor
-- [ ] Username
+- [x] [Two Factor](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthtwofactor/)
+- [x] [Username](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthusername/)
 - [ ] Anonymous
 - [ ] Phone Number
 - [ ] Magic Link
