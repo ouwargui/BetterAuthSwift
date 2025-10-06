@@ -6,15 +6,17 @@ Better Auth client for Swift
 
 Better Auth Swift provides a comprehensive client for integrating with your BetterAuth server. It aims to support everything the JS client supports.
 
+### Plugins
+
+You can use the following plugins to extend the functionality of the client:
+
+- ``/BetterAuthTwoFactor``
+- ``/BetterAuthUsername``
+- ``/BetterAuthAnonymous``
+
 ## Topics
 
 ### Articles
 
 - <doc:GettingStarted>
 - <doc:LoginWithApple>
-
-### Plugins
-
-- ``/BetterAuthTwoFactor``
-- ``/BetterAuthUsername``
-- ``/BetterAuthAnonymous``
