@@ -1,6 +1,6 @@
-# ``BetterAuthTwoFactor``
+# ``BetterAuthAnonymous``
 
-Better Auth Two Factor plugin
+Better Auth Anonymous plugin
 
 ## Overview
 
@@ -11,4 +11,3 @@ Better Auth Two Factor provides all necessary utilities to support two factor on
 ### Articles
 
 - <doc:GettingStarted>
-- <doc:LoginWith2FA>
