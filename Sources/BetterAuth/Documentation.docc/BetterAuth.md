@@ -1,4 +1,4 @@
-# `BetterAuth`
+# ``BetterAuth``
 
 Better Auth client for Swift
 
