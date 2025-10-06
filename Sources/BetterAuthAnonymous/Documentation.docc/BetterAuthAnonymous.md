@@ -1,4 +1,4 @@
-# `BetterAuthAnonymous`
+# ``BetterAuthAnonymous``
 
 Better Auth Anonymous plugin
 
