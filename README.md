@@ -169,8 +169,8 @@ if let user = client.user,
 
 - [x] [Two Factor](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthtwofactor/)
 - [x] [Username](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthusername/)
-- [ ] Anonymous
-- [ ] Phone Number
+- [x] [Anonymous](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthanonymous/)
+- [x] [Phone Number](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthphonenumber/)
 - [ ] Magic Link
 - [ ] Email OTP
 - [ ] Passkey
