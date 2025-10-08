@@ -55,8 +55,8 @@ public class BetterAuthClient: ObservableObject {
 
   public typealias GetSession = APIResource<Session?, EmptyContext>
 
-  /// Makes a request to /get-session.
-  /// - Returns: ``Session``
+  /// Make a request to /get-session.
+  /// - Returns: ``GetSession``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getSession() async throws -> GetSession {
     let res: GetSession = try await httpClient.perform(
@@ -69,8 +69,8 @@ public class BetterAuthClient: ObservableObject {
 
   public typealias SignOut = APIResource<SignOutResponse, EmptyContext>
 
-  /// Makes a request to /sign-out.
-  /// - Returns: ``SignOutResponse``
+  /// Make a request to /sign-out.
+  /// - Returns: ``SignOut``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func signOut() async throws -> SignOut {
     return try await self.sessionStore.withSessionRefresh {
@@ -88,9 +88,9 @@ extension BetterAuthClient {
     ForgetPasswordResponse, EmptyContext
   >
 
-  /// Makes a request to /forget-password.
+  /// Make a request to /forget-password.
   /// - Parameter body: ``ForgetPasswordRequest``
-  /// - Returns: ``ForgetPasswordResponse``
+  /// - Returns: ``ForgetPassword``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func forgetPassword(with body: ForgetPasswordRequest) async throws
     -> ForgetPassword
@@ -106,9 +106,9 @@ extension BetterAuthClient {
     ResetPasswordResponse, EmptyContext
   >
 
-  /// Makes a request to /reset-password.
+  /// Make a request to /reset-password.
   /// - Parameter body: ``ResetPasswordRequest``
-  /// - Returns: ``ResetPasswordResponse``
+  /// - Returns: ``ResetPassword``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func resetPassword(with body: ResetPasswordRequest) async throws
     -> ResetPassword
@@ -122,9 +122,9 @@ extension BetterAuthClient {
 
   public typealias VerifyEmail = APIResource<VerifyEmailResponse, EmptyContext>
 
-  /// Makes a request to /verify-email.
+  /// Make a request to /verify-email.
   /// - Parameter body: ``VerifyEmailRequest``
-  /// - Returns: ``VerifyEmailResponse``
+  /// - Returns: ``VerifyEmail``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func verifyEmail(with body: VerifyEmailRequest) async throws
     -> VerifyEmail
@@ -142,9 +142,9 @@ extension BetterAuthClient {
     SendVerificationEmailResponse, EmptyContext
   >
 
-  /// Makes a request to /send-verification-email.
+  /// Make a request to /send-verification-email.
   /// - Parameter body: ``SendVerificationEmailRequest``
-  /// - Returns: ``SendVerificationEmailResponse``
+  /// - Returns: ``SendVerificationEmail``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func sendVerificationEmail(with body: SendVerificationEmailRequest)
     async throws -> SendVerificationEmail
@@ -158,9 +158,9 @@ extension BetterAuthClient {
 
   public typealias ChangeEmail = APIResource<ChangeEmailResponse, EmptyContext>
 
-  /// Makes a request to /change-email.
+  /// Make a request to /change-email.
   /// - Parameter body: ``ChangeEmailRequest``
-  /// - Returns: ``ChangeEmailResponse``
+  /// - Returns: ``ChangeEmail``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func changeEmail(with body: ChangeEmailRequest) async throws
     -> ChangeEmail
@@ -176,9 +176,9 @@ extension BetterAuthClient {
     ChangePasswordResponse, EmptyContext
   >
 
-  /// Makes a request to /change-password.
+  /// Make a request to /change-password.
   /// - Parameter body: ``ChangePasswordRequest``
-  /// - Returns: ``ChangePasswordResponse``
+  /// - Returns: ``ChangePassword``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func changePassword(with body: ChangePasswordRequest) async throws
     -> ChangePassword
@@ -192,9 +192,9 @@ extension BetterAuthClient {
 
   public typealias UpdateUser = APIResource<UpdateUserResponse, EmptyContext>
 
-  /// Makes a request to /update-user.
+  /// Make a request to /update-user.
   /// - Parameter body: ``UpdateUserRequest``
-  /// - Returns: ``UpdateUserResponse``
+  /// - Returns: ``UpdateUser``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func updateUser(with body: UpdateUserRequest) async throws
     -> UpdateUser
@@ -210,9 +210,9 @@ extension BetterAuthClient {
 
   public typealias DeleteUser = APIResource<DeleteUserResponse, EmptyContext>
 
-  /// Makes a request to /delete-user.
+  /// Make a request to /delete-user.
   /// - Parameter body: ``DeleteUserRequest``
-  /// - Returns: ``DeleteUserResponse``
+  /// - Returns: ``DeleteUser``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func deleteUser(with body: DeleteUserRequest) async throws
     -> DeleteUser
@@ -230,9 +230,9 @@ extension BetterAuthClient {
     RequestPasswordResetResponse, EmptyContext
   >
 
-  /// Makes a request to /request-password-reset.
+  /// Make a request to /request-password-reset.
   /// - Parameter body: ``RequestPasswordResetRequest``
-  /// - Returns: ``RequestPasswordResetResponse``
+  /// - Returns: ``RequestPasswordReset``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func requestPasswordReset(with body: RequestPasswordResetRequest)
     async throws -> RequestPasswordReset
@@ -246,8 +246,8 @@ extension BetterAuthClient {
 
   public typealias ListSessions = APIResource<ListSessionResponse, EmptyContext>
 
-  /// Makes a request to /list-sessions.
-  /// - Returns: ``ListSessionResponse``
+  /// Make a request to /list-sessions.
+  /// - Returns: ``ListSessions``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listSessions() async throws -> ListSessions {
     return try await httpClient.perform(
@@ -260,9 +260,9 @@ extension BetterAuthClient {
     RevokeSessionResponse, EmptyContext
   >
 
-  /// Makes a request to /revoke-session.
+  /// Make a request to /revoke-session.
   /// - Parameter body: ``RevokeSessionRequest``
-  /// - Returns: ``RevokeSessionResponse``
+  /// - Returns: ``RevokeSession``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeSession(with body: RevokeSessionRequest) async throws
     -> RevokeSession
@@ -277,8 +277,8 @@ extension BetterAuthClient {
     RevokeSessionsResponse, EmptyContext
   >
 
-  /// Makes a request to /revoke-sessions.
-  /// - Returns: ``RevokeSessionsResponse``
+  /// Make a request to /revoke-sessions.
+  /// - Returns: ``RevokeSessions``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeSessions() async throws -> RevokeSessions {
     return try await httpClient.perform(
@@ -290,8 +290,8 @@ extension BetterAuthClient {
     RevokeOtherSessionsResponse, EmptyContext
   >
 
-  /// Makes a request to /revoke-other-sessions.
-  /// - Returns: ``RevokeOtherSessionsResponse``
+  /// Make a request to /revoke-other-sessions.
+  /// - Returns: ``RevokeOtherSessions``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func revokeOtherSessions() async throws -> RevokeOtherSessions {
     return try await httpClient.perform(
@@ -302,9 +302,9 @@ extension BetterAuthClient {
 
   public typealias LinkSocial = APIResource<LinkSocialResponse, EmptyContext>
 
-  /// Makes a request to /link-social.
+  /// Make a request to /link-social.
   /// - Parameter body: ``LinkSocialRequest``
-  /// - Returns: ``LinkSocialResponse``
+  /// - Returns: ``LinkSocial``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func linkSocial(with body: LinkSocialRequest) async throws
     -> LinkSocial
@@ -319,8 +319,8 @@ extension BetterAuthClient {
     ListAccountsResponse, EmptyContext
   >
 
-  /// Makes a request to /list-accounts.
-  /// - Returns: ``ListAccountsResponse``
+  /// Make a request to /list-accounts.
+  /// - Returns: ``ListAccounts``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func listAccounts() async throws -> ListAccounts {
     return try await httpClient.perform(
@@ -333,9 +333,9 @@ extension BetterAuthClient {
     UnlinkAccountResponse, EmptyContext
   >
 
-  /// Makes a request to /unlink-account.
+  /// Make a request to /unlink-account.
   /// - Parameter body: ``UnlinkAccountRequest``
-  /// - Returns: ``UnlinkAccountResponse``
+  /// - Returns: ``UnlinkAccount``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func unlinkAccount(with body: UnlinkAccountRequest) async throws
     -> UnlinkAccount
@@ -351,9 +351,9 @@ extension BetterAuthClient {
     RefreshTokenResponse, EmptyContext
   >
 
-  /// Makes a request to /refresh-token.
+  /// Make a request to /refresh-token.
   /// - Parameter body: ``RefreshTokenRequest``
-  /// - Returns: ``RefreshTokenResponse``
+  /// - Returns: ``RefreshToken``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func refreshToken(with body: RefreshTokenRequest) async throws
     -> RefreshToken
@@ -369,9 +369,9 @@ extension BetterAuthClient {
     GetAccessTokenResponse, EmptyContext
   >
 
-  /// Makes a request to /get-access-token.
+  /// Make a request to /get-access-token.
   /// - Parameter body: ``GetAccessTokenRequest``
-  /// - Returns: ``GetAccessTokenResponse``
+  /// - Returns: ``GetAccessToken``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func getAccessToken(with body: GetAccessTokenRequest) async throws
     -> GetAccessToken
@@ -385,9 +385,9 @@ extension BetterAuthClient {
 
   public typealias AccountInfo = APIResource<AccountInfoResponse, EmptyContext>
 
-  /// Makes a request to /account-info.
+  /// Make a request to /account-info.
   /// - Parameter body: ``AccountInfoRequest``
-  /// - Returns: ``AccountInfoResponse``
+  /// - Returns: ``AccountInfo``
   /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
   public func accountInfo(with body: AccountInfoRequest) async throws
     -> AccountInfo
@@ -414,9 +414,9 @@ extension BetterAuthClient {
       SignInEmailResponse?, SignInContext
     >
 
-    /// Makes a request to /sign-in/email.
+    /// Make a request to /sign-in/email.
     /// - Parameter body: ``SignInEmailRequest``
-    /// - Returns: ``SignInEmailResponse``
+    /// - Returns: ``SignInEmail``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func email(with body: SignInEmailRequest) async throws
       -> SignInEmail
@@ -443,9 +443,9 @@ extension BetterAuthClient {
       SignInSocialResponse, EmptyContext
     >
 
-    /// Makes a request to /sign-in/social.
+    /// Make a request to /sign-in/social.
     /// - Parameter body: ``SignInSocialRequest``
-    /// - Returns: ``SignInSocialResponse``
+    /// - Returns: ``SignInSocial``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func social(with body: SignInSocialRequest) async throws
       -> SignInSocial
@@ -497,9 +497,9 @@ extension BetterAuthClient {
       SignUpEmailResponse, EmptyContext
     >
 
-    /// Makes a request to /sign-up/email.
+    /// Make a request to /sign-up/email.
     /// - Parameter body: ``SignUpEmailRequest``
-    /// - Returns: ``SignUpEmailResponse``
+    /// - Returns: ``SignUpEmail``
     /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
     public func email(with body: SignUpEmailRequest) async throws
       -> SignUpEmail

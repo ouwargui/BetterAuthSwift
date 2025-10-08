@@ -21,11 +21,10 @@ extension BetterAuthClient.SignUp {
     SignUpEmailResponse, EmptyContext
   >
 
-  /// Makes a request to **/sign-up/email**.
-  ///
+  /// Make a request to **/sign-up/email**.
   /// - Parameter body: ``UsernameSignUpEmailRequest``
-  /// - Returns: ``SignUpEmailResponse``
-  /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+  /// - Returns: ``UsernameSignUpEmail``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func email(with body: UsernameSignUpEmailRequest) async throws
     -> UsernameSignUpEmail
   {
@@ -48,11 +47,10 @@ extension BetterAuthClient.SignIn {
     UsernameSignInUsernameResponse?, SignInContext
   >
 
-  /// Makes a request to **/sign-in/username**.
-  ///
+  /// Make a request to **/sign-in/username**.
   /// - Parameter body: ``UsernameSignUpEmailRequest``
-  /// - Returns: ``SignInUsernameResponse``
-  /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+  /// - Returns: ``UsernameSignInUsername``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func username(with body: UsernameSignInUsernameRequest) async throws
     -> UsernameSignInUsername
   {
@@ -62,7 +60,9 @@ extension BetterAuthClient.SignIn {
 
     return try await client.sessionStore.withSessionRefresh {
       let res:
-        APIResource<PluginOptional<UsernameSignInUsernameResponse>, SignInContext> =
+        APIResource<
+          PluginOptional<UsernameSignInUsernameResponse>, SignInContext
+        > =
           try await client.httpClient.perform(
             action: .signInUsername,
             route: BetterAuthUsernameRoute.signInUsername,

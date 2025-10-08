@@ -13,6 +13,7 @@ let package = Package(
     .library(name: "BetterAuthTwoFactor", targets: ["BetterAuthTwoFactor"]),
     .library(name: "BetterAuthUsername", targets: ["BetterAuthUsername"]),
     .library(name: "BetterAuthAnonymous", targets: ["BetterAuthAnonymous"]),
+    .library(name: "BetterAuthPhoneNumber", targets: ["BetterAuthPhoneNumber"]),
   ],
   dependencies: [
     .package(
@@ -35,6 +36,10 @@ let package = Package(
     ),
     .target(
       name: "BetterAuthAnonymous",
+      dependencies: ["BetterAuth"]
+    ),
+    .target(
+      name: "BetterAuthPhoneNumber",
       dependencies: ["BetterAuth"]
     ),
     .testTarget(

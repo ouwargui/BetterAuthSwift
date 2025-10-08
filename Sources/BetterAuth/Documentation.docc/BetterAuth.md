@@ -8,6 +8,13 @@ Better Auth Swift provides a comprehensive client for integrating with your Bett
 
 > Tip: Check the [Better Auth docs](https://www.better-auth.com/docs) before proceeding.
 
+### Plugins
+
+- ``/BetterAuthTwoFactor``
+- ``/BetterAuthUsername``
+- ``/BetterAuthAnonymous``
+- ``/BetterAuthPhoneNumber``
+
 ## Topics
 
 ### Articles

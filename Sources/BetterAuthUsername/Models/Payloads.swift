@@ -51,7 +51,7 @@ public struct UsernameSignInUsernameRequest: Codable, Sendable {
   }
 }
 
-public struct UsernameSignInUsernameResponse: Codable, Sendable, UserProtocol {
+public struct UserWithUsername: UserProtocol {
   public let id: String
   public let email: String
   public let name: String
@@ -79,6 +79,16 @@ public struct UsernameSignInUsernameResponse: Codable, Sendable, UserProtocol {
     self.createdAt = createdAt
     self.updatedAt = updatedAt
     self.username = username
+  }
+}
+
+public struct UsernameSignInUsernameResponse: Codable, Sendable {
+  public let user: UserWithUsername
+  public let token: String
+
+  public init(user: UserWithUsername, token: String) {
+    self.user = user
+    self.token = token
   }
 }
 

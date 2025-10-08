@@ -6,6 +6,9 @@ extension BetterAuthClient.SignIn {
     AnonymousSignInAnonymousResponse, EmptyContext
   >
 
+  /// Make a request to **/sign-in/anonymous**.
+  /// - Returns: ``AnonymousSignInAnonymous``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func anonymous() async throws
     -> AnonymousSignInAnonymous
   {
