@@ -7,6 +7,7 @@
 
 import AuthenticationServices
 import BetterAuth
+import BetterAuthPhoneNumber
 import BetterAuthTwoFactor
 import BetterAuthUsername
 import SwiftUI
@@ -23,11 +24,12 @@ extension String {
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
     baseURL: URL(string: "http://localhost:3001")!,
-    plugins: [TwoFactorPlugin(), UsernamePlugin()]
+    plugins: [TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin()]
   )
   @State var email = "\(UUID().uuidString)@test.com"
   @State var username = "\(String.randomString(length: 5))"
   @State var password: String = "12345678"
+  @State var otp: String = ""
 
   var body: some View {
     VStack {
@@ -35,54 +37,100 @@ struct ContentView: View {
         Spacer()
         Text("Hello, \(user.name)")
         Text("2fa enabled? \(user.twoFactorEnabled?.description ?? "nil")")
+        Text("phone number: \(user.phoneNumber?.description ?? "none")")
+        Button {
+          print(user)
+        } label: {
+          Text("Print user")
+        }
+
       }
 
       Spacer()
 
       if client.session != nil {
-        HStack(spacing: 10) {
-          Button {
-            Task {
-              do {
-                let res = try await client.getSession()
-                print(res.data ?? "nil")
-              } catch {
-                print(error)
-              }
-            }
-          } label: {
-            Text("Get session")
-          }.buttonStyle(.glass)
-
-          Button {
-            Task {
-              do {
-                if client.user?.twoFactorEnabled == true {
-                  let res = try await client.twoFactor.disable(
-                    with: .init(password: password)
-                  )
-                  print(res)
-                } else {
-                  let res = try await client.twoFactor.enable(
-                    with: .init(password: password)
-                  )
-                  print(res)
+        VStack {
+          HStack(spacing: 10) {
+            Button {
+              Task {
+                do {
+                  let res = try await client.getSession()
+                  print(res.data ?? "nil")
+                } catch {
+                  print(error)
                 }
-              } catch {
-                print(error)
               }
+            } label: {
+              Text("Get session")
+            }.buttonStyle(.glass)
+
+            Button {
+              Task {
+                do {
+                  if client.user?.twoFactorEnabled == true {
+                    let res = try await client.twoFactor.disable(
+                      with: .init(password: password)
+                    )
+                    print(res)
+                  } else {
+                    let res = try await client.twoFactor.enable(
+                      with: .init(password: password)
+                    )
+                    print(res)
+                  }
+                } catch {
+                  print(error)
+                }
+              }
+            } label: {
+              Text("2FA")
             }
-          } label: {
-            Text("2FA")
+
+            Button {
+              Task {
+                try await client.signOut()
+              }
+            } label: {
+              Text("Sign out")
+            }.buttonStyle(.glass).tint(.red)
           }
 
           Button {
             Task {
-              try await client.signOut()
+              do {
+                let _ = try await client.phoneNumber.sendOtp(
+                  with: .init(phoneNumber: "+1234567890")
+                )
+              } catch {
+                print(error)
+              }
             }
           } label: {
-            Text("Sign out")
-          }.buttonStyle(.glass).tint(.red)
+            Text("Send phone number OTP")
+          }.buttonStyle(.glass)
+
+          TextField(text: $otp) {
+            Text("OTP")
+          }
+
+          Button {
+            Task {
+              do {
+                let _ = try await client.phoneNumber.verify(
+                  with: .init(
+                    phoneNumber: "+1234567890",
+                    code: otp,
+                    disableSession: false,
+                    updatePhoneNumber: true
+                  )
+                )
+              } catch {
+                print(error)
+              }
+            }
+          } label: {
+            Text("Confirm OTP")
+          }.buttonStyle(.glass)
         }
       } else {
         VStack(spacing: 10) {

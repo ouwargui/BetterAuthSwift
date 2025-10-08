@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A156B06C2E95EE4700295CDD /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A156B06B2E95EE4700295CDD /* BetterAuth */; };
+		A156B06E2E95EE4700295CDD /* BetterAuthAnonymous in Frameworks */ = {isa = PBXBuildFile; productRef = A156B06D2E95EE4700295CDD /* BetterAuthAnonymous */; };
+		A156B0702E95EE4700295CDD /* BetterAuthPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = A156B06F2E95EE4700295CDD /* BetterAuthPhoneNumber */; };
+		A156B0722E95EE4700295CDD /* BetterAuthTwoFactor in Frameworks */ = {isa = PBXBuildFile; productRef = A156B0712E95EE4700295CDD /* BetterAuthTwoFactor */; };
+		A156B0742E95EE4700295CDD /* BetterAuthUsername in Frameworks */ = {isa = PBXBuildFile; productRef = A156B0732E95EE4700295CDD /* BetterAuthUsername */; };
 		A170F2632E8E3A9B007D88B6 /* BetterAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2622E8E3A9B007D88B6 /* BetterAuth */; };
 		A170F2652E8E3A9B007D88B6 /* BetterAuthTwoFactor in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2642E8E3A9B007D88B6 /* BetterAuthTwoFactor */; };
 		A170F2672E8E3A9B007D88B6 /* BetterAuthUsername in Frameworks */ = {isa = PBXBuildFile; productRef = A170F2662E8E3A9B007D88B6 /* BetterAuthUsername */; };
@@ -45,12 +50,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A156B0722E95EE4700295CDD /* BetterAuthTwoFactor in Frameworks */,
 				A170F2672E8E3A9B007D88B6 /* BetterAuthUsername in Frameworks */,
 				A170F2652E8E3A9B007D88B6 /* BetterAuthTwoFactor in Frameworks */,
 				A1D8242E2E8B8A4F00049493 /* BetterAuthTwoFactor in Frameworks */,
+				A156B0742E95EE4700295CDD /* BetterAuthUsername in Frameworks */,
 				A1D8242C2E8B8A4F00049493 /* BetterAuth in Frameworks */,
+				A156B06E2E95EE4700295CDD /* BetterAuthAnonymous in Frameworks */,
 				A170F2632E8E3A9B007D88B6 /* BetterAuth in Frameworks */,
 				A186B3892E833AEB001671AD /* BetterAuth in Frameworks */,
+				A156B0702E95EE4700295CDD /* BetterAuthPhoneNumber in Frameworks */,
+				A156B06C2E95EE4700295CDD /* BetterAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,6 +109,11 @@
 				A170F2622E8E3A9B007D88B6 /* BetterAuth */,
 				A170F2642E8E3A9B007D88B6 /* BetterAuthTwoFactor */,
 				A170F2662E8E3A9B007D88B6 /* BetterAuthUsername */,
+				A156B06B2E95EE4700295CDD /* BetterAuth */,
+				A156B06D2E95EE4700295CDD /* BetterAuthAnonymous */,
+				A156B06F2E95EE4700295CDD /* BetterAuthPhoneNumber */,
+				A156B0712E95EE4700295CDD /* BetterAuthTwoFactor */,
+				A156B0732E95EE4700295CDD /* BetterAuthUsername */,
 			);
 			productName = BetterAuthSwiftExample;
 			productReference = A186E3F02E833A4200757E13 /* BetterAuthSwiftExample.app */;
@@ -129,7 +144,7 @@
 			mainGroup = A186E3E72E833A4200757E13;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A186B3872E833AEB001671AD /* XCLocalSwiftPackageReference "../../BetterAuthSwift" */,
+				A156B06A2E95EE4700295CDD /* XCLocalSwiftPackageReference "../../BetterAuthSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A186E3F12E833A4200757E13 /* Products */;
@@ -414,13 +429,33 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A186B3872E833AEB001671AD /* XCLocalSwiftPackageReference "../../BetterAuthSwift" */ = {
+		A156B06A2E95EE4700295CDD /* XCLocalSwiftPackageReference "../../BetterAuthSwift" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../BetterAuthSwift;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A156B06B2E95EE4700295CDD /* BetterAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuth;
+		};
+		A156B06D2E95EE4700295CDD /* BetterAuthAnonymous */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthAnonymous;
+		};
+		A156B06F2E95EE4700295CDD /* BetterAuthPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthPhoneNumber;
+		};
+		A156B0712E95EE4700295CDD /* BetterAuthTwoFactor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthTwoFactor;
+		};
+		A156B0732E95EE4700295CDD /* BetterAuthUsername */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BetterAuthUsername;
+		};
 		A170F2622E8E3A9B007D88B6 /* BetterAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BetterAuth;
