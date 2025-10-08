@@ -18,11 +18,10 @@ extension BetterAuthClient {
       TwoFactorEnableResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/enable**.
-    ///
+    /// Make a request to **/two-factor/enable**.
     /// - Parameter body: ``TwoFactorEnableRequest``
-    /// - Returns: ``TwoFactorEnableResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorEnable``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func enable(with body: TwoFactorEnableRequest) async throws
       -> TwoFactorEnable
     {
@@ -43,11 +42,10 @@ extension BetterAuthClient {
       TwoFactorDisableResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/disable**.
-    ///
+    /// Make a request to **/two-factor/disable**.
     /// - Parameter body: ``TwoFactorDisableRequest``
-    /// - Returns: ``TwoFactorDisableResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorDisable``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func disable(with body: TwoFactorDisableRequest) async throws
       -> TwoFactorDisable
     {
@@ -68,11 +66,10 @@ extension BetterAuthClient {
       TwoFactorGenerateBackupCodesResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/generate-backup-codes**.
-    ///
+    /// Make a request to **/two-factor/generate-backup-codes**.
     /// - Parameter body: ``TwoFactorGenerateBackupCodesRequest``
-    /// - Returns: ``TwoFactorGenerateBackupCodesResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorGenerateBackupCodes``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func generateBackupCodes(
       with body: TwoFactorGenerateBackupCodesRequest
     ) async throws
@@ -95,11 +92,10 @@ extension BetterAuthClient {
       TwoFactorGetTotpURIResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/get-totp-uri**.
-    ///
+    /// Make a request to **/two-factor/get-totp-uri**.
     /// - Parameter body: ``TwoFactorGetTotpURIRequest``
-    /// - Returns: ``TwoFactorGetTotpURIResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorGetTotpURI``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func getTotpURI(with body: TwoFactorGetTotpURIRequest) async throws
       -> TwoFactorGetTotpURI
     {
@@ -120,11 +116,10 @@ extension BetterAuthClient {
       TwoFactorSendOTPResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/send-otp**.
-    ///
+    /// Make a request to **/two-factor/send-otp**.
     /// - Parameter body: ``TwoFactorSendOTPRequest``
-    /// - Returns: ``TwoFactorSendOTPResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorSendOTP``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func sendOtp(with body: TwoFactorSendOTPRequest) async throws
       -> TwoFactorSendOTP
     {
@@ -145,11 +140,10 @@ extension BetterAuthClient {
       TwoFactorVerifyBackupCodeResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/verify-backup-code**.
-    ///
+    /// Make a request to **/two-factor/verify-backup-code**.
     /// - Parameter body: ``TwoFactorVerifyBackupCodeRequest``
-    /// - Returns: ``TwoFactorVerifyBackupCodeResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorVerifyBackupCode``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verifyBackupCode(with body: TwoFactorVerifyBackupCodeRequest)
       async throws
       -> TwoFactorVerifyBackupCode
@@ -171,11 +165,10 @@ extension BetterAuthClient {
       TwoFactorVerifyOTPResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/verify-otp**.
-    ///
+    /// Make a request to **/two-factor/verify-otp**.
     /// - Parameter body: ``TwoFactorVerifyOTPRequest``
-    /// - Returns: ``TwoFactorVerifyOTPResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorVerifyOTP``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verifyOtp(with body: TwoFactorVerifyOTPRequest) async throws
       -> TwoFactorVerifyOTP
     {
@@ -196,11 +189,10 @@ extension BetterAuthClient {
       TwoFactorVerifyTOTPResponse, EmptyContext
     >
 
-    /// Makes a request to **/two-factor/verify-totp**.
-    ///
+    /// Make a request to **/two-factor/verify-totp**.
     /// - Parameter body: ``TwoFactorVerifyTOTPRequest``
-    /// - Returns: ``TwoFactorVerifyTOTPResponse``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+    /// - Returns: ``TwoFactorVerifyTOTP``
+    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verifyTotp(with body: TwoFactorVerifyTOTPRequest) async throws
       -> TwoFactorVerifyTOTP
     {
