@@ -1,6 +1,6 @@
 # Getting Started
 
-Learn how to integrate the Phone Number plugin.
+Learn how to integrate the Magic Link plugin.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Add Better Auth Swift to your project using Xcode:
 1. In Xcode, select **File → Add Package Dependencies**
 2. Enter the repository URL: `https://github.com/ouwargui/BetterAuthSwift.git`
 3. Click on **Add package**
-4. Choose the PhoneNumber plugin
+4. Choose the MagicLink plugin
 
 Or add it to your `Package.swift`:
 
@@ -24,7 +24,7 @@ targets: [
       name: "MyApp",
       dependencies: [
         .product(name: "BetterAuth", package: "BetterAuthSwift"),
-        .product(name: "BetterAuthPhoneNumber", package: "BetterAuthSwift"),
+        .product(name: "BetterAuthMagicLink", package: "BetterAuthSwift"),
       ]
     )
 ]
@@ -36,12 +36,12 @@ targets: [
 import BetterAuth
 
 // Import the plugin
-import BetterAuthPhoneNumber
+import BetterAuthMagicLink
 
 let client = BetterAuthClient(
   baseURL: URL(string: "https://your-api.com")!,
-  plugins: [PhoneNumberPlugin()]
+  plugins: [MagicLinkPlugin()]
 )
 ```
 
-> Tip: Check the [Better Auth docs for the Phone Number plugin](https://www.better-auth.com/docs/plugins/phone-number)
+> Tip: Check the [Better Auth docs for the Magic Link plugin](https://www.better-auth.com/docs/plugins/magic-link)
