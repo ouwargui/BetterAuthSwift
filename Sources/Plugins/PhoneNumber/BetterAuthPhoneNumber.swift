@@ -7,6 +7,7 @@ extension BetterAuthClient.SignIn {
   >
 
   /// Make a request to **/sign-in/phone-number**.
+  /// - Parameter body: ``PhoneNumberSignInPhoneNumberRequest``
   /// - Returns: ``PhoneNumberSignInPhoneNumber``
   /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func phoneNumber(with body: PhoneNumberSignInPhoneNumberRequest)
@@ -44,6 +45,7 @@ extension BetterAuthClient {
     >
 
     /// Make a request to **/phone-number/send-otp**.
+    /// - Parameter body: ``PhoneNumberSendOTPRequest``
     /// - Returns: ``PhoneNumberSendOTP``
     /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func sendOtp(with body: PhoneNumberSendOTPRequest) async throws
@@ -65,6 +67,7 @@ extension BetterAuthClient {
     >
 
     /// Make a request to **/phone-number/verify**.
+    /// - Parameter body: ``PhoneNumberVerifyRequest``
     /// - Returns: ``PhoneNumberVerify``
     /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verify(with body: PhoneNumberVerifyRequest) async throws
@@ -88,6 +91,7 @@ extension BetterAuthClient {
     >
 
     /// Make a request to **/phone-number/forget-password**.
+    /// - Parameter body: ``PhoneNumberForgetPasswordRequest``
     /// - Returns: ``PhoneNumberForgetPassword``
     /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func forgetPassword(with body: PhoneNumberForgetPasswordRequest)
@@ -110,6 +114,7 @@ extension BetterAuthClient {
     >
 
     /// Make a request to **/phone-number/request-password-reset**.
+    /// - Parameter body: ``PhoneNumberRequestPasswordResetRequest``
     /// - Returns: ``PhoneNumberRequestPasswordReset``
     /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func requestPasswordReset(
@@ -134,6 +139,7 @@ extension BetterAuthClient {
     >
 
     /// Make a request to **/phone-number/reset-password**.
+    /// - Parameter body: ``PhoneNumberResetPasswordRequest``
     /// - Returns: ``PhoneNumberResetPassword``
     /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func resetPassword(

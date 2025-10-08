@@ -40,7 +40,7 @@ public struct PhoneNumberSignInPhoneNumberRequest: Codable, Sendable {
   public let password: String
   public let rememberMe: Bool?
 
-  public init(phoneNumber: String, password: String, rememberMe: Bool?) {
+  public init(phoneNumber: String, password: String, rememberMe: Bool? = nil) {
     self.phoneNumber = phoneNumber
     self.password = password
     self.rememberMe = rememberMe
@@ -82,8 +82,8 @@ public struct PhoneNumberVerifyRequest: Codable, Sendable {
   public init(
     phoneNumber: String,
     code: String,
-    disableSession: Bool?,
-    updatePhoneNumber: Bool?
+    disableSession: Bool? = nil,
+    updatePhoneNumber: Bool? = nil
   ) {
     self.phoneNumber = phoneNumber
     self.code = code
@@ -97,7 +97,7 @@ public struct PhoneNumberVerifyResponse: Codable, Sendable {
   public let token: String?
   public let user: UserWithPhoneNumber?
 
-  public init(status: Bool, token: String?, user: UserWithPhoneNumber?) {
+  public init(status: Bool, token: String? = nil, user: UserWithPhoneNumber? = nil) {
     self.status = status
     self.token = token
     self.user = user

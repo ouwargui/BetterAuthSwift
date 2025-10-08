@@ -36,7 +36,7 @@ targets: [
 import BetterAuth
 
 // Import the plugin
-import PhoneNumber
+import BetterAuthPhoneNumber
 
 let client = BetterAuthClient(
   baseURL: URL(string: "https://your-api.com")!,
