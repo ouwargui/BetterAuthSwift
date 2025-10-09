@@ -1,5 +1,7 @@
 import Foundation
 
+public typealias EncodableAndSendable = Encodable & Sendable
+
 public protocol HTTPClientProtocol: Sendable {
   var cookieStorage: CookieStorageProtocol { get }
   init(
@@ -10,8 +12,8 @@ public protocol HTTPClientProtocol: Sendable {
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     action: MiddlewareActions?,
     route: AuthRoutable,
-    body: Encodable?,
-    query: Encodable?,
+    body: EncodableAndSendable?,
+    query: EncodableAndSendable?,
     responseType: T.Type
   ) async throws -> APIResource<T, C>
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
@@ -25,12 +27,12 @@ public protocol HTTPClientProtocol: Sendable {
   ) async throws -> APIResource<T, C>
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     route: AuthRoutable,
-    body: Encodable,
+    body: EncodableAndSendable,
     responseType: T.Type
   ) async throws -> APIResource<T, C>
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     route: AuthRoutable,
-    query: Encodable,
+    query: EncodableAndSendable,
     responseType: T.Type
   ) async throws -> APIResource<T, C>
 }
@@ -125,7 +127,7 @@ public actor HTTPClient: HTTPClientProtocol {
 
   public func perform<T, C>(
     route: any AuthRoutable,
-    body: any Encodable,
+    body: any EncodableAndSendable,
     responseType: T.Type
   ) async throws -> APIResource<T, C> {
     return try await self.perform(
@@ -139,7 +141,7 @@ public actor HTTPClient: HTTPClientProtocol {
 
   public func perform<T, C>(
     route: any AuthRoutable,
-    query: any Encodable,
+    query: any EncodableAndSendable,
     responseType: T.Type
   ) async throws -> APIResource<T, C> {
     return try await self.perform(
@@ -154,8 +156,8 @@ public actor HTTPClient: HTTPClientProtocol {
   public func perform<T: Decodable & Sendable, C: Codable & Sendable>(
     action: MiddlewareActions?,
     route: any AuthRoutable,
-    body: (any Encodable)?,
-    query: (any Encodable)?,
+    body: (any EncodableAndSendable)?,
+    query: (any EncodableAndSendable)?,
     responseType: T.Type
   ) async throws -> APIResource<T, C> {
     var reqCtx = HTTPRequestContext(

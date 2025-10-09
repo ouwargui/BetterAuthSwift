@@ -1,6 +1,7 @@
 import AuthenticationServices
 import Foundation
 
+#if !os(watchOS)
 @MainActor
 class OAuthHandler: NSObject {
   private var webAuthSession: ASWebAuthenticationSession?
@@ -100,3 +101,4 @@ extension OAuthHandler: ASWebAuthenticationPresentationContextProviding {
     #endif
   }
 }
+#endif

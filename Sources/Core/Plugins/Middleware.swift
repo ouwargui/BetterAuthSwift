@@ -37,7 +37,7 @@ public struct HTTPRequestContext: Sendable {
     -> URLRequest
   {
     var url: URL {
-      if #available(macOS 13.0, iOS 16.0, *) {
+      if #available(macOS 13.0, iOS 16.0, watchOS 9.0, *) {
         return baseURL.appending(path: self.path)
       } else {
         return baseURL.appendingPathComponent(self.path)

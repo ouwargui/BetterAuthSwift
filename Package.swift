@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.1
 
 import PackageDescription
 
@@ -14,7 +14,7 @@ let package = Package(
     .library(name: "BetterAuthUsername", targets: ["BetterAuthUsername"]),
     .library(name: "BetterAuthAnonymous", targets: ["BetterAuthAnonymous"]),
     .library(name: "BetterAuthPhoneNumber", targets: ["BetterAuthPhoneNumber"]),
-    .library(name: "BetterAuthMagicLink", targets: ["BetterAuthMagicLink"]),
+    .library(name: "BetterAuthMagicLink", targets: ["BetterAuthMagicLink"])
   ],
   dependencies: [
     .package(
@@ -56,6 +56,6 @@ let package = Package(
     .testTarget(
       name: "BetterAuthTests",
       dependencies: ["BetterAuth"]
-    ),
+    )
   ]
 )

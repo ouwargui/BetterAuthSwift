@@ -443,6 +443,7 @@ extension BetterAuthClient {
       SignInSocialResponse, EmptyContext
     >
 
+    #if !os(watchOS)
     /// Make a request to /sign-in/social.
     /// - Parameter body: ``SignInSocialRequest``
     /// - Returns: ``SignInSocial``
@@ -483,6 +484,7 @@ extension BetterAuthClient {
         return authResponse
       }
     }
+    #endif
   }
 
   @MainActor
