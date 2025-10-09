@@ -172,7 +172,7 @@ if let user = client.user,
 - [x] [Anonymous](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthanonymous/)
 - [x] [Phone Number](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthphonenumber/)
 - [x] [Magic Link](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthmagiclink/)
-- [ ] Email OTP
+- [x] [Email OTP](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthemailotp/)
 - [ ] Passkey
 - [ ] Generic OAuth
 - [ ] One Tap
