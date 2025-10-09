@@ -20,8 +20,8 @@ actor MockHTTPClient: HTTPClientProtocol {
   func perform<T, C>(
     action: BetterAuth.MiddlewareActions?,
     route: any BetterAuth.AuthRoutable,
-    body: (any Encodable)?,
-    query: (any Encodable)?,
+    body: (any EncodableAndSendable)?,
+    query: (any EncodableAndSendable)?,
     responseType: T.Type
   ) async throws -> BetterAuth.APIResource<T, C>
   where
@@ -80,7 +80,7 @@ actor MockHTTPClient: HTTPClientProtocol {
 
   func perform<T, C>(
     route: any BetterAuth.AuthRoutable,
-    body: any Encodable,
+    body: any EncodableAndSendable,
     responseType: T.Type
   ) async throws -> BetterAuth.APIResource<T, C>
   where
@@ -92,7 +92,7 @@ actor MockHTTPClient: HTTPClientProtocol {
 
   func perform<T, C>(
     route: any BetterAuth.AuthRoutable,
-    query: any Encodable,
+    query: any EncodableAndSendable,
     responseType: T.Type
   ) async throws -> BetterAuth.APIResource<T, C>
   where
