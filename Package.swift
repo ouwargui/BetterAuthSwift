@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
   name: "BetterAuthSwift",
-  platforms: [.macOS(.v11), .iOS(.v14), .visionOS(.v1)],
+  platforms: [.macOS(.v11), .iOS(.v14), .visionOS(.v1), .watchOS(.v9)],
   products: [
     .library(
       name: "BetterAuth",
@@ -14,7 +14,8 @@ let package = Package(
     .library(name: "BetterAuthUsername", targets: ["BetterAuthUsername"]),
     .library(name: "BetterAuthAnonymous", targets: ["BetterAuthAnonymous"]),
     .library(name: "BetterAuthPhoneNumber", targets: ["BetterAuthPhoneNumber"]),
-    .library(name: "BetterAuthMagicLink", targets: ["BetterAuthMagicLink"])
+    .library(name: "BetterAuthMagicLink", targets: ["BetterAuthMagicLink"]),
+    .library(name: "BetterAuthEmailOTP", targets: ["BetterAuthEmailOTP"])
   ],
   dependencies: [
     .package(
@@ -52,6 +53,11 @@ let package = Package(
       name: "BetterAuthMagicLink",
       dependencies: ["BetterAuth"],
       path: "Sources/Plugins/MagicLink"
+    ),
+    .target(
+      name: "BetterAuthEmailOTP",
+      dependencies: ["BetterAuth"],
+      path: "Sources/Plugins/EmailOTP"
     ),
     .testTarget(
       name: "BetterAuthTests",
