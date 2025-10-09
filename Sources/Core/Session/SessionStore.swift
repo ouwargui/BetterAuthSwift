@@ -31,7 +31,7 @@ package class SessionStore: ObservableObject {
     self.isLoading = loading
   }
 
-  package func withSessionRefresh<T>(_ operation: () async throws -> T)
+  package func withSessionRefresh<T: Sendable>(_ operation: () async throws -> T)
     async throws
     -> T
   {
