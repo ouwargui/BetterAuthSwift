@@ -7,10 +7,11 @@
 
 import AuthenticationServices
 import BetterAuth
+import BetterAuthEmailOTP
+import BetterAuthMagicLink
 import BetterAuthPhoneNumber
 import BetterAuthTwoFactor
 import BetterAuthUsername
-import BetterAuthMagicLink
 import SwiftUI
 
 extension String {
@@ -28,9 +29,10 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
   case twoFactor
   case username
   case magicLink
-  
+  case emailOTP
+
   var id: String { rawValue }
-  
+
   var title: String {
     switch self {
     case .core:
@@ -43,6 +45,8 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
       "Username"
     case .magicLink:
       "Magic Link"
+    case .emailOTP:
+      "Email OTP"
     }
   }
 }
@@ -50,7 +54,10 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
     baseURL: URL(string: "http://localhost:3001")!,
-    plugins: [TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(), MagicLinkPlugin()]
+    plugins: [
+      TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
+      MagicLinkPlugin(), EmailOTPPlugin(),
+    ]
   )
   @State private var path: [Screen] = []
   @Binding var deepLink: DeepLink?
@@ -92,7 +99,7 @@ struct ContentView: View {
       }
     }
   }
-  
+
   @ViewBuilder
   func destinationView(for screen: Screen) -> some View {
     switch screen {
@@ -106,6 +113,8 @@ struct ContentView: View {
       UsernameView()
     case .magicLink:
       MagicLinkView()
+    case .emailOTP:
+      EmailOTPView()
     }
   }
 }
