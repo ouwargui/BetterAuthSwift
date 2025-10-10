@@ -13,6 +13,7 @@ public class BetterAuthClient: ObservableObject {
   package let httpClient: HTTPClientProtocol
   package let sessionStore: SessionStore
   package let plugins: [AuthPlugin]
+  package let scheme: String?
 
   /// The current session. It's a @Published variable.
   public var session: SessionData? {
@@ -31,14 +32,16 @@ public class BetterAuthClient: ObservableObject {
 
   public init(
     baseURL: URL,
+    scheme: String? = nil,
     plugins: [AuthPlugin] = [],
     httpClient: HTTPClientProtocol? = nil
   ) {
     self.baseUrl = baseURL.getBaseURL()
     self.httpClient =
-      httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins)
+    httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins, scheme: scheme)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
     self.plugins = plugins
+    self.scheme = scheme?.withSchemeSuffix()
 
     sessionStore.objectWillChange
       .receive(on: DispatchQueue.main)

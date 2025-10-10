@@ -1,7 +1,7 @@
 import Foundation
 
 extension URL {
-  func getHost() throws -> URL {
+  package func getHost() throws -> URL {
     guard
       var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
     else {

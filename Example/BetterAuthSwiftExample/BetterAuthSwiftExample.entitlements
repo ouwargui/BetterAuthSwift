@@ -6,5 +6,9 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:d46a2db6d452.ngrok-free.app?mode=developer</string>
+	</array>
 </dict>
 </plist>

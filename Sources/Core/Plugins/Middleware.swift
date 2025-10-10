@@ -18,19 +18,22 @@ public struct HTTPRequestContext: Sendable {
   public var headers: [String: String]
   public var body: AnyEncodable?
   public var query: AnyEncodable?
+  public let scheme: String?
 
   public init(
     path: String,
     method: String,
     headers: [String: String] = [:],
     body: AnyEncodable? = nil,
-    query: AnyEncodable? = nil
+    query: AnyEncodable? = nil,
+    scheme: String? = nil
   ) {
     self.path = path
     self.method = method
     self.headers = headers
     self.body = body
     self.query = query
+    self.scheme = scheme
   }
 
   public func buildUrlRequest(baseURL: URL, encoder: JSONEncoder) throws
@@ -48,6 +51,9 @@ public struct HTTPRequestContext: Sendable {
     request.httpMethod = self.method
     request.httpShouldHandleCookies = true
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    if let scheme = self.scheme {
+      request.setValue(scheme, forHTTPHeaderField: "Origin")
+    }
     for (k, v) in self.headers {
       request.setValue(v, forHTTPHeaderField: k)
     }

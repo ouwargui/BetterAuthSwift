@@ -44,15 +44,18 @@ public actor HTTPClient: HTTPClientProtocol {
   private let decoder = JSONDecoder()
   private let plugins: [AuthPlugin]
   public let cookieStorage: CookieStorageProtocol
+  package let scheme: String?
 
   package init(
     baseURL: URL,
     plugins: [AuthPlugin] = [],
-    cookieStorage: CookieStorageProtocol = CookieStorage()
+    cookieStorage: CookieStorageProtocol = CookieStorage(),
+    scheme: String? = nil
   ) {
     self.baseURL = baseURL
     self.plugins = plugins
     self.cookieStorage = cookieStorage
+    self.scheme = scheme
 
     let config = URLSessionConfiguration.default
     config.httpCookieAcceptPolicy = .always
@@ -70,6 +73,7 @@ public actor HTTPClient: HTTPClientProtocol {
     self.baseURL = baseURL
     self.plugins = plugins
     self.cookieStorage = cookieStorage ?? CookieStorage()
+    self.scheme = nil
 
     let config = URLSessionConfiguration.default
     config.httpCookieAcceptPolicy = .always
@@ -165,7 +169,8 @@ public actor HTTPClient: HTTPClientProtocol {
       method: route.method,
       headers: [:],
       body: body.map(AnyEncodable.init),
-      query: query.map(AnyEncodable.init)
+      query: query.map(AnyEncodable.init),
+      scheme: self.scheme
     )
 
     try await performWillSend(action: action, request: &reqCtx)
