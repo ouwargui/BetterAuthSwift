@@ -2,7 +2,7 @@ import Foundation
 
 extension URL {
   package var hostname: String {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, macOS 13.0, *) {
       return self.host()!
     } else {
       return self.host!

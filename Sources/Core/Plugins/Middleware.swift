@@ -1,6 +1,7 @@
 import Foundation
 
-public struct MiddlewareActions: Hashable, Sendable, ExpressibleByStringLiteral {
+public struct MiddlewareActions: Hashable, Sendable, ExpressibleByStringLiteral
+{
   public let name: String
 
   public init(_ name: String) {
@@ -18,7 +19,6 @@ public struct HTTPRequestContext: Sendable {
   public var headers: [String: String]
   public var body: AnyEncodable?
   public var query: AnyEncodable?
-  public let scheme: String?
 
   public init(
     path: String,
@@ -26,14 +26,12 @@ public struct HTTPRequestContext: Sendable {
     headers: [String: String] = [:],
     body: AnyEncodable? = nil,
     query: AnyEncodable? = nil,
-    scheme: String? = nil
   ) {
     self.path = path
     self.method = method
     self.headers = headers
     self.body = body
     self.query = query
-    self.scheme = scheme
   }
 
   public func buildUrlRequest(baseURL: URL, encoder: JSONEncoder) throws
@@ -51,9 +49,6 @@ public struct HTTPRequestContext: Sendable {
     request.httpMethod = self.method
     request.httpShouldHandleCookies = true
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    if let scheme = self.scheme {
-      request.setValue(scheme, forHTTPHeaderField: "Origin")
-    }
     for (k, v) in self.headers {
       request.setValue(v, forHTTPHeaderField: k)
     }
@@ -89,12 +84,18 @@ public protocol AuthPlugin: Sendable {
   var id: String { get }
   func willSend(_ action: MiddlewareActions, request: inout HTTPRequestContext)
     async throws
-  func didReceive(_ action: MiddlewareActions, response: inout HTTPResponseContext)
+  func didReceive(
+    _ action: MiddlewareActions,
+    response: inout HTTPResponseContext
+  )
     async throws
 }
 
 extension AuthPlugin {
-  public func willSend(_ action: MiddlewareActions, request: inout HTTPRequestContext)
+  public func willSend(
+    _ action: MiddlewareActions,
+    request: inout HTTPRequestContext
+  )
     async throws
   {}
   public func didReceive(
