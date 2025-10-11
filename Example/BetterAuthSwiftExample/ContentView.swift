@@ -9,6 +9,7 @@ import AuthenticationServices
 import BetterAuth
 import BetterAuthEmailOTP
 import BetterAuthMagicLink
+import BetterAuthPasskey
 import BetterAuthPhoneNumber
 import BetterAuthTwoFactor
 import BetterAuthUsername
@@ -30,6 +31,7 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
   case username
   case magicLink
   case emailOTP
+  case passkeyView
 
   var id: String { rawValue }
 
@@ -47,17 +49,20 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
       "Magic Link"
     case .emailOTP:
       "Email OTP"
+    case .passkeyView:
+      "Passkey"
     }
   }
 }
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://localhost:3001")!,
+    baseURL: URL(string: "https://d46a2db6d452.ngrok-free.app")!,
+    scheme: "betterauthswiftexample://",
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
       MagicLinkPlugin(), EmailOTPPlugin(),
-    ]
+    ],
   )
   @State private var path: [Screen] = []
   @Binding var deepLink: DeepLink?
@@ -115,6 +120,8 @@ struct ContentView: View {
       MagicLinkView()
     case .emailOTP:
       EmailOTPView()
+    case .passkeyView:
+      PasskeyView()
     }
   }
 }

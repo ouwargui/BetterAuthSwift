@@ -36,7 +36,7 @@ public class BetterAuthClient: ObservableObject {
   ) {
     self.baseUrl = baseURL.getBaseURL()
     self.httpClient =
-      httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins)
+    httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
     self.plugins = plugins
 

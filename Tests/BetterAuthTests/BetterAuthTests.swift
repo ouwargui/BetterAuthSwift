@@ -26,6 +26,22 @@ import Testing
   )
 }
 
+@Test func urlReturnsCorrectHost() async {
+  var url = URL(string: "http://localhost:3001")!
+
+  #expect(
+    url.hostname == "localhost",
+    "Expected hostname to be localhost, received \(url.hostname)"
+  )
+
+  url = URL(string: "https://dbw2dada.adsansdsa.com")!
+
+  #expect(
+    url.hostname == "dbw2dada.adsansdsa.com",
+    "Expected hostname to be dbw2dada.adsansdsa.com, received \(url.hostname)"
+  )
+}
+
 @Test func betterAuthClientGetCookieReturnsTheBetterAuthCookie() async throws {
   let baseURL = URL(string: "http://localhost:3001")!
 
@@ -39,7 +55,11 @@ import Testing
   let client = await MainActor.run {
     BetterAuthClient(
       baseURL: baseURL,
-      httpClient: MockHTTPClient(baseURL: baseURL, plugins: [], cookieStorage: cookieStorage)
+      httpClient: MockHTTPClient(
+        baseURL: baseURL,
+        plugins: [],
+        cookieStorage: cookieStorage
+      )
     )
   }
 

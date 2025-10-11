@@ -48,7 +48,7 @@ public actor HTTPClient: HTTPClientProtocol {
   package init(
     baseURL: URL,
     plugins: [AuthPlugin] = [],
-    cookieStorage: CookieStorageProtocol = CookieStorage()
+    cookieStorage: CookieStorageProtocol = CookieStorage(),
   ) {
     self.baseURL = baseURL
     self.plugins = plugins
@@ -165,7 +165,7 @@ public actor HTTPClient: HTTPClientProtocol {
       method: route.method,
       headers: [:],
       body: body.map(AnyEncodable.init),
-      query: query.map(AnyEncodable.init)
+      query: query.map(AnyEncodable.init),
     )
 
     try await performWillSend(action: action, request: &reqCtx)

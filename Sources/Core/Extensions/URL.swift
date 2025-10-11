@@ -1,7 +1,15 @@
 import Foundation
 
 extension URL {
-  func getHost() throws -> URL {
+  package var hostname: String {
+    if #available(iOS 16.0, macOS 13.0, *) {
+      return self.host()!
+    } else {
+      return self.host!
+    }
+  }
+
+  package func getHost() throws -> URL {
     guard
       var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
     else {
@@ -19,7 +27,7 @@ extension URL {
     return hostURL
   }
 
-  func getBaseURL() -> URL {
+  package func getBaseURL() -> URL {
     if #available(macOS 13.0, iOS 16.0, watchOS 9.0, *) {
       if self.path().isEmpty || self.path() == "/" {
         return self.appending(path: "/api/auth")

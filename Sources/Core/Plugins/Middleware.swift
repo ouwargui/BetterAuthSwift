@@ -1,6 +1,7 @@
 import Foundation
 
-public struct MiddlewareActions: Hashable, Sendable, ExpressibleByStringLiteral {
+public struct MiddlewareActions: Hashable, Sendable, ExpressibleByStringLiteral
+{
   public let name: String
 
   public init(_ name: String) {
@@ -24,7 +25,7 @@ public struct HTTPRequestContext: Sendable {
     method: String,
     headers: [String: String] = [:],
     body: AnyEncodable? = nil,
-    query: AnyEncodable? = nil
+    query: AnyEncodable? = nil,
   ) {
     self.path = path
     self.method = method
@@ -83,12 +84,18 @@ public protocol AuthPlugin: Sendable {
   var id: String { get }
   func willSend(_ action: MiddlewareActions, request: inout HTTPRequestContext)
     async throws
-  func didReceive(_ action: MiddlewareActions, response: inout HTTPResponseContext)
+  func didReceive(
+    _ action: MiddlewareActions,
+    response: inout HTTPResponseContext
+  )
     async throws
 }
 
 extension AuthPlugin {
-  public func willSend(_ action: MiddlewareActions, request: inout HTTPRequestContext)
+  public func willSend(
+    _ action: MiddlewareActions,
+    request: inout HTTPRequestContext
+  )
     async throws
   {}
   public func didReceive(
