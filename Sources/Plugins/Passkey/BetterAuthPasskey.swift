@@ -1,19 +1,13 @@
 import BetterAuth
 import Foundation
 
+@available(iOS 15.0, *)
 extension BetterAuthClient.SignIn {
   public typealias PasskeySignInPasskey = APIResource<
     PasskeySignInPasskeyResponse, EmptyContext
   >
 
-  @available(iOS 15.0, *)
   public func passkey() async throws -> PasskeySignInPasskey {
-    return try await passkey(with: .init())
-  }
-  @available(iOS 15.0, *)
-  public func passkey(with body: PasskeySignInPasskeyRequest) async throws
-    -> PasskeySignInPasskey
-  {
     guard let client = client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
@@ -35,7 +29,7 @@ extension BetterAuthClient.SignIn {
     let handler = PasskeyHandler()
     let authResult = try await handler.authenticate(
       challenge: challenge,
-      relyingPartyIdentifier: try client.baseUrl.host!,
+      relyingPartyIdentifier: client.baseUrl.hostname,
       allowedCredentials: allowedCredentials
     )
 
@@ -55,20 +49,74 @@ extension BetterAuthClient.SignIn {
     )
 
     return try await client.sessionStore.withSessionRefresh {
-      return try await client.passkey.verifyAuthentication(
-        with: .init(response: passkeyResponse)
+      return try await client.httpClient.perform(
+        route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
+        body: passkeyResponse,
+        responseType: PasskeyVerifyAuthenticationResponse.self
+      )
+    }
+  }
+
+  @available(iOS 16.0, *)
+  public func passkeyAutoFill() async throws
+    -> PasskeySignInPasskey
+  {
+    guard let client = client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    let authOptions = try await client.passkey.generateAuthenticateOptions()
+
+    guard let challenge = Data(base64urlEncoded: authOptions.data.challenge)
+    else {
+      throw BetterAuthSwiftError(
+        message: "Failed to encode challenge to Data"
+      )
+    }
+
+    let allowedCredentials = authOptions.data.allowCredentials?
+      .compactMap {
+        $0.id.data(using: .utf8)
+      }
+
+    let handler = PasskeyHandler()
+    let authResult = try await handler.authenticateWithAutoFill(
+      challenge: challenge,
+      relyingPartyIdentifier: client.baseUrl.hostname,
+      allowedCredentials: allowedCredentials
+    )
+
+    let response = PasskeyAuthenticatorAssertionResponse(
+      clientDataJSON: authResult.rawClientDataJSON.base64urlEncodedString(),
+      authenticatorData: authResult.rawAuthenticatorData
+        .base64urlEncodedString(),
+      signature: authResult.signature.base64urlEncodedString()
+    )
+
+    let passkeyResponse = PasskeyAuthenticationResponse(
+      id: authResult.credentialID.base64urlEncodedString(),
+      rawId: authResult.credentialID.base64urlEncodedString(),
+      response: response,
+      clientExtensionResults: .init(),
+      type: .publicKey
+    )
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
+        body: passkeyResponse,
+        responseType: PasskeyVerifyAuthenticationResponse.self
       )
     }
   }
 }
 
+@available(iOS 15.0, *)
 extension BetterAuthClient {
-  @available(iOS 15.0, *)
   public var passkey: Passkey {
     Passkey(client: self)
   }
 
-  @available(iOS 15.0, *)
   @MainActor
   public class Passkey {
     private weak var client: BetterAuthClient?
@@ -112,7 +160,7 @@ extension BetterAuthClient {
         userId: userId,
         username: regOptions.data.user.name,
         userDisplayName: regOptions.data.user.displayName,
-        relyingPartyIdentifier: try client.baseUrl.host!
+        relyingPartyIdentifier: client.baseUrl.hostname
       )
 
       let response = PasskeyAuthenticatorAttestationResponse(
@@ -209,11 +257,13 @@ extension BetterAuthClient {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.perform(
-        route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
-        body: body,
-        responseType: PasskeyVerifyAuthenticationResponse.self
-      )
+      return try await client.sessionStore.withSessionRefresh {
+        return try await client.httpClient.perform(
+          route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
+          body: body,
+          responseType: PasskeyVerifyAuthenticationResponse.self
+        )
+      }
     }
   }
 }

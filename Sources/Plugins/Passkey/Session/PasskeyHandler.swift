@@ -39,11 +39,11 @@ class PasskeyHandler: NSObject {
     return credential
   }
 
-  func authenticate(
+  private func createAuthenticateRequest(
     challenge: Data,
     relyingPartyIdentifier: String,
-    allowedCredentials: [Data]? = nil
-  ) async throws -> ASAuthorizationPublicKeyCredentialAssertion {
+    allowedCredentials: [Data]? = nil,
+  ) -> ASAuthorizationPlatformPublicKeyCredentialAssertionRequest {
     let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
       relyingPartyIdentifier: relyingPartyIdentifier
     )
@@ -60,6 +60,46 @@ class PasskeyHandler: NSObject {
       }
     }
 
+    return request
+  }
+
+  @available(iOS 16.0, *)
+  func authenticateWithAutoFill(
+    challenge: Data,
+    relyingPartyIdentifier: String,
+    allowedCredentials: [Data]? = nil,
+  ) async throws -> ASAuthorizationPublicKeyCredentialAssertion {
+    let request = self.createAuthenticateRequest(
+      challenge: challenge,
+      relyingPartyIdentifier: relyingPartyIdentifier,
+      allowedCredentials: allowedCredentials
+    )
+
+    let authorization = try await performAutoFillAssistedRequest(request)
+
+    guard
+      let credential = authorization.credential
+        as? ASAuthorizationPlatformPublicKeyCredentialAssertion
+    else {
+      throw BetterAuthSwiftError(
+        message: "Invalid credential type for authentication"
+      )
+    }
+
+    return credential
+  }
+
+  func authenticate(
+    challenge: Data,
+    relyingPartyIdentifier: String,
+    allowedCredentials: [Data]? = nil,
+  ) async throws -> ASAuthorizationPublicKeyCredentialAssertion {
+    let request = self.createAuthenticateRequest(
+      challenge: challenge,
+      relyingPartyIdentifier: relyingPartyIdentifier,
+      allowedCredentials: allowedCredentials
+    )
+
     let authorization = try await performRequest(request)
 
     guard
@@ -74,7 +114,9 @@ class PasskeyHandler: NSObject {
     return credential
   }
 
-  private func performRequest(_ request: ASAuthorizationRequest) async throws
+  private func performRequest(
+    _ request: ASAuthorizationRequest,
+  ) async throws
     -> ASAuthorization
   {
     return try await withCheckedThrowingContinuation { continuation in
@@ -86,6 +128,22 @@ class PasskeyHandler: NSObject {
       authController?.delegate = self
       authController?.presentationContextProvider = self
       authController?.performRequests()
+    }
+  }
+
+  @available(iOS 16.0, *)
+  private func performAutoFillAssistedRequest(_ request: ASAuthorizationRequest)
+    async throws -> ASAuthorization
+  {
+    return try await withCheckedThrowingContinuation { continuation in
+      self.continuation = continuation
+
+      authController = ASAuthorizationController(authorizationRequests: [
+        request
+      ])
+      authController?.delegate = self
+      authController?.presentationContextProvider = self
+      authController?.performAutoFillAssistedRequests()
     }
   }
 }

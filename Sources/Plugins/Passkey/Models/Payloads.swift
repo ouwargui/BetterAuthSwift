@@ -1,14 +1,6 @@
 import BetterAuth
 import Foundation
 
-public struct PasskeySignInPasskeyRequest: Codable, Sendable {
-  public let autoFill: Bool?
-
-  public init(autoFill: Bool? = nil) {
-    self.autoFill = autoFill
-  }
-}
-
 public typealias PasskeySignInPasskeyResponse = PasskeyVerifyAuthenticationResponse
 
 public enum PasskeyAuthenticatorAttachment: String, Codable, Sendable {
