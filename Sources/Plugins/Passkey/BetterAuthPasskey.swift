@@ -13,8 +13,7 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      let passkey = await client.passkey
-      let authOptions = try await passkey.generateAuthenticateOptions()
+      let authOptions = try await client.passkey.generateAuthenticateOptions()
 
       guard let challenge = Data(base64urlEncoded: authOptions.data.challenge)
       else {
@@ -50,7 +49,7 @@
         type: .publicKey
       )
 
-      return try await passkey.verifyAuthentication(
+      return try await client.passkey.verifyAuthentication(
         with: .init(response: passkeyResponse)
       )
     }
@@ -64,8 +63,7 @@
           throw BetterAuthSwiftError(message: "Client deallocated")
         }
 
-        let passkey = await client.passkey
-        let authOptions = try await passkey.generateAuthenticateOptions()
+        let authOptions = try await client.passkey.generateAuthenticateOptions()
 
         guard let challenge = Data(base64urlEncoded: authOptions.data.challenge)
         else {

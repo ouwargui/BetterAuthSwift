@@ -78,8 +78,7 @@
         type: .publicKey
       )
 
-      let passkey = await client.passkey
-      let verify = try await passkey.verifyRegistration(
+      let verify = try await client.passkey.verifyRegistration(
         with: .init(
           response: payload,
           name: body.name

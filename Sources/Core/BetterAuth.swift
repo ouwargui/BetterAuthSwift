@@ -53,7 +53,10 @@ public class BetterAuthClient: ObservableObject {
       }
       .store(in: &cancellables)
   }
+}
 
+// MARK: Route methods
+extension BetterAuthClient {
   /// Returns the Better Auth cookie
   public func getCookie() -> HTTPCookie? {
     return self.httpClient.cookieStorage.getBetterAuthCookie()
@@ -86,10 +89,7 @@ public class BetterAuthClient: ObservableObject {
       )
     }
   }
-}
 
-// MARK: Rest of methods
-extension BetterAuthClient {
   public typealias ForgetPassword = APIResource<
     ForgetPasswordResponse, EmptyContext
   >
