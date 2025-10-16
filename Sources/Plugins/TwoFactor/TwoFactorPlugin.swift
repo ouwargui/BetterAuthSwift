@@ -1,38 +1,28 @@
 import BetterAuth
 import Foundation
 
-extension BetterAuthContext where C == SignInContext {
-  public var twoFactorRedirect: TwoFactorRedirect? {
-    self.meta[TwoFactorPluginData.twoFactorRedirect.pluginFieldName]?.value
-      as? TwoFactorRedirect
-  }
-}
-
-extension APIResource where C == SignInContext, T: OptionalType {
-  public enum TwoFactorSignInResponse<Success> {
-    case success(Success)
-    case twoFactorRedirect(TwoFactorRedirect)
+public final class TwoFactorPlugin: PluginFactory {
+  public static let id: String = "twoFactor"
+  public static func create(client: BetterAuthClient) -> Pluggable {
+    TwoFactor(client: client)
   }
   
-  public var twoFactorResponse: TwoFactorSignInResponse<T.Wrapped> {
-    if let twoFactorRedirect = self.context.twoFactorRedirect {
-      return .twoFactorRedirect(twoFactorRedirect)
-    }
-    
-    return .success(self.data.optional!)
-  }
+  public init() {}
 }
 
-public struct TwoFactorPlugin: AuthPlugin {
-  public let id: String = "twoFactor"
+@MainActor
+public class TwoFactor: Pluggable {
+  private weak var client: BetterAuthClient?
 
-  public init() {}
+  init(client: BetterAuthClient) {
+    self.client = client
+  }
 
   public func didReceive(
-    _ action: MiddlewareActions,
+    _ action: MiddlewareAction,
     response: inout HTTPResponseContext
   ) async throws {
-    let actionsToHandle: [MiddlewareActions] = [.signInEmail, .signInUsername]
+    let actionsToHandle: [MiddlewareAction] = [.signInEmail, .signInUsername]
     guard actionsToHandle.contains(where: { $0 == action }) else { return }
 
     guard
@@ -44,5 +34,200 @@ public struct TwoFactorPlugin: AuthPlugin {
 
     response.meta[TwoFactorPluginData.twoFactorRedirect.pluginFieldName] =
       AnyCodable(twoFactorBody.twoFactorRedirect)
+  }
+
+  public typealias TwoFactorEnable = APIResource<
+    TwoFactorEnableResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/enable**.
+  /// - Parameter body: ``TwoFactorEnableRequest``
+  /// - Returns: ``TwoFactorEnable``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func enable(with body: TwoFactorEnableRequest) async throws
+    -> TwoFactorEnable
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.enable,
+        body: body,
+        responseType: TwoFactorEnableResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorDisable = APIResource<
+    TwoFactorDisableResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/disable**.
+  /// - Parameter body: ``TwoFactorDisableRequest``
+  /// - Returns: ``TwoFactorDisable``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func disable(with body: TwoFactorDisableRequest) async throws
+    -> TwoFactorDisable
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.disable,
+        body: body,
+        responseType: TwoFactorDisableResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorGenerateBackupCodes = APIResource<
+    TwoFactorGenerateBackupCodesResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/generate-backup-codes**.
+  /// - Parameter body: ``TwoFactorGenerateBackupCodesRequest``
+  /// - Returns: ``TwoFactorGenerateBackupCodes``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func generateBackupCodes(
+    with body: TwoFactorGenerateBackupCodesRequest
+  ) async throws
+    -> TwoFactorGenerateBackupCodes
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.generateBackupCodes,
+        body: body,
+        responseType: TwoFactorGenerateBackupCodesResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorGetTotpURI = APIResource<
+    TwoFactorGetTotpURIResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/get-totp-uri**.
+  /// - Parameter body: ``TwoFactorGetTotpURIRequest``
+  /// - Returns: ``TwoFactorGetTotpURI``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func getTotpURI(with body: TwoFactorGetTotpURIRequest) async throws
+    -> TwoFactorGetTotpURI
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.getTotpURI,
+        body: body,
+        responseType: TwoFactorGetTotpURIResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorSendOTP = APIResource<
+    TwoFactorSendOTPResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/send-otp**.
+  /// - Parameter body: ``TwoFactorSendOTPRequest``
+  /// - Returns: ``TwoFactorSendOTP``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func sendOtp(with body: TwoFactorSendOTPRequest) async throws
+    -> TwoFactorSendOTP
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.sendOTP,
+        body: body,
+        responseType: TwoFactorSendOTPResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorVerifyBackupCode = APIResource<
+    TwoFactorVerifyBackupCodeResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/verify-backup-code**.
+  /// - Parameter body: ``TwoFactorVerifyBackupCodeRequest``
+  /// - Returns: ``TwoFactorVerifyBackupCode``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func verifyBackupCode(with body: TwoFactorVerifyBackupCodeRequest)
+    async throws
+    -> TwoFactorVerifyBackupCode
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.verifyBackupCode,
+        body: body,
+        responseType: TwoFactorVerifyBackupCodeResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorVerifyOTP = APIResource<
+    TwoFactorVerifyOTPResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/verify-otp**.
+  /// - Parameter body: ``TwoFactorVerifyOTPRequest``
+  /// - Returns: ``TwoFactorVerifyOTP``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func verifyOtp(with body: TwoFactorVerifyOTPRequest) async throws
+    -> TwoFactorVerifyOTP
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.verifyOTP,
+        body: body,
+        responseType: TwoFactorVerifyOTPResponse.self
+      )
+    }
+  }
+
+  public typealias TwoFactorVerifyTOTP = APIResource<
+    TwoFactorVerifyTOTPResponse, EmptyContext
+  >
+
+  /// Make a request to **/two-factor/verify-totp**.
+  /// - Parameter body: ``TwoFactorVerifyTOTPRequest``
+  /// - Returns: ``TwoFactorVerifyTOTP``
+  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  public func verifyTotp(with body: TwoFactorVerifyTOTPRequest) async throws
+    -> TwoFactorVerifyTOTP
+  {
+    guard let client = self.client else {
+      throw BetterAuthSwiftError(message: "Client deallocated")
+    }
+
+    return try await client.sessionStore.withSessionRefresh {
+      return try await client.httpClient.perform(
+        route: BetterAuthTwoFactorRoute.verifyTOTP,
+        body: body,
+        responseType: TwoFactorVerifyTOTPResponse.self
+      )
+    }
   }
 }

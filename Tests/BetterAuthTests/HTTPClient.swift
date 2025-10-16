@@ -3,22 +3,22 @@ import Foundation
 
 actor MockHTTPClient: HTTPClientProtocol {
   let baseURL: URL
-  let plugins: [AuthPlugin]
+  let pluginRegistry: PluginRegistry
   let cookieStorage: CookieStorageProtocol
 
   init(
     baseURL: URL,
-    plugins: [AuthPlugin],
+    pluginRegistry: PluginRegistry,
     cookieStorage: (CookieStorageProtocol)?
   ) {
     self.baseURL = baseURL
-    self.plugins = plugins
+    self.pluginRegistry = pluginRegistry
     self.cookieStorage =
       cookieStorage ?? BetterAuth.CookieStorage(storage: InMemoryStorage())
   }
 
   func perform<T, C>(
-    action: BetterAuth.MiddlewareActions?,
+    action: BetterAuth.MiddlewareAction?,
     route: any BetterAuth.AuthRoutable,
     body: (any EncodableAndSendable)?,
     query: (any EncodableAndSendable)?,
@@ -67,7 +67,7 @@ actor MockHTTPClient: HTTPClientProtocol {
   }
 
   func perform<T, C>(
-    action: BetterAuth.MiddlewareActions,
+    action: BetterAuth.MiddlewareAction,
     route: any BetterAuth.AuthRoutable,
     responseType: T.Type
   ) async throws -> BetterAuth.APIResource<T, C>

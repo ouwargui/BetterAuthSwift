@@ -1,6 +1,6 @@
 import Foundation
 
-extension MiddlewareActions {
-  public static let signInEmail: MiddlewareActions = "signIn.email"
-  public static let signInUsername: MiddlewareActions = "signIn.username"
+extension MiddlewareAction {
+  public static let signInEmail: MiddlewareAction = "signIn.email"
+  public static let signInUsername: MiddlewareAction = "signIn.username"
 }
