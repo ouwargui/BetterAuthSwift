@@ -57,7 +57,7 @@ import Testing
       baseURL: baseURL,
       httpClient: MockHTTPClient(
         baseURL: baseURL,
-        plugins: [],
+        pluginRegistry: PluginRegistry(factories: []),
         cookieStorage: cookieStorage
       )
     )

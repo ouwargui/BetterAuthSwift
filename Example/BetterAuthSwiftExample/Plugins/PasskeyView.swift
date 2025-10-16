@@ -26,7 +26,7 @@ struct PasskeyView: View {
           Task {
             Task {
               do {
-                _ = try await client.signIn.passkey(with: .init())
+                _ = try await client.signIn.passkey()
               } catch {
                 print(error)
               }

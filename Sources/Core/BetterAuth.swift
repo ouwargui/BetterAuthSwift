@@ -12,7 +12,7 @@ public class BetterAuthClient: ObservableObject {
   package let baseUrl: URL
   package let httpClient: HTTPClientProtocol
   package let sessionStore: SessionStore
-  package let plugins: [AuthPlugin]
+  package let pluginRegistry: PluginRegistry
 
   /// The current session. It's a @Published variable.
   public var session: SessionData? {
@@ -31,14 +31,20 @@ public class BetterAuthClient: ObservableObject {
 
   public init(
     baseURL: URL,
-    plugins: [AuthPlugin] = [],
+    plugins: [PluginFactory] = [],
     httpClient: HTTPClientProtocol? = nil
   ) {
     self.baseUrl = baseURL.getBaseURL()
+    self.pluginRegistry = PluginRegistry(factories: plugins)
     self.httpClient =
-    httpClient ?? HTTPClient(baseURL: self.baseUrl, plugins: plugins)
+      httpClient
+      ?? HTTPClient(baseURL: self.baseUrl, pluginRegistry: self.pluginRegistry)
     self.sessionStore = SessionStore(httpClient: self.httpClient)
-    self.plugins = plugins
+    self.pluginRegistry.register(client: self)
+
+    Task {
+      await self.sessionStore.refreshSession()
+    }
 
     sessionStore.objectWillChange
       .receive(on: DispatchQueue.main)
@@ -444,46 +450,48 @@ extension BetterAuthClient {
     >
 
     #if !os(watchOS)
-    /// Make a request to /sign-in/social.
-    /// - Parameter body: ``SignInSocialRequest``
-    /// - Returns: ``SignInSocial``
-    /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
-    public func social(with body: SignInSocialRequest) async throws
-      -> SignInSocial
-    {
-      guard let client = client else {
-        throw BetterAuthSwiftError(message: "Client deallocated")
-      }
+      /// Make a request to /sign-in/social.
+      /// - Parameter body: ``SignInSocialRequest``
+      /// - Returns: ``SignInSocial``
+      /// - Throws: ``BetterAuthError`` - ``BetterAuthSwiftError``
+      public func social(with body: SignInSocialRequest) async throws
+        -> SignInSocial
+      {
+        guard let client = client else {
+          throw BetterAuthSwiftError(message: "Client deallocated")
+        }
 
-      return try await client.sessionStore.withSessionRefresh {
-        let authResponse: SignInSocial =
-          try await client.httpClient.perform(
-            route: BetterAuthRoute.signInSocial,
-            body: body,
-            responseType: SignInSocialResponse.self
-          )
+        return try await client.sessionStore.withSessionRefresh {
+          let authResponse: SignInSocial =
+            try await client.httpClient.perform(
+              route: BetterAuthRoute.signInSocial,
+              body: body,
+              responseType: SignInSocialResponse.self
+            )
 
-        if body.idToken != nil {
+          if body.idToken != nil {
+            return authResponse
+          }
+
+          if authResponse.data.redirect, let authURL = authResponse.data.url {
+            let handler = OAuthHandler()
+
+            let sessionCookie = try await handler.authenticate(
+              authURL: authURL,
+              callbackURLScheme: try handler.extractScheme(
+                from: body.callbackURL
+              )
+            )
+
+            try client.httpClient.cookieStorage.setCookie(
+              sessionCookie,
+              for: client.baseUrl
+            )
+          }
+
           return authResponse
         }
-
-        if authResponse.data.redirect, let authURL = authResponse.data.url {
-          let handler = OAuthHandler()
-
-          let sessionCookie = try await handler.authenticate(
-            authURL: authURL,
-            callbackURLScheme: try handler.extractScheme(from: body.callbackURL)
-          )
-
-          try client.httpClient.cookieStorage.setCookie(
-            sessionCookie,
-            for: client.baseUrl
-          )
-        }
-
-        return authResponse
       }
-    }
     #endif
   }
 

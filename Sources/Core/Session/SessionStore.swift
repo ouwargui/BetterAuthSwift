@@ -12,10 +12,6 @@ package class SessionStore: ObservableObject {
 
   init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
-
-    Task {
-      await refreshSession()
-    }
   }
 
   package func update(_ session: Session?) {
@@ -55,7 +51,7 @@ package class SessionStore: ObservableObject {
     }
   }
 
-  private func refreshSession() async {
+  package func refreshSession() async {
     do {
       let session: APIResource<Session?, EmptyContext> =
         try await httpClient.perform(

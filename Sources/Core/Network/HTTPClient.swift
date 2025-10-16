@@ -4,13 +4,8 @@ public typealias EncodableAndSendable = Encodable & Sendable
 
 public protocol HTTPClientProtocol: Sendable {
   var cookieStorage: CookieStorageProtocol { get }
-  init(
-    baseURL: URL,
-    plugins: [AuthPlugin],
-    cookieStorage: CookieStorageProtocol?
-  )
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
-    action: MiddlewareActions?,
+    action: MiddlewareAction?,
     route: AuthRoutable,
     body: EncodableAndSendable?,
     query: EncodableAndSendable?,
@@ -21,7 +16,7 @@ public protocol HTTPClientProtocol: Sendable {
     responseType: T.Type
   ) async throws -> APIResource<T, C>
   func perform<T: Decodable & Sendable, C: Codable & Sendable>(
-    action: MiddlewareActions,
+    action: MiddlewareAction,
     route: AuthRoutable,
     responseType: T.Type
   ) async throws -> APIResource<T, C>
@@ -42,16 +37,16 @@ public actor HTTPClient: HTTPClientProtocol {
   private let session: URLSession
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
-  private let plugins: [AuthPlugin]
+  private let pluginRegistry: PluginRegistry
   public let cookieStorage: CookieStorageProtocol
 
   package init(
     baseURL: URL,
-    plugins: [AuthPlugin] = [],
+    pluginRegistry: PluginRegistry,
     cookieStorage: CookieStorageProtocol = CookieStorage(),
   ) {
     self.baseURL = baseURL
-    self.plugins = plugins
+    self.pluginRegistry = pluginRegistry
     self.cookieStorage = cookieStorage
 
     let config = URLSessionConfiguration.default
@@ -64,11 +59,11 @@ public actor HTTPClient: HTTPClientProtocol {
 
   public init(
     baseURL: URL,
-    plugins: [AuthPlugin] = [],
+    pluginRegistry: PluginRegistry,
     cookieStorage: CookieStorageProtocol?
   ) {
     self.baseURL = baseURL
-    self.plugins = plugins
+    self.pluginRegistry = pluginRegistry
     self.cookieStorage = cookieStorage ?? CookieStorage()
 
     let config = URLSessionConfiguration.default
@@ -80,21 +75,21 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   private func performWillSend(
-    action: MiddlewareActions?,
+    action: MiddlewareAction?,
     request: inout HTTPRequestContext
   ) async throws {
     guard let action = action else { return }
-    for plugin in plugins {
+    for plugin in await pluginRegistry.all() {
       try await plugin.willSend(action, request: &request)
     }
   }
 
   private func performDidReceive(
-    action: MiddlewareActions?,
+    action: MiddlewareAction?,
     response: inout HTTPResponseContext
   ) async throws {
     guard let action = action else { return }
-    for plugin in plugins {
+    for plugin in await pluginRegistry.all() {
       try await plugin.didReceive(action, response: &response)
     }
   }
@@ -112,7 +107,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func perform<T, C>(
-    action: MiddlewareActions,
+    action: MiddlewareAction,
     route: any AuthRoutable,
     responseType: T.Type
   ) async throws -> APIResource<T, C> {
@@ -154,7 +149,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func perform<T: Decodable & Sendable, C: Codable & Sendable>(
-    action: MiddlewareActions?,
+    action: MiddlewareAction?,
     route: any AuthRoutable,
     body: (any EncodableAndSendable)?,
     query: (any EncodableAndSendable)?,

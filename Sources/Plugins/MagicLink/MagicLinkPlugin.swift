@@ -1,8 +1,13 @@
 import BetterAuth
 import Foundation
 
-public struct MagicLinkPlugin: AuthPlugin {
-  public let id: String = "magicLink"
-
+public final class MagicLinkPlugin: PluginFactory {  
+  public static let id: String = "magicLink"
+  public static func create(client: BetterAuthClient) -> Pluggable {
+    MagicLink()
+  }
+  
   public init() {}
 }
+
+public final class MagicLink: Pluggable {}
