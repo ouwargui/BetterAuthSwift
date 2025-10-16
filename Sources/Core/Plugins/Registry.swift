@@ -1,5 +1,7 @@
 import Foundation
 
+public protocol Pluggable: Sendable, Middleware {}
+
 @MainActor
 public protocol PluginFactory: Sendable {
   static var id: String { get }
