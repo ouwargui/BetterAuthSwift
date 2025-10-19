@@ -1,7 +1,8 @@
 import BetterAuth
 import Foundation
 
-public typealias PasskeySignInPasskeyResponse = PasskeyVerifyAuthenticationResponse
+public typealias PasskeySignInPasskeyResponse =
+  PasskeyVerifyAuthenticationResponse
 
 public enum PasskeyAuthenticatorAttachment: String, Codable, Sendable {
   case crossPlatform = "cross-platform"
@@ -286,7 +287,12 @@ public struct PasskeyRegistrationResponse: Codable, Sendable {
   }
 }
 
-public struct PasskeyVerifyRegistrationRequest: Codable, Sendable {
+public struct PasskeyVerifyRegistrationRequest: Codable, Sendable, Identifiable
+{
+  public var id: String {
+    self.response.id
+  }
+
   public let response: PasskeyRegistrationResponse
   public let name: String?
 
@@ -300,6 +306,8 @@ public enum PasskeyDeviceType: String, Codable, Sendable {
   case singleDevice
   case multiDevice
 }
+
+public typealias PasskeyModel = PasskeyVerifyRegistrationRequest
 
 public struct PasskeyVerifyRegistrationResponse: Codable, Sendable {
   public let id: String
@@ -427,5 +435,36 @@ public struct PasskeyVerifyAuthenticationResponse: Codable, Sendable {
 
   public init(session: SessionData) {
     self.session = session
+  }
+}
+
+public typealias PasskeyListUserPasskeysResponse =
+  [PasskeyVerifyRegistrationRequest]
+
+public struct PasskeyDeletePasskeyRequest: Codable, Sendable {
+  public let id: String
+
+  public init(id: String) {
+    self.id = id
+  }
+}
+
+public struct PasskeyDeletePasskeyResponse: Codable, Sendable {}
+
+public struct PasskeyUpdatePasskeyRequest: Codable, Sendable {
+  public let id: String
+  public let name: String
+
+  public init(id: String, name: String) {
+    self.id = id
+    self.name = name
+  }
+}
+
+public struct PasskeyUpdatePasskeyResponse: Codable, Sendable {
+  public let passkey: PasskeyModel
+
+  public init(passkey: PasskeyModel) {
+    self.passkey = passkey
   }
 }

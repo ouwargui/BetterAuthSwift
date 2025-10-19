@@ -11,13 +11,19 @@ struct PasskeyView: View {
 
       if let user = client.session.data?.user {
         Text("Hello \(user.name)")
-        Button("Add passkey") {
-          Task {
-            do {
-              let res = try await client.passkey.addPasskey()
-              print(res.data)
-            } catch {
-              print(error)
+        if let passkeys = client.passkey.userPasskeys.data {
+          List(passkeys) { passkey in
+            Text(passkey.response.id)
+          }
+        } else {
+          Button("Add passkey") {
+            Task {
+              do {
+                let res = try await client.passkey.addPasskey()
+                print(res.data)
+              } catch {
+                print(error)
+              }
             }
           }
         }

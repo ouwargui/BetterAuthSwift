@@ -15,9 +15,11 @@ public class BetterAuthClient: ObservableObject {
 
   public lazy var signIn = SignIn(client: self)
   public lazy var signUp = SignUp(client: self)
+
+  /// Session store. Will be updated on session changes
   public let session: SessionStore
 
-  private var cancellables = Set<AnyCancellable>()
+  package var cancellables = Set<AnyCancellable>()
 
   public init(
     baseURL: URL,
@@ -82,7 +84,8 @@ extension BetterAuthClient {
   /// - Returns: ``ForgetPassword``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func forgetPassword(with body: ForgetPasswordRequest) async throws
-    -> ForgetPassword {
+    -> ForgetPassword
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.forgetPassword,
       body: body,
@@ -99,7 +102,8 @@ extension BetterAuthClient {
   /// - Returns: ``ResetPassword``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func resetPassword(with body: ResetPasswordRequest) async throws
-    -> ResetPassword {
+    -> ResetPassword
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.resetPassword,
       body: body,
@@ -114,7 +118,8 @@ extension BetterAuthClient {
   /// - Returns: ``VerifyEmail``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func verifyEmail(with body: VerifyEmailRequest) async throws
-    -> VerifyEmail {
+    -> VerifyEmail
+  {
     return try await self.session.withSessionRefresh {
       return try await httpClient.perform(
         route: BetterAuthRoute.verifyEmail,
@@ -133,7 +138,8 @@ extension BetterAuthClient {
   /// - Returns: ``SendVerificationEmail``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func sendVerificationEmail(with body: SendVerificationEmailRequest)
-    async throws -> SendVerificationEmail {
+    async throws -> SendVerificationEmail
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.sendVerificationEmail,
       body: body,
@@ -148,7 +154,8 @@ extension BetterAuthClient {
   /// - Returns: ``ChangeEmail``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func changeEmail(with body: ChangeEmailRequest) async throws
-    -> ChangeEmail {
+    -> ChangeEmail
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.changeEmail,
       body: body,
@@ -165,7 +172,8 @@ extension BetterAuthClient {
   /// - Returns: ``ChangePassword``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func changePassword(with body: ChangePasswordRequest) async throws
-    -> ChangePassword {
+    -> ChangePassword
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.changePassword,
       body: body,
@@ -180,7 +188,8 @@ extension BetterAuthClient {
   /// - Returns: ``UpdateUser``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func updateUser(with body: UpdateUserRequest) async throws
-    -> UpdateUser {
+    -> UpdateUser
+  {
     return try await self.session.withSessionRefresh {
       return try await httpClient.perform(
         route: BetterAuthRoute.updateUser,
@@ -197,7 +206,8 @@ extension BetterAuthClient {
   /// - Returns: ``DeleteUser``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func deleteUser(with body: DeleteUserRequest) async throws
-    -> DeleteUser {
+    -> DeleteUser
+  {
     return try await self.session.withSessionRefresh {
       return try await httpClient.perform(
         route: BetterAuthRoute.deleteUser,
@@ -216,7 +226,8 @@ extension BetterAuthClient {
   /// - Returns: ``RequestPasswordReset``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func requestPasswordReset(with body: RequestPasswordResetRequest)
-    async throws -> RequestPasswordReset {
+    async throws -> RequestPasswordReset
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.requestPasswordReset,
       body: body,
@@ -245,7 +256,8 @@ extension BetterAuthClient {
   /// - Returns: ``RevokeSession``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func revokeSession(with body: RevokeSessionRequest) async throws
-    -> RevokeSession {
+    -> RevokeSession
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.revokeSession,
       body: body,
@@ -286,7 +298,8 @@ extension BetterAuthClient {
   /// - Returns: ``LinkSocial``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func linkSocial(with body: LinkSocialRequest) async throws
-    -> LinkSocial {
+    -> LinkSocial
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.linkSocial,
       body: body,
@@ -316,7 +329,8 @@ extension BetterAuthClient {
   /// - Returns: ``UnlinkAccount``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func unlinkAccount(with body: UnlinkAccountRequest) async throws
-    -> UnlinkAccount {
+    -> UnlinkAccount
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.unlinkAccount,
       body: body,
@@ -333,7 +347,8 @@ extension BetterAuthClient {
   /// - Returns: ``RefreshToken``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func refreshToken(with body: RefreshTokenRequest) async throws
-    -> RefreshToken {
+    -> RefreshToken
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.refreshToken,
       body: body,
@@ -350,7 +365,8 @@ extension BetterAuthClient {
   /// - Returns: ``GetAccessToken``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func getAccessToken(with body: GetAccessTokenRequest) async throws
-    -> GetAccessToken {
+    -> GetAccessToken
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.getAccessToken,
       body: body,
@@ -365,7 +381,8 @@ extension BetterAuthClient {
   /// - Returns: ``AccountInfo``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func accountInfo(with body: AccountInfoRequest) async throws
-    -> AccountInfo {
+    -> AccountInfo
+  {
     return try await httpClient.perform(
       route: BetterAuthRoute.accountInfo,
       body: body,
@@ -393,7 +410,8 @@ extension BetterAuthClient {
     /// - Returns: ``SignInEmail``
     /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
     public func email(with body: SignInEmailRequest) async throws
-      -> SignInEmail {
+      -> SignInEmail
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -422,7 +440,8 @@ extension BetterAuthClient {
       /// - Returns: ``SignInSocial``
       /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
       public func social(with body: SignInSocialRequest) async throws
-        -> SignInSocial {
+        -> SignInSocial
+      {
         guard let client = client else {
           throw BetterAuthSwiftError(message: "Client deallocated")
         }
@@ -478,7 +497,8 @@ extension BetterAuthClient {
     /// - Returns: ``SignUpEmail``
     /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
     public func email(with body: SignUpEmailRequest) async throws
-      -> SignUpEmail {
+      -> SignUpEmail
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }

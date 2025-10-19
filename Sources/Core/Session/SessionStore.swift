@@ -53,14 +53,6 @@ public class SessionStore: ObservableObject {
     }
   }
 
-  package func refreshSessionIfNeeded() async {
-    guard self.data != nil else {
-      return
-    }
-
-    await self.refreshSession()
-  }
-
   public func refreshSession() async {
     setLoading(true)
     defer { setLoading(false) }

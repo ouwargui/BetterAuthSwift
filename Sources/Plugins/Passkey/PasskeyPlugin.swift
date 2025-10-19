@@ -18,19 +18,46 @@
   public class Passkey: Pluggable {
     private weak var client: BetterAuthClient?
 
+    /// Passkey store. Will be updated on passkey changes
+    public let userPasskeys: PasskeyStore
+
     init(client: BetterAuthClient) {
       self.client = client
+      self.userPasskeys = PasskeyStore(httpClient: client.httpClient)
+
+      userPasskeys.objectWillChange
+        .sink { [weak client] _ in client?.objectWillChange.send() }
+        .store(in: &client.cancellables)
     }
 
     public typealias PasskeyAddPasskey = APIResource<
       PasskeyAddPasskeyResponse, EmptyContext
     >
 
+    /// Handles the whole flow of adding a Passkey. You can also call this method to try autofill the
+    /// Passkey if the user already registered one before.
+    ///
+    /// Will call **/passkey/generate-register-options**. Then use `AuthenticationServices`
+    /// to create a Passkey on the client and then verify it by calling **/passkey/verify-registration**.
+    ///
+    /// - Returns: ``PasskeyAddPasskey``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func addPasskey() async throws -> PasskeyAddPasskey {
       return try await self.addPasskey(with: .init())
     }
+
+    /// Handles the whole flow of adding a Passkey. You can also call this method to try autofill the
+    /// Passkey if the user already registered one before.
+    ///
+    /// Will call **/passkey/generate-register-options**. Then use `AuthenticationServices`
+    /// to create a Passkey on the client and then verify it by calling **/passkey/verify-registration**.
+    ///
+    /// - Parameter body: ``PasskeyAddPasskeyRequest``
+    /// - Returns: ``PasskeyAddPasskey``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func addPasskey(with body: PasskeyAddPasskeyRequest) async throws
-      -> PasskeyAddPasskey {
+      -> PasskeyAddPasskey
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -91,6 +118,11 @@
       PasskeyGenerateRegisterOptionsResponse, EmptyContext
     >
 
+    /// Makes a request to **/passkey/generate-register-options**.
+    ///
+    /// - Parameter body: ``PasskeyGenerateRegisterOptionsRequest``
+    /// - Returns: ``PasskeyGenerateRegisterOptions``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func generateRegisterOptions(
       with body: PasskeyGenerateRegisterOptionsRequest
     ) async throws -> PasskeyGenerateRegisterOptions {
@@ -109,8 +141,14 @@
       PasskeyGenerateAuthenticateOptionsResponse, EmptyContext
     >
 
+    /// Makes a request to **/passkey/generate-authenticate-options**.
+    ///
+    /// - Parameter body: ``PasskeyGenerateAuthenticateOptionsRequest``
+    /// - Returns: ``PasskeyGenerateAuthenticateOptions``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func generateAuthenticateOptions() async throws
-      -> PasskeyGenerateAuthenticateOptions {
+      -> PasskeyGenerateAuthenticateOptions
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -125,10 +163,16 @@
       PasskeyVerifyRegistrationResponse, EmptyContext
     >
 
+    /// Makes a request to **/passkey/verify-registration**.
+    ///
+    /// - Parameter body: ``PasskeyVerifyRegistrationRequest``
+    /// - Returns: ``PasskeyVerifyRegistration``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verifyRegistration(
       with body: PasskeyVerifyRegistrationRequest
     )
-      async throws -> PasskeyVerifyRegistration {
+      async throws -> PasskeyVerifyRegistration
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -144,10 +188,16 @@
       PasskeyVerifyAuthenticationResponse, EmptyContext
     >
 
+    /// Makes a request to **/passkey/verify-authentication**.
+    ///
+    /// - Parameter body: ``PasskeyVerifyAuthenticationRequest``
+    /// - Returns: ``PasskeyVerifyAuthentication``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func verifyAuthentication(
       with body: PasskeyVerifyAuthenticationRequest
     )
-      async throws -> PasskeyVerifyAuthentication {
+      async throws -> PasskeyVerifyAuthentication
+    {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -159,6 +209,72 @@
           responseType: PasskeyVerifyAuthenticationResponse.self
         )
       }
+    }
+
+    public typealias PasskeyListUserPasskeys = APIResource<
+      PasskeyListUserPasskeysResponse, EmptyContext
+    >
+
+    /// Makes a request to **/passkey/list-user-passkeys**.
+    ///
+    /// - Parameter body: ``PasskeyListUserPasskeysRequest``
+    /// - Returns: ``PasskeyListUserPasskeys``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
+    public func listUserPasskeys() async throws -> PasskeyListUserPasskeys {
+      guard let client = client else {
+        throw BetterAuthSwiftError(message: "Client deallocated")
+      }
+
+      return try await client.httpClient.perform(
+        route: BetterAuthPasskeyRoute.passkeyListUserPasskeys,
+        responseType: PasskeyListUserPasskeysResponse.self
+      )
+    }
+
+    public typealias PasskeyDeletePasskey = APIResource<
+      PasskeyDeletePasskeyResponse, EmptyContext
+    >
+
+    /// Makes a request to **/passkey/delete-passkey**.
+    ///
+    /// - Parameter body: ``PasskeyDeletePasskeyRequest``
+    /// - Returns: ``PasskeyDeletePasskey``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
+    public func deletePasskey(with body: PasskeyDeletePasskeyRequest)
+      async throws -> PasskeyDeletePasskey
+    {
+      guard let client = client else {
+        throw BetterAuthSwiftError(message: "Client deallocated")
+      }
+
+      return try await client.httpClient.perform(
+        route: BetterAuthPasskeyRoute.passkeyDeletePasskey,
+        body: body,
+        responseType: PasskeyDeletePasskeyResponse.self
+      )
+    }
+
+    public typealias PasskeyUpdatePasskey = APIResource<
+      PasskeyUpdatePasskeyResponse, EmptyContext
+    >
+
+    /// Makes a request to **/passkey/update-passkey**.
+    ///
+    /// - Parameter body: ``PasskeyUpdatePasskeyRequest``
+    /// - Returns: ``PasskeyUpdatePasskey``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
+    public func updatePasskey(with body: PasskeyUpdatePasskeyRequest)
+      async throws -> PasskeyUpdatePasskey
+    {
+      guard let client = client else {
+        throw BetterAuthSwiftError(message: "Client deallocated")
+      }
+
+      return try await client.httpClient.perform(
+        route: BetterAuthPasskeyRoute.passkeyUpdatePasskey,
+        body: body,
+        responseType: PasskeyUpdatePasskeyResponse.self
+      )
     }
   }
 #endif
