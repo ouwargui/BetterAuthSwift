@@ -2,6 +2,7 @@
   import Foundation
   import BetterAuth
   import OSLog
+  import Combine
 
   @available(iOS 15.0, macOS 12.0, *)
   @MainActor
@@ -16,8 +17,22 @@
       category: "passkey"
     )
 
+    private let LISTENED_SIGNALS: [Signal] = [
+      .signout,
+      .passkeyDeletePasskey,
+      .passkeyUpdatePasskey,
+      .passkeyVerifyRegistration,
+    ]
+
+    private var cancellables = Set<AnyCancellable>()
+
     init(httpClient: HTTPClientProtocol) {
       self.httpClient = httpClient
+
+      SignalBus.shared.listen(to: LISTENED_SIGNALS, storeIn: &cancellables) {
+        [weak self] _ in
+        await self?.refreshPasskeys()
+      }
     }
 
     package func update(_ passkeys: PasskeyListUserPasskeysResponse?) {

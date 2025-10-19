@@ -14,8 +14,25 @@ public class SessionStore: ObservableObject {
     category: "session"
   )
 
+  private let LISTENED_SIGNALS: [Signal] = [
+    .signout,
+    .passkeyVerifyAuthentication,
+    .signIn,
+    .signUp,
+    .deleteUser,
+    .updateUser,
+    .verifyEmail,
+  ]
+
+  private var cancellables = Set<AnyCancellable>()
+
   init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
+
+    SignalBus.shared.listen(to: LISTENED_SIGNALS, storeIn: &cancellables) {
+      [weak self] _ in
+      await self?.refreshSession()
+    }
   }
 
   package func update(_ session: Session?) {
