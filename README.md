@@ -58,13 +58,13 @@ let response = try? await client.signIn.email(with: .init(
   email: "user@example.com",
   password: "securepassword"
 ))
-print(response.data.user.name)
+print(response.user.name)
 
-// Session is a @Published variable
-print(client.session?.token)
+// Will be automatically updated
+print(client.session.data?.session)
 
-// So is user
-print(client.user?.name)
+// So will the user
+print(client.session.data?.user)
 ```
 
 ### 3. Use in SwiftUI
@@ -83,6 +83,12 @@ struct MyApp: App {
     WindowGroup {
       ContentView()
         .environmentObject(authClient)
+        .task {
+          // Explicitly fetch the initial session.
+          // future changes to the session will
+          // be automatically updated
+          await authClient.session.refreshSession()
+        }
     }
   }
 }
@@ -91,11 +97,11 @@ struct ContentView: View {
   @EnvironmentObject private var authClient: BetterAuthClient
 
   var body: some View {
-    if let user = authClient.user {
+    if let user = authClient.session.data?.user {
       Text("Hello, \(user.name)")
     }
 
-    if let session = authClient.session {
+    if let session = authClient.session.data?.session {
       Button {
         Task {
           try await authClient.signOut()
@@ -141,7 +147,7 @@ targets: [
       name: "MyApp",
       dependencies: [
         .product(name: "BetterAuth", package: "BetterAuthSwift"),
-        .product(name: "BetterAuthTwoFactor", package: "BetterAuthSwift"),
+        .product(name: "BetterAuth<PLUGIN_NAME>", package: "BetterAuthSwift"),
       ]
     )
 ]
@@ -151,13 +157,13 @@ targets: [
 
 ```swift
 import BetterAuth
-import BetterAuthTwoFactor
+import BetterAuthTwoFactor // Import the plugin you want
 
 let client = BetterAuthClient(
   baseURL: URL(string: "https://your-api.com")!
 )
 
-if let user = client.user,
+if let user = client.session.data?.user,
    let twoFactorEnabled = user.twoFactorEnabled {
       print(twoFactorEnabled) // true or false
    }
@@ -173,7 +179,7 @@ if let user = client.user,
 - [x] [Phone Number](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthphonenumber/)
 - [x] [Magic Link](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthmagiclink/)
 - [x] [Email OTP](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthemailotp/)
-- [ ] Passkey
+- [x] [Passkey](https://ouwargui.github.io/BetterAuthSwift/documentation/betterauthpasskey/)
 - [ ] Generic OAuth
 - [ ] One Tap
 - [ ] Sign In With Ethereum

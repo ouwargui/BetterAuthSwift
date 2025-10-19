@@ -24,13 +24,13 @@ struct ContentView: View {
 
   var body: some View {
     VStack {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         Text("Hello, \(user.name)")
       }
 
       Spacer()
 
-      if client.session != nil {
+      if client.session.data != nil {
         SignInWithAppleButton(.signIn) { request in
           request.requestedScopes = [.email, .fullName]
         } onCompletion: { result in
