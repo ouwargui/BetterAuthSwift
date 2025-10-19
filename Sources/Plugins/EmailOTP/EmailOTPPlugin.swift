@@ -6,7 +6,7 @@ public final class EmailOTPPlugin: PluginFactory {
   public static func create(client: BetterAuthClient) -> Pluggable {
     EmailOTP()
   }
-  
+
   public init() {}
 }
 
@@ -25,7 +25,7 @@ public final class EmailOTP: Pluggable {
   /// Make a request to **/email-otp/send-verification-otp**
   /// - Parameter body: ``EmailOTPSendVerificationOTPRequest``
   /// - Returns: ``EmailOTPSendVerificationOTP``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func sendVerificationOtp(
     with body: EmailOTPSendVerificationOTPRequest
   ) async throws -> EmailOTPSendVerificationOTP {
@@ -47,7 +47,7 @@ public final class EmailOTP: Pluggable {
   /// Make a request to **/email-otp/check-verification-otp**
   /// - Parameter body: ``EmailOTPCheckVerificationOTPRequest``
   /// - Returns: ``EmailOTPCheckVerificationOTP``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func checkVerificationOtp(
     with body: EmailOTPCheckVerificationOTPRequest
   ) async throws -> EmailOTPCheckVerificationOTP {
@@ -69,7 +69,7 @@ public final class EmailOTP: Pluggable {
   /// Make a request to **/email-otp/verify-email**
   /// - Parameter body: ``EmailOTPVerifyEmailRequest``
   /// - Returns: ``EmailOTPVerifyEmail``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verifyEmail(
     with body: EmailOTPVerifyEmailRequest
   ) async throws -> EmailOTPVerifyEmail {
@@ -77,7 +77,7 @@ public final class EmailOTP: Pluggable {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthEmailOTPRoute.emailOTPVerifyEmail,
         body: body,
@@ -93,7 +93,7 @@ public final class EmailOTP: Pluggable {
   /// Make a request to **/email-otp/reset-password**
   /// - Parameter body: ``EmailOTPResetPasswordRequest``
   /// - Returns: ``EmailOTPResetPassword``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func resetPassword(
     with body: EmailOTPResetPasswordRequest
   ) async throws -> EmailOTPResetPassword {

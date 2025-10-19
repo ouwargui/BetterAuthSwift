@@ -9,10 +9,9 @@ extension BetterAuthClient.SignIn {
   /// Make a request to **/sign-in/magic-link**
   /// - Parameter body: ``MagicLinkSignInMagicLinkRequest``
   /// - Returns: ``MagicLinkSignInMagicLink``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func magicLink(with body: MagicLinkSignInMagicLinkRequest) async throws
-    -> MagicLinkSignInMagicLink
-  {
+    -> MagicLinkSignInMagicLink {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }

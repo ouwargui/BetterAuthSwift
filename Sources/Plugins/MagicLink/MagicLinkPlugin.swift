@@ -1,12 +1,12 @@
 import BetterAuth
 import Foundation
 
-public final class MagicLinkPlugin: PluginFactory {  
+public final class MagicLinkPlugin: PluginFactory {
   public static let id: String = "magicLink"
   public static func create(client: BetterAuthClient) -> Pluggable {
     MagicLink()
   }
-  
+
   public init() {}
 }
 
@@ -25,15 +25,14 @@ public final class MagicLink: Pluggable {
   /// Make a request to **/magic-link/verify**
   /// - Parameter body: ``MagicLinkVerifyRequest``
   /// - Returns: ``MagicLinkVerify``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verify(with body: MagicLinkVerifyRequest) async throws
-    -> MagicLinkVerify
-  {
+    -> MagicLinkVerify {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthMagicLinkRoute.magicLinkVerify,
         query: body,

@@ -30,8 +30,7 @@
       return try await self.addPasskey(with: .init())
     }
     public func addPasskey(with body: PasskeyAddPasskeyRequest) async throws
-      -> PasskeyAddPasskey
-    {
+      -> PasskeyAddPasskey {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -111,8 +110,7 @@
     >
 
     public func generateAuthenticateOptions() async throws
-      -> PasskeyGenerateAuthenticateOptions
-    {
+      -> PasskeyGenerateAuthenticateOptions {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -130,8 +128,7 @@
     public func verifyRegistration(
       with body: PasskeyVerifyRegistrationRequest
     )
-      async throws -> PasskeyVerifyRegistration
-    {
+      async throws -> PasskeyVerifyRegistration {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
@@ -150,13 +147,12 @@
     public func verifyAuthentication(
       with body: PasskeyVerifyAuthenticationRequest
     )
-      async throws -> PasskeyVerifyAuthentication
-    {
+      async throws -> PasskeyVerifyAuthentication {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.sessionStore.withSessionRefresh {
+      return try await client.session.withSessionRefresh {
         return try await client.httpClient.perform(
           route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
           body: body,

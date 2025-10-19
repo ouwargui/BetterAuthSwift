@@ -6,8 +6,7 @@ extension BetterAuthClient {
   >
 
   public func isUsernameAvailable(with body: UsernameIsUsernameAvailableRequest)
-    async throws -> UsernameIsUsernameAvailable
-  {
+    async throws -> UsernameIsUsernameAvailable {
     return try await self.httpClient.perform(
       route: BetterAuthUsernameRoute.isUsernameAvailable,
       body: body,
@@ -24,15 +23,14 @@ extension BetterAuthClient.SignUp {
   /// Make a request to **/sign-up/email**.
   /// - Parameter body: ``UsernameSignUpEmailRequest``
   /// - Returns: ``UsernameSignUpEmail``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func email(with body: UsernameSignUpEmailRequest) async throws
-    -> UsernameSignUpEmail
-  {
+    -> UsernameSignUpEmail {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthRoute.signUpEmail,
         body: body,
@@ -50,15 +48,14 @@ extension BetterAuthClient.SignIn {
   /// Make a request to **/sign-in/username**.
   /// - Parameter body: ``UsernameSignUpEmailRequest``
   /// - Returns: ``UsernameSignInUsername``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func username(with body: UsernameSignInUsernameRequest) async throws
-    -> UsernameSignInUsername
-  {
+    -> UsernameSignInUsername {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       let res:
         APIResource<
           PluginOptional<UsernameSignInUsernameResponse>, SignInContext

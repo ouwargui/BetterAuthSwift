@@ -9,15 +9,14 @@ extension BetterAuthClient.SignIn {
   /// Make a request to **/sign-in/phone-number**.
   /// - Parameter body: ``PhoneNumberSignInPhoneNumberRequest``
   /// - Returns: ``PhoneNumberSignInPhoneNumber``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func phoneNumber(with body: PhoneNumberSignInPhoneNumberRequest)
-    async throws -> PhoneNumberSignInPhoneNumber
-  {
+    async throws -> PhoneNumberSignInPhoneNumber {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthPhoneNumberRoute.signInPhoneNumber,
         body: body,

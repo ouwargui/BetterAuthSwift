@@ -16,7 +16,7 @@ struct TwoFactorView: View {
   @State private var show2fa: Bool = false
   
   private var twoFactorEnabled: String {
-    guard let twoFactor = client.user?.twoFactorEnabled else {
+    guard let twoFactor = client.session.data?.user.twoFactorEnabled else {
       return "false"
     }
     
@@ -25,7 +25,7 @@ struct TwoFactorView: View {
 
   var body: some View {
     VStack(spacing: 24) {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         HStack(alignment: .center, spacing: 16) {
           AsyncImage(url: URL(string: user.image ?? "")) { image in
             image.resizable()

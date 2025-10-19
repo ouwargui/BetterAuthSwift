@@ -6,7 +6,7 @@ public final class PhoneNumberPlugin: PluginFactory {
   public static func create(client: BetterAuthClient) -> Pluggable {
     PhoneNumber()
   }
-  
+
   public init() {}
 }
 
@@ -25,10 +25,9 @@ public final class PhoneNumber: Pluggable {
   /// Make a request to **/phone-number/send-otp**.
   /// - Parameter body: ``PhoneNumberSendOTPRequest``
   /// - Returns: ``PhoneNumberSendOTP``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func sendOtp(with body: PhoneNumberSendOTPRequest) async throws
-    -> PhoneNumberSendOTP
-  {
+    -> PhoneNumberSendOTP {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
@@ -47,15 +46,14 @@ public final class PhoneNumber: Pluggable {
   /// Make a request to **/phone-number/verify**.
   /// - Parameter body: ``PhoneNumberVerifyRequest``
   /// - Returns: ``PhoneNumberVerify``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verify(with body: PhoneNumberVerifyRequest) async throws
-    -> PhoneNumberVerify
-  {
+    -> PhoneNumberVerify {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthPhoneNumberRoute.phoneNumberVerify,
         body: body,
@@ -71,11 +69,10 @@ public final class PhoneNumber: Pluggable {
   /// Make a request to **/phone-number/forget-password**.
   /// - Parameter body: ``PhoneNumberForgetPasswordRequest``
   /// - Returns: ``PhoneNumberForgetPassword``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func forgetPassword(with body: PhoneNumberForgetPasswordRequest)
     async throws
-    -> PhoneNumberForgetPassword
-  {
+    -> PhoneNumberForgetPassword {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
@@ -94,13 +91,12 @@ public final class PhoneNumber: Pluggable {
   /// Make a request to **/phone-number/request-password-reset**.
   /// - Parameter body: ``PhoneNumberRequestPasswordResetRequest``
   /// - Returns: ``PhoneNumberRequestPasswordReset``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func requestPasswordReset(
     with body: PhoneNumberRequestPasswordResetRequest
   )
     async throws
-    -> PhoneNumberRequestPasswordReset
-  {
+    -> PhoneNumberRequestPasswordReset {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
@@ -119,13 +115,12 @@ public final class PhoneNumber: Pluggable {
   /// Make a request to **/phone-number/reset-password**.
   /// - Parameter body: ``PhoneNumberResetPasswordRequest``
   /// - Returns: ``PhoneNumberResetPassword``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func resetPassword(
     with body: PhoneNumberResetPasswordRequest
   )
     async throws
-    -> PhoneNumberResetPassword
-  {
+    -> PhoneNumberResetPassword {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }

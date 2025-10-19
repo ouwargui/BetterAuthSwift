@@ -1,6 +1,26 @@
 import Foundation
 
-public struct BetterAuthSwiftError: Codable, Sendable, LocalizedError {
+public enum BetterAuthError: Equatable {
+  case libError(BetterAuthSwiftError)
+  case apiError(BetterAuthApiError)
+  case unknownError(Error)
+
+  public static func == (lhs: BetterAuthError, rhs: BetterAuthError) -> Bool {
+    switch (lhs, rhs) {
+    case (.libError(let a), .libError(let b)):
+      return a == b
+    case (.apiError(let a), .apiError(let b)):
+      return a == b
+    case (.unknownError(let a), .unknownError(let b)):
+      return a.localizedDescription == b.localizedDescription
+    default:
+      return false
+    }
+  }
+}
+
+public struct BetterAuthSwiftError: Codable, Sendable, LocalizedError, Equatable
+{
   public let message: String?
 
   public var errorDescription: String? {
@@ -22,7 +42,7 @@ package struct CoreError: Codable, Sendable {
   }
 }
 
-public struct BetterAuthError: Codable, Sendable, LocalizedError {
+public struct BetterAuthApiError: Codable, Sendable, LocalizedError, Equatable {
   public let code: String?
   public let message: String?
   public let status: Int?

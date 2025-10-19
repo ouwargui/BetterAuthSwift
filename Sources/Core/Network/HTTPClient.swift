@@ -95,8 +95,7 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func perform<T, C>(route: AuthRoutable, responseType: T.Type)
-    async throws -> APIResource<T, C>
-  {
+    async throws -> APIResource<T, C> {
     return try await self.perform(
       action: nil,
       route: route,
@@ -175,7 +174,7 @@ public actor HTTPClient: HTTPClientProtocol {
     guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 400 else {
       let coreError = try? decoder.decode(CoreError.self, from: data)
       if let coreError = coreError {
-        throw BetterAuthError(coreError: coreError, response: httpResponse)
+        throw BetterAuthApiError(coreError: coreError, response: httpResponse)
       }
 
       throw BetterAuthSwiftError(

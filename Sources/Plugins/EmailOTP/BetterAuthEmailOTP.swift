@@ -9,15 +9,14 @@ extension BetterAuthClient.SignIn {
   /// Make a request to **/sign-in/email-otp**
   /// - Parameter body: ``EmailOTPSignInEmailOTPRequest``
   /// - Returns: ``EmailOTPSignInEmailOTP``
-  /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+  /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func emailOtp(with body: EmailOTPSignInEmailOTPRequest) async throws
-    -> EmailOTPSignInEmailOTP
-  {
+    -> EmailOTPSignInEmailOTP {
     guard let client = client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.sessionStore.withSessionRefresh {
+    return try await client.session.withSessionRefresh {
       return try await client.httpClient.perform(
         route: BetterAuthEmailOTPRoute.signInEmailOTP,
         body: body,
@@ -52,10 +51,9 @@ extension BetterAuthClient {
     /// Make a request to **/forget-password/email-otp**
     /// - Parameter body: ``EmailOTPForgetPasswordEmailOTPRequest``
     /// - Returns: ``EmailOTPForgetPasswordEmailOTP``
-    /// - Throws: ``/BetterAuth/BetterAuthError`` - ``/BetterAuth/BetterAuthSwiftError``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func emailOtp(with body: EmailOTPForgetPasswordEmailOTPRequest)
-      async throws -> EmailOTPForgetPasswordEmailOTP
-    {
+      async throws -> EmailOTPForgetPasswordEmailOTP {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }

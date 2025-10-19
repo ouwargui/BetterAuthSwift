@@ -57,8 +57,7 @@
     #if os(iOS) || os(visionOS)
       @available(iOS 16.0, *)
       public func passkeyAutoFill() async throws
-        -> PasskeySignInPasskey
-      {
+        -> PasskeySignInPasskey {
         guard let client = client else {
           throw BetterAuthSwiftError(message: "Client deallocated")
         }
@@ -99,7 +98,7 @@
           type: .publicKey
         )
 
-        return try await client.sessionStore.withSessionRefresh {
+        return try await client.session.withSessionRefresh {
           return try await client.httpClient.perform(
             route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
             body: passkeyResponse,

@@ -14,7 +14,7 @@ struct EmailOTPView: View {
 
   var body: some View {
     VStack(spacing: 24) {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         // MARK: - Logged In
         HStack(alignment: .center, spacing: 16) {
           AsyncImage(url: URL(string: user.image ?? "")) { image in
@@ -152,7 +152,7 @@ struct EmailOTPView: View {
       }
     }
     .padding()
-    .animation(.spring(duration: 0.35), value: client.user?.id)
+    .animation(.spring(duration: 0.35), value: client.session.data?.user.id)
   }
 
   // MARK: - Logic

@@ -9,7 +9,7 @@ struct PasskeyView: View {
     VStack {
       Spacer()
 
-      if let user = client.user {
+      if let user = client.session.data?.user {
         Text("Hello \(user.name)")
         Button("Add passkey") {
           Task {

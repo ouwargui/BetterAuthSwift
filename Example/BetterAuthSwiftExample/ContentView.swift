@@ -57,10 +57,10 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "https://1aa6c147afda.ngrok-free.app")!,
+    baseURL: URL(string: "https://c10c12aae565.ngrok-free.app")!,
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
-      MagicLinkPlugin(), EmailOTPPlugin(), PasskeyPlugin()
+      MagicLinkPlugin(), EmailOTPPlugin(), PasskeyPlugin(),
     ],
   )
   @State private var path: [Screen] = []
@@ -92,6 +92,13 @@ struct ContentView: View {
       }
     }
     .environmentObject(client)
+    .task {
+      await self.client.session.refreshSession()
+    }
+    .onChange(of: self.client.session.error) { _, err in
+      guard let err = err else { return }
+      print(err)
+    }
     .onChange(of: deepLink) { _, link in
       guard let link, let token = link.token else { return }
       Task {
