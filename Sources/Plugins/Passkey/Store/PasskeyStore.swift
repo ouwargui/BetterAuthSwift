@@ -22,6 +22,7 @@
       .passkeyDeletePasskey,
       .passkeyUpdatePasskey,
       .passkeyVerifyRegistration,
+      .passkeyVerifyAuthentication,
     ]
 
     private var cancellables = Set<AnyCancellable>()

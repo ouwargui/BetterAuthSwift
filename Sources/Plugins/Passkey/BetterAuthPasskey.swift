@@ -31,7 +31,7 @@
           $0.id.data(using: .utf8)
         }
 
-      let handler = PasskeyHandler()
+      let handler = PasskeyHandler.shared
       let authResult = try await handler.authenticate(
         challenge: challenge,
         relyingPartyIdentifier: client.baseUrl.hostname,
@@ -85,7 +85,7 @@
             $0.id.data(using: .utf8)
           }
 
-        let handler = PasskeyHandler()
+        let handler = PasskeyHandler.shared
         let authResult = try await handler.authenticateWithAutoFill(
           challenge: challenge,
           relyingPartyIdentifier: client.baseUrl.hostname,
@@ -107,15 +107,9 @@
           type: .publicKey
         )
 
-        return try await SignalBus.shared.emittingSignal(
-          .passkeyVerifyAuthentication
-        ) {
-          return try await client.httpClient.perform(
-            route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
-            body: passkeyResponse,
-            responseType: PasskeyVerifyAuthenticationResponse.self
-          )
-        }
+        return try await client.passkey.verifyAuthentication(
+          with: .init(response: passkeyResponse)
+        )
       }
     #endif
   }

@@ -81,6 +81,7 @@ public enum PasskeyAuthenticatorTransportFuture: String, Codable, Sendable {
   case nfc
   case smartCard = "smart-card"
   case usb
+  case ``
 }
 
 public struct PasskeyPublicKeyCredentialDescriptor: Codable, Sendable {

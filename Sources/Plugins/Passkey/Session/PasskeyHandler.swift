@@ -6,8 +6,12 @@
   @available(iOS 15.0, macOS 12.0, *)
   @MainActor
   class PasskeyHandler: NSObject {
+    public static let shared = PasskeyHandler()
     private var authController: ASAuthorizationController?
     private var continuation: CheckedContinuation<ASAuthorization, Error>?
+    private var autoFillContinuation: CheckedContinuation<Void, Never>?
+
+    private override init() {}
 
     func register(
       challenge: Data,
@@ -122,6 +126,10 @@
     ) async throws
       -> ASAuthorization
     {
+      if #available(iOS 16.0, macOS 12.0, *) {
+        await self.cancelAutofill()
+      }
+
       return try await withCheckedThrowingContinuation { continuation in
         self.continuation = continuation
 
@@ -141,6 +149,8 @@
       )
         async throws -> ASAuthorization
       {
+        await self.cancelAutofill()
+
         return try await withCheckedThrowingContinuation { continuation in
           self.continuation = continuation
 
@@ -170,12 +180,32 @@
       didCompleteWithError error: any Error
     ) {
       continuation?.resume(throwing: error)
+      autoFillContinuation?.resume(returning: ())
       cleanup()
     }
 
     private func cleanup() {
       authController = nil
+      autoFillContinuation = nil
       continuation = nil
+    }
+
+    @available(iOS 16.0, macOS 13.0, *)
+    private func cancelAutofill() async {
+      return await withCheckedContinuation { continuation in
+        if let autoFillContinuation = self.autoFillContinuation {
+          autoFillContinuation.resume(returning: ())
+          self.autoFillContinuation = nil
+        }
+
+        guard let controller = self.authController else {
+          continuation.resume()
+          return
+        }
+
+        self.autoFillContinuation = continuation
+        controller.cancel()
+      }
     }
   }
 
@@ -183,7 +213,7 @@
   extension PasskeyHandler:
     ASAuthorizationControllerPresentationContextProviding
   {
-    func presentationAnchor(for controller: ASAuthorizationController)
+    package func presentationAnchor(for controller: ASAuthorizationController)
       -> ASPresentationAnchor
     {
       #if os(iOS)

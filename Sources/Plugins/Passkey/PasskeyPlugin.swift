@@ -75,7 +75,7 @@
         )
       }
 
-      let handler = PasskeyHandler()
+      let handler = PasskeyHandler.shared
       let regResult = try await handler.register(
         challenge: challenge,
         userId: userId,
