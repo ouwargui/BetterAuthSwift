@@ -54,7 +54,7 @@ struct EmailOTPView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
 
@@ -76,10 +76,8 @@ struct EmailOTPView: View {
             .font(.headline)
 
           TextField("Email address", text: $email)
-            .keyboardType(.emailAddress)
-            .autocapitalization(.none)
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.secondarySystemFill))
             .cornerRadius(8)
             .disabled(isCodeSent)
           
@@ -100,9 +98,8 @@ struct EmailOTPView: View {
           if isCodeSent {
             VStack(spacing: 10) {
               SecureField("Enter OTP code", text: $otp)
-                .keyboardType(.numberPad)
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemFill))
                 .cornerRadius(8)
 
               Button {
@@ -138,7 +135,7 @@ struct EmailOTPView: View {
         .frame(maxWidth: 380)
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.tertiarySystemBackground))
+            .fill(Color(.tertiarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
         .overlay(alignment: .center) {

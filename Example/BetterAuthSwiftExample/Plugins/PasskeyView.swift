@@ -64,20 +64,20 @@ struct PasskeyView: View {
         VStack(spacing: 16) {
           TextField("Email", text: $email)
             .textContentType(.username)
-            .keyboardType(.emailAddress)
-            .autocapitalization(.none)
             .textFieldStyle(.roundedBorder)
             .focused($usernameFocused)
             .onChange(of: usernameFocused) { _, newValue in
-              if newValue {
-                Task {
-                  do {
-                    _ = try await client.signIn.passkeyAutoFill()
-                  } catch {
-                    print(error)
+              #if os(iOS) || os(visionOS)
+                if newValue {
+                  Task {
+                    do {
+                      _ = try await client.signIn.passkeyAutoFill()
+                    } catch {
+                      print(error)
+                    }
                   }
                 }
-              }
+              #endif
             }
 
           SecureField("Password", text: $password)

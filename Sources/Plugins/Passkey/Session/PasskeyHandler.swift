@@ -126,7 +126,7 @@
     ) async throws
       -> ASAuthorization
     {
-      if #available(iOS 16.0, macOS 12.0, *) {
+      if #available(iOS 16.0, macOS 13.0, *) {
         await self.cancelAutofill()
       }
 

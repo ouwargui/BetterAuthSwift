@@ -61,7 +61,7 @@ struct UsernameView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
 
@@ -85,29 +85,26 @@ struct UsernameView: View {
           VStack(spacing: 10) {
             TextField("Username", text: $username)
               .padding(12)
-              .background(Color(.secondarySystemBackground))
+              .background(Color(.secondarySystemFill))
               .cornerRadius(8)
-              .textInputAutocapitalization(.none)
               .disableAutocorrection(true)
             
             SecureField("Password", text: $password)
               .padding(12)
-              .background(Color(.secondarySystemBackground))
+              .background(Color(.secondarySystemFill))
               .cornerRadius(8)
           }
           
           if isRegistering {
             VStack(spacing: 10) {
               TextField("Email", text: $email)
-                .keyboardType(.emailAddress)
-                .textInputAutocapitalization(.none)
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemFill))
                 .cornerRadius(8)
               
               TextField("Full Name", text: $name)
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemFill))
                 .cornerRadius(8)
             }
             .transition(.opacity)
@@ -148,7 +145,7 @@ struct UsernameView: View {
         .frame(maxWidth: 380)
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.tertiarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
         .overlay(alignment: .center) {

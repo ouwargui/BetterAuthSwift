@@ -79,16 +79,18 @@ struct ContentView: View {
       .navigationDestination(for: Screen.self) { screen in
         destinationView(for: screen)
           .navigationTitle(screen.title)
-          .navigationBarTitleDisplayMode(.inline)
-          .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-              Button("Logout") {
-                Task {
-                  _ = try await client.signOut()
+          #if os(iOS) || os(visionOS)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+              ToolbarItem(placement: .topBarTrailing) {
+                Button("Logout") {
+                  Task {
+                    _ = try await client.signOut()
+                  }
                 }
               }
             }
-          }
+          #endif
       }
     }
     .environmentObject(client)

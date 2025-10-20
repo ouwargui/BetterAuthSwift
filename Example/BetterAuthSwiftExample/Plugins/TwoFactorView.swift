@@ -69,7 +69,7 @@ struct TwoFactorView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
         
