@@ -109,7 +109,7 @@ internal class KeychainStorage: StorageProtocol {
   }
 }
 
-enum KeychainError: Error, LocalizedError {
+internal enum KeychainError: Error, LocalizedError {
   case saveError(OSStatus)
   case deleteError(OSStatus)
   case unexpectedError(OSStatus)

@@ -13,7 +13,7 @@ struct PhoneNumberView: View {
 
   var body: some View {
     VStack(spacing: 24) {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         HStack(alignment: .center, spacing: 16) {
           AsyncImage(url: URL(string: user.image ?? "")) { image in
             image.resizable()
@@ -59,7 +59,7 @@ struct PhoneNumberView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
 
@@ -81,9 +81,8 @@ struct PhoneNumberView: View {
 
           HStack {
             TextField("+1 (555) 123-4567", text: $phoneNumber)
-              .keyboardType(.phonePad)
               .padding(12)
-              .background(Color(.secondarySystemBackground))
+              .background(Color(.secondarySystemFill))
               .cornerRadius(8)
               .disabled(isOTPSent)
               .textContentType(.telephoneNumber)
@@ -103,9 +102,8 @@ struct PhoneNumberView: View {
           if isOTPSent {
             VStack(spacing: 10) {
               SecureField("Enter OTP Code", text: $otpCode)
-                .keyboardType(.numberPad)
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemFill))
                 .cornerRadius(8)
 
               Button {
@@ -134,7 +132,7 @@ struct PhoneNumberView: View {
         .frame(maxWidth: 380)
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.tertiarySystemBackground))
+            .fill(Color(.tertiarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
         .overlay(alignment: .center) {
@@ -148,7 +146,7 @@ struct PhoneNumberView: View {
       }
     }
     .padding()
-    .animation(.spring(duration: 0.35), value: client.user?.id)
+    .animation(.spring(duration: 0.35), value: client.session.data?.user.id)
   }
 
   private func sendOTP() {

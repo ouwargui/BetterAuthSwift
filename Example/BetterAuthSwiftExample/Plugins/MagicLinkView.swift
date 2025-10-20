@@ -12,7 +12,7 @@ struct MagicLinkView: View {
   
   var body: some View {
     VStack(spacing: 24) {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         // MARK: - Logged-in User
         HStack(alignment: .center, spacing: 16) {
           AsyncImage(url: URL(string: user.image ?? "")) { image in
@@ -55,7 +55,7 @@ struct MagicLinkView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
         
@@ -77,10 +77,8 @@ struct MagicLinkView: View {
             .font(.headline)
           
           TextField("Email address", text: $email)
-            .keyboardType(.emailAddress)
-            .textInputAutocapitalization(.none)
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.secondarySystemFill))
             .cornerRadius(8)
           
           Button {
@@ -113,7 +111,7 @@ struct MagicLinkView: View {
         .frame(maxWidth: 380)
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.tertiarySystemBackground))
+            .fill(Color(.tertiarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
         .overlay(alignment: .center) {
@@ -126,7 +124,7 @@ struct MagicLinkView: View {
       }
     }
     .padding()
-    .animation(.spring(duration: 0.35), value: client.user?.id)
+    .animation(.spring(duration: 0.35), value: client.session.data?.user.id)
   }
   
   // MARK: - Logic

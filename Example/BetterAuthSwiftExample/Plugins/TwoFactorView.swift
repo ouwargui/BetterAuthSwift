@@ -2,16 +2,21 @@ import BetterAuth
 import SwiftUI
 import BetterAuthTwoFactor
 
+let random = String.randomString(length: 10)
+
 struct TwoFactorView: View {
   @EnvironmentObject var client: BetterAuthClient
   @State private var errorMessage: String? = nil
   @State private var isLoading: Bool = false
 
-  private let email: String = "\(String.randomString(length: 10))@test.com"
+  private let email: String = "\(random)@test.com"
   private let password: String = "12345678"
   
+  @State private var code: String = ""
+  @State private var show2fa: Bool = false
+  
   private var twoFactorEnabled: String {
-    guard let twoFactor = client.user?.twoFactorEnabled else {
+    guard let twoFactor = client.session.data?.user.twoFactorEnabled else {
       return "false"
     }
     
@@ -20,7 +25,7 @@ struct TwoFactorView: View {
 
   var body: some View {
     VStack(spacing: 24) {
-      if let user = client.user {
+      if let user = client.session.data?.user {
         HStack(alignment: .center, spacing: 16) {
           AsyncImage(url: URL(string: user.image ?? "")) { image in
             image.resizable()
@@ -64,7 +69,7 @@ struct TwoFactorView: View {
         .padding()
         .background(
           RoundedRectangle(cornerRadius: 16)
-            .fill(Color(.secondarySystemBackground))
+            .fill(Color(.secondarySystemFill))
             .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
         )
         
@@ -85,14 +90,64 @@ struct TwoFactorView: View {
           Text("You’re not signed in yet")
             .font(.headline)
           
-          Button("Sign up") {
-            Task {
-              self.signup()
+          if self.show2fa {
+            TextField("Code", text: $code)
+              .textContentType(.oneTimeCode)
+
+            Button("Verify 2fa") {
+              Task {
+                self.verify2fa()
+              }
+            }
+          } else {
+            Button("Sign in") {
+              Task {
+                self.signin()
+              }
+            }
+            
+            Button("Sign up") {
+              Task {
+                self.signup()
+              }
             }
           }
         }
         .padding()
       }
+    }
+  }
+  
+  private func signin() {
+    Task {
+      isLoading = true
+      errorMessage = nil
+      do {
+        let res = try await client.signIn.email(with: .init(email: email, password: password))
+        switch res.twoFactorResponse {
+        case .twoFactorRedirect(let twoFA):
+          _ = try await client.twoFactor.sendOtp(with: .init())
+          self.show2fa = twoFA
+        default:
+          break
+        }
+      } catch {
+        errorMessage = "Failed to signin: \(error.localizedDescription)"
+      }
+      isLoading = false
+    }
+  }
+  
+  private func verify2fa() {
+    Task {
+      isLoading = true
+      errorMessage = nil
+      do {
+        _ = try await client.twoFactor.verifyOtp(with: .init(code: code, trustDevice: false))
+      } catch {
+        errorMessage = "Failed to verify otp: \(error.localizedDescription)"
+      }
+      isLoading = false
     }
   }
 

@@ -9,6 +9,7 @@ import AuthenticationServices
 import BetterAuth
 import BetterAuthEmailOTP
 import BetterAuthMagicLink
+import BetterAuthPasskey
 import BetterAuthPhoneNumber
 import BetterAuthTwoFactor
 import BetterAuthUsername
@@ -30,6 +31,7 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
   case username
   case magicLink
   case emailOTP
+  case passkeyView
 
   var id: String { rawValue }
 
@@ -47,17 +49,19 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
       "Magic Link"
     case .emailOTP:
       "Email OTP"
+    case .passkeyView:
+      "Passkey"
     }
   }
 }
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://localhost:3001")!,
+    baseURL: URL(string: "https://c10c12aae565.ngrok-free.app")!,
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
-      MagicLinkPlugin(), EmailOTPPlugin(),
-    ]
+      MagicLinkPlugin(), EmailOTPPlugin(), PasskeyPlugin(),
+    ],
   )
   @State private var path: [Screen] = []
   @Binding var deepLink: DeepLink?
@@ -75,19 +79,28 @@ struct ContentView: View {
       .navigationDestination(for: Screen.self) { screen in
         destinationView(for: screen)
           .navigationTitle(screen.title)
-          .navigationBarTitleDisplayMode(.inline)
-          .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-              Button("Logout") {
-                Task {
-                  _ = try await client.signOut()
+          #if os(iOS) || os(visionOS)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+              ToolbarItem(placement: .topBarTrailing) {
+                Button("Logout") {
+                  Task {
+                    _ = try await client.signOut()
+                  }
                 }
               }
             }
-          }
+          #endif
       }
     }
     .environmentObject(client)
+    .task {
+      await self.client.session.refreshSession()
+    }
+    .onChange(of: self.client.session.error) { _, err in
+      guard let err = err else { return }
+      print(err)
+    }
     .onChange(of: deepLink) { _, link in
       guard let link, let token = link.token else { return }
       Task {
@@ -115,6 +128,8 @@ struct ContentView: View {
       MagicLinkView()
     case .emailOTP:
       EmailOTPView()
+    case .passkeyView:
+      PasskeyView()
     }
   }
 }

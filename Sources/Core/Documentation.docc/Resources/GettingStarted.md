@@ -41,11 +41,11 @@ let response = try? await client.signIn.email(with: .init(
 ))
 print(response.user.name)
 
-// Session is a @Published variable
-print(client.session?.token)
+// Will be automatically updated
+print(client.session.data?.session)
 
-// So is user
-print(client.user?.name)
+// So will the user
+print(client.session.data?.user)
 ```
 
 ### 3. Use in SwiftUI
@@ -64,6 +64,12 @@ struct MyApp: App {
     WindowGroup {
       ContentView()
         .environmentObject(authClient)
+        .task {
+          // Explicitly fetch the initial session.
+          // future changes to the session will
+          // be automatically updated
+          await authClient.session.refreshSession()
+        }
     }
   }
 }

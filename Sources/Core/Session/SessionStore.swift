@@ -1,25 +1,46 @@
 import Combine
-import OSLog
 import Foundation
+import OSLog
 
 @MainActor
-package class SessionStore: ObservableObject {
-  @Published private(set) var current: Session?
-  @Published private(set) var isLoading: Bool = false
+public class SessionStore: ObservableObject {
+  @Published public private(set) var data: Session?
+  @Published public private(set) var isPending: Bool = false
+  @Published public private(set) var error: BetterAuthError?
 
   private let httpClient: HTTPClientProtocol
-  private let logger = Logger(subsystem: "com.betterauth", category: "SessionStore")
+  private let logger = Logger(
+    subsystem: "com.betterauth",
+    category: "session"
+  )
+
+  private let LISTENED_SIGNALS: [Signal] = [
+    .signout,
+    .passkeyVerifyAuthentication,
+    .signIn,
+    .signUp,
+    .deleteUser,
+    .updateUser,
+    .verifyEmail,
+    .phoneNumberVerify,
+    .magicLinkVerify,
+    .twoFactor,
+    .emailOtpVerifyEmail,
+  ]
+
+  private var cancellables = Set<AnyCancellable>()
 
   init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
 
-    Task {
-      await refreshSession()
+    SignalBus.shared.listen(to: LISTENED_SIGNALS, storeIn: &cancellables) {
+      [weak self] _ in
+      await self?.refreshSession()
     }
   }
 
   package func update(_ session: Session?) {
-    self.current = session
+    self.data = session
     guard let session = session else {
       logger.debug("Session updated: nil")
       return
@@ -28,34 +49,13 @@ package class SessionStore: ObservableObject {
   }
 
   private func setLoading(_ loading: Bool) {
-    self.isLoading = loading
+    self.isPending = loading
   }
 
-  package func withSessionRefresh<T: Sendable>(_ operation: () async throws -> T)
-    async throws
-    -> T
-  {
+  public func refreshSession() async {
     setLoading(true)
-
     defer { setLoading(false) }
 
-    do {
-      let result = try await operation()
-
-      await refreshSession()
-
-      return result
-    } catch let error as BetterAuthError {
-      if error.status == 401 {
-        update(nil)
-      }
-      throw error
-    } catch {
-      throw error
-    }
-  }
-
-  private func refreshSession() async {
     do {
       let session: APIResource<Session?, EmptyContext> =
         try await httpClient.perform(
@@ -64,8 +64,15 @@ package class SessionStore: ObservableObject {
         )
 
       update(session.data)
+    } catch let error as BetterAuthApiError {
+      update(nil)
+      self.error = .apiError(error)
+    } catch let error as BetterAuthSwiftError {
+      update(nil)
+      self.error = .libError(error)
     } catch {
       update(nil)
+      self.error = .unknownError(error)
     }
   }
 }
