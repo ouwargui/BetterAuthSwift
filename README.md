@@ -157,10 +157,13 @@ targets: [
 
 ```swift
 import BetterAuth
-import BetterAuthTwoFactor // Import the plugin you want
+// 1. Import the plugin you want
+import BetterAuthTwoFactor
 
 let client = BetterAuthClient(
-  baseURL: URL(string: "https://your-api.com")!
+  baseURL: URL(string: "https://your-api.com")!,
+  // 2. Add it to the plugins array
+  plugins: [TwoFactorPlugin()]
 )
 
 if let user = client.session.data?.user,
