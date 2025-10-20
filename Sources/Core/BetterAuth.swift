@@ -67,8 +67,8 @@ extension BetterAuthClient {
   /// - Returns: ``SignOut``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
   public func signOut() async throws -> SignOut {
-    return try await self.session.withSessionRefresh {
-      return try await httpClient.perform(
+    return try await SignalBus.shared.emittingSignal(.signout) {
+      return try await self.httpClient.perform(
         route: BetterAuthRoute.signOut,
         responseType: SignOutResponse.self
       )
@@ -120,8 +120,8 @@ extension BetterAuthClient {
   public func verifyEmail(with body: VerifyEmailRequest) async throws
     -> VerifyEmail
   {
-    return try await self.session.withSessionRefresh {
-      return try await httpClient.perform(
+    return try await SignalBus.shared.emittingSignal(.verifyEmail) {
+      return try await self.httpClient.perform(
         route: BetterAuthRoute.verifyEmail,
         query: body,
         responseType: VerifyEmailResponse.self
@@ -190,8 +190,8 @@ extension BetterAuthClient {
   public func updateUser(with body: UpdateUserRequest) async throws
     -> UpdateUser
   {
-    return try await self.session.withSessionRefresh {
-      return try await httpClient.perform(
+    return try await SignalBus.shared.emittingSignal(.updateUser) {
+      return try await self.httpClient.perform(
         route: BetterAuthRoute.updateUser,
         body: body,
         responseType: UpdateUserResponse.self
@@ -208,8 +208,8 @@ extension BetterAuthClient {
   public func deleteUser(with body: DeleteUserRequest) async throws
     -> DeleteUser
   {
-    return try await self.session.withSessionRefresh {
-      return try await httpClient.perform(
+    return try await SignalBus.shared.emittingSignal(.deleteUser) {
+      return try await self.httpClient.perform(
         route: BetterAuthRoute.deleteUser,
         body: body,
         responseType: DeleteUserResponse.self
@@ -416,7 +416,7 @@ extension BetterAuthClient {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.session.withSessionRefresh {
+      return try await SignalBus.shared.emittingSignal(.signIn) {
         let res:
           APIResource<PluginOptional<SignInEmailResponse>, SignInContext> =
             try await client.httpClient.perform(
@@ -446,7 +446,7 @@ extension BetterAuthClient {
           throw BetterAuthSwiftError(message: "Client deallocated")
         }
 
-        return try await client.session.withSessionRefresh {
+        return try await SignalBus.shared.emittingSignal(.signIn) {
           let authResponse: SignInSocial =
             try await client.httpClient.perform(
               route: BetterAuthRoute.signInSocial,
@@ -503,7 +503,7 @@ extension BetterAuthClient {
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.session.withSessionRefresh {
+      return try await SignalBus.shared.emittingSignal(.signUp) {
         return try await client.httpClient.perform(
           route: BetterAuthRoute.signUpEmail,
           body: body,

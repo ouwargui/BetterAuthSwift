@@ -8,6 +8,10 @@
       PasskeySignInPasskeyResponse, EmptyContext
     >
 
+    /// Handles the whole flow of signing in with Passkey.
+    ///
+    /// - Returns: ``PasskeySignInPasskey``
+    /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
     public func passkey() async throws -> PasskeySignInPasskey {
       guard let client = client else {
         throw BetterAuthSwiftError(message: "Client deallocated")
@@ -55,9 +59,14 @@
     }
 
     #if os(iOS) || os(visionOS)
+      /// You can call this method to try autofill the Passkey if the user already registered one before.
+      ///
+      /// - Returns: ``PasskeySignInPasskey``
+      /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
       @available(iOS 16.0, *)
       public func passkeyAutoFill() async throws
-        -> PasskeySignInPasskey {
+        -> PasskeySignInPasskey
+      {
         guard let client = client else {
           throw BetterAuthSwiftError(message: "Client deallocated")
         }
@@ -98,7 +107,9 @@
           type: .publicKey
         )
 
-        return try await client.session.withSessionRefresh {
+        return try await SignalBus.shared.emittingSignal(
+          .passkeyVerifyAuthentication
+        ) {
           return try await client.httpClient.perform(
             route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
             body: passkeyResponse,

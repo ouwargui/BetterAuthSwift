@@ -287,12 +287,8 @@ public struct PasskeyRegistrationResponse: Codable, Sendable {
   }
 }
 
-public struct PasskeyVerifyRegistrationRequest: Codable, Sendable, Identifiable
+public struct PasskeyVerifyRegistrationRequest: Codable, Sendable
 {
-  public var id: String {
-    self.response.id
-  }
-
   public let response: PasskeyRegistrationResponse
   public let name: String?
 
@@ -307,9 +303,9 @@ public enum PasskeyDeviceType: String, Codable, Sendable {
   case multiDevice
 }
 
-public typealias PasskeyModel = PasskeyVerifyRegistrationRequest
+public typealias PasskeyModel = PasskeyVerifyRegistrationResponse
 
-public struct PasskeyVerifyRegistrationResponse: Codable, Sendable {
+public struct PasskeyVerifyRegistrationResponse: Codable, Sendable, Identifiable {
   public let id: String
   public let name: String?
   public let publicKey: String
@@ -438,8 +434,7 @@ public struct PasskeyVerifyAuthenticationResponse: Codable, Sendable {
   }
 }
 
-public typealias PasskeyListUserPasskeysResponse =
-  [PasskeyVerifyRegistrationRequest]
+public typealias PasskeyListUserPasskeysResponse = [PasskeyModel]
 
 public struct PasskeyDeletePasskeyRequest: Codable, Sendable {
   public let id: String

@@ -22,6 +22,7 @@ public class SessionStore: ObservableObject {
     .deleteUser,
     .updateUser,
     .verifyEmail,
+    .phoneNumberVerify,
   ]
 
   private var cancellables = Set<AnyCancellable>()
@@ -46,28 +47,6 @@ public class SessionStore: ObservableObject {
 
   private func setLoading(_ loading: Bool) {
     self.isPending = loading
-  }
-
-  package func withSessionRefresh<T: Sendable>(
-    _ operation: () async throws -> T
-  )
-    async throws
-    -> T
-  {
-    do {
-      let result = try await operation()
-
-      await refreshSession()
-
-      return result
-    } catch let error as BetterAuthApiError {
-      if error.status == 401 {
-        update(nil)
-      }
-      throw error
-    } catch {
-      throw error
-    }
   }
 
   public func refreshSession() async {

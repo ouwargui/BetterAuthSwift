@@ -11,9 +11,12 @@ struct PasskeyView: View {
 
       if let user = client.session.data?.user {
         Text("Hello \(user.name)")
-        if let passkeys = client.passkey.userPasskeys.data {
+          .task {
+            await client.passkey.userPasskeys.refreshPasskeys()
+          }
+        if let passkeys = client.passkey.userPasskeys.data, !passkeys.isEmpty {
           List(passkeys) { passkey in
-            Text(passkey.response.id)
+            Text(passkey.id)
           }
         } else {
           Button("Add passkey") {

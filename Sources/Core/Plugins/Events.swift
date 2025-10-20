@@ -9,6 +9,9 @@ package enum Signal {
   case deleteUser
   case verifyEmail
 
+  // Mark: Phone Number
+  case phoneNumberVerify
+
   // MARK: Passkey
   case passkeyVerifyRegistration
   case passkeyDeletePasskey
@@ -29,6 +32,17 @@ package final class SignalBus {
 
   public func send(_ signal: Signal) {
     subject.send(signal)
+  }
+
+  public func emittingSignal<T: Sendable>(
+    _ signal: Signal,
+    perform action: @escaping () async throws -> T
+  ) async throws -> T {
+    let res = try await action()
+
+    self.send(signal)
+
+    return res
   }
 
   @discardableResult

@@ -34,8 +34,7 @@
       PasskeyAddPasskeyResponse, EmptyContext
     >
 
-    /// Handles the whole flow of adding a Passkey. You can also call this method to try autofill the
-    /// Passkey if the user already registered one before.
+    /// Handles the whole flow of adding a Passkey.
     ///
     /// Will call **/passkey/generate-register-options**. Then use `AuthenticationServices`
     /// to create a Passkey on the client and then verify it by calling **/passkey/verify-registration**.
@@ -46,8 +45,7 @@
       return try await self.addPasskey(with: .init())
     }
 
-    /// Handles the whole flow of adding a Passkey. You can also call this method to try autofill the
-    /// Passkey if the user already registered one before.
+    /// Handles the whole flow of adding a Passkey.
     ///
     /// Will call **/passkey/generate-register-options**. Then use `AuthenticationServices`
     /// to create a Passkey on the client and then verify it by calling **/passkey/verify-registration**.
@@ -104,14 +102,12 @@
         type: .publicKey
       )
 
-      let verify = try await client.passkey.verifyRegistration(
+      return try await client.passkey.verifyRegistration(
         with: .init(
           response: payload,
           name: body.name
         )
       )
-
-      return verify
     }
 
     public typealias PasskeyGenerateRegisterOptions = APIResource<
@@ -177,11 +173,15 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.perform(
-        route: BetterAuthPasskeyRoute.passkeyVerifyRegistration,
-        body: body,
-        responseType: PasskeyVerifyRegistrationResponse.self
-      )
+      return try await SignalBus.shared.emittingSignal(
+        .passkeyVerifyRegistration
+      ) {
+        return try await client.httpClient.perform(
+          route: BetterAuthPasskeyRoute.passkeyVerifyRegistration,
+          body: body,
+          responseType: PasskeyVerifyRegistrationResponse.self
+        )
+      }
     }
 
     public typealias PasskeyVerifyAuthentication = APIResource<
@@ -202,7 +202,9 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.session.withSessionRefresh {
+      return try await SignalBus.shared.emittingSignal(
+        .passkeyVerifyAuthentication
+      ) {
         return try await client.httpClient.perform(
           route: BetterAuthPasskeyRoute.passkeyVerifyAuthentication,
           body: body,
@@ -247,11 +249,13 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.perform(
-        route: BetterAuthPasskeyRoute.passkeyDeletePasskey,
-        body: body,
-        responseType: PasskeyDeletePasskeyResponse.self
-      )
+      return try await SignalBus.shared.emittingSignal(.passkeyDeletePasskey) {
+        return try await client.httpClient.perform(
+          route: BetterAuthPasskeyRoute.passkeyDeletePasskey,
+          body: body,
+          responseType: PasskeyDeletePasskeyResponse.self
+        )
+      }
     }
 
     public typealias PasskeyUpdatePasskey = APIResource<
@@ -270,11 +274,13 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await client.httpClient.perform(
-        route: BetterAuthPasskeyRoute.passkeyUpdatePasskey,
-        body: body,
-        responseType: PasskeyUpdatePasskeyResponse.self
-      )
+      return try await SignalBus.shared.emittingSignal(.passkeyDeletePasskey) {
+        return try await client.httpClient.perform(
+          route: BetterAuthPasskeyRoute.passkeyUpdatePasskey,
+          body: body,
+          responseType: PasskeyUpdatePasskeyResponse.self
+        )
+      }
     }
   }
 #endif
