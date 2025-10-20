@@ -77,7 +77,7 @@ public final class EmailOTP: Pluggable {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.emailOtpVerifyEmail) {
       return try await client.httpClient.perform(
         route: BetterAuthEmailOTPRoute.emailOTPVerifyEmail,
         body: body,

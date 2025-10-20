@@ -10,12 +10,13 @@ extension BetterAuthClient.SignIn {
   /// - Returns: ``AnonymousSignInAnonymous``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func anonymous() async throws
-    -> AnonymousSignInAnonymous {
+    -> AnonymousSignInAnonymous
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.signIn) {
       return try await client.httpClient.perform(
         route: BetterAuthAnonymousRoute.signInAnonymous,
         responseType: AnonymousSignInAnonymousResponse.self

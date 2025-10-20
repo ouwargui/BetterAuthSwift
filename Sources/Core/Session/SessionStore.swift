@@ -23,6 +23,9 @@ public class SessionStore: ObservableObject {
     .updateUser,
     .verifyEmail,
     .phoneNumberVerify,
+    .magicLinkVerify,
+    .twoFactor,
+    .emailOtpVerifyEmail,
   ]
 
   private var cancellables = Set<AnyCancellable>()

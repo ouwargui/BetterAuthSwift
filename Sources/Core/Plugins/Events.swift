@@ -8,15 +8,24 @@ package enum Signal {
   case signUp
   case deleteUser
   case verifyEmail
+  
+  // MARK: Two Factor
+  case twoFactor
 
-  // Mark: Phone Number
+  // MARK: Phone Number
   case phoneNumberVerify
+  
+  // MARK: Magic Link
+  case magicLinkVerify
 
   // MARK: Passkey
   case passkeyVerifyRegistration
   case passkeyDeletePasskey
   case passkeyUpdatePasskey
   case passkeyVerifyAuthentication
+  
+  // MARK: Email OTP
+  case emailOtpVerifyEmail
 }
 
 @MainActor

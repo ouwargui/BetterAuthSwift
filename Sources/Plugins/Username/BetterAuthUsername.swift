@@ -6,7 +6,8 @@ extension BetterAuthClient {
   >
 
   public func isUsernameAvailable(with body: UsernameIsUsernameAvailableRequest)
-    async throws -> UsernameIsUsernameAvailable {
+    async throws -> UsernameIsUsernameAvailable
+  {
     return try await self.httpClient.perform(
       route: BetterAuthUsernameRoute.isUsernameAvailable,
       body: body,
@@ -25,12 +26,13 @@ extension BetterAuthClient.SignUp {
   /// - Returns: ``UsernameSignUpEmail``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func email(with body: UsernameSignUpEmailRequest) async throws
-    -> UsernameSignUpEmail {
+    -> UsernameSignUpEmail
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.signUp) {
       return try await client.httpClient.perform(
         route: BetterAuthRoute.signUpEmail,
         body: body,
@@ -50,12 +52,13 @@ extension BetterAuthClient.SignIn {
   /// - Returns: ``UsernameSignInUsername``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func username(with body: UsernameSignInUsernameRequest) async throws
-    -> UsernameSignInUsername {
+    -> UsernameSignInUsername
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.signIn) {
       let res:
         APIResource<
           PluginOptional<UsernameSignInUsernameResponse>, SignInContext

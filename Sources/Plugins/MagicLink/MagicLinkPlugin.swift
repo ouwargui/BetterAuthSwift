@@ -27,12 +27,13 @@ public final class MagicLink: Pluggable {
   /// - Returns: ``MagicLinkVerify``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verify(with body: MagicLinkVerifyRequest) async throws
-    -> MagicLinkVerify {
+    -> MagicLinkVerify
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.magicLinkVerify) {
       return try await client.httpClient.perform(
         route: BetterAuthMagicLinkRoute.magicLinkVerify,
         query: body,

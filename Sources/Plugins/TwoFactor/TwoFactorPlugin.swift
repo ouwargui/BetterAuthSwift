@@ -45,12 +45,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorEnable``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func enable(with body: TwoFactorEnableRequest) async throws
-    -> TwoFactorEnable {
+    -> TwoFactorEnable
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.enable,
         body: body,
@@ -68,12 +69,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorDisable``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func disable(with body: TwoFactorDisableRequest) async throws
-    -> TwoFactorDisable {
+    -> TwoFactorDisable
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.disable,
         body: body,
@@ -93,12 +95,13 @@ public class TwoFactor: Pluggable {
   public func generateBackupCodes(
     with body: TwoFactorGenerateBackupCodesRequest
   ) async throws
-    -> TwoFactorGenerateBackupCodes {
+    -> TwoFactorGenerateBackupCodes
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.generateBackupCodes,
         body: body,
@@ -116,12 +119,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorGetTotpURI``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func getTotpURI(with body: TwoFactorGetTotpURIRequest) async throws
-    -> TwoFactorGetTotpURI {
+    -> TwoFactorGetTotpURI
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.getTotpURI,
         body: body,
@@ -139,12 +143,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorSendOTP``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func sendOtp(with body: TwoFactorSendOTPRequest) async throws
-    -> TwoFactorSendOTP {
+    -> TwoFactorSendOTP
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.sendOTP,
         body: body,
@@ -163,12 +168,13 @@ public class TwoFactor: Pluggable {
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verifyBackupCode(with body: TwoFactorVerifyBackupCodeRequest)
     async throws
-    -> TwoFactorVerifyBackupCode {
+    -> TwoFactorVerifyBackupCode
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.verifyBackupCode,
         body: body,
@@ -186,12 +192,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorVerifyOTP``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verifyOtp(with body: TwoFactorVerifyOTPRequest) async throws
-    -> TwoFactorVerifyOTP {
+    -> TwoFactorVerifyOTP
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.verifyOTP,
         body: body,
@@ -209,12 +216,13 @@ public class TwoFactor: Pluggable {
   /// - Returns: ``TwoFactorVerifyTOTP``
   /// - Throws: ``/BetterAuth/BetterAuthApiError`` - ``/BetterAuth/BetterAuthSwiftError``
   public func verifyTotp(with body: TwoFactorVerifyTOTPRequest) async throws
-    -> TwoFactorVerifyTOTP {
+    -> TwoFactorVerifyTOTP
+  {
     guard let client = self.client else {
       throw BetterAuthSwiftError(message: "Client deallocated")
     }
 
-    return try await client.session.withSessionRefresh {
+    return try await SignalBus.shared.emittingSignal(.twoFactor) {
       return try await client.httpClient.perform(
         route: BetterAuthTwoFactorRoute.verifyTOTP,
         body: body,
