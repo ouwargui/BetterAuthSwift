@@ -4,7 +4,7 @@ import Foundation
 public final class MagicLinkPlugin: PluginFactory {
   public static let id: String = "magicLink"
   public static func create(client: BetterAuthClient) -> Pluggable {
-    MagicLink()
+    MagicLink(client: client)
   }
 
   public init() {}
@@ -14,7 +14,7 @@ public final class MagicLinkPlugin: PluginFactory {
 public final class MagicLink: Pluggable {
   private weak var client: BetterAuthClient?
 
-  init(client: BetterAuthClient? = nil) {
+  public init(client: BetterAuthClient) {
     self.client = client
   }
 

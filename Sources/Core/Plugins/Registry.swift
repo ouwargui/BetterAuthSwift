@@ -1,6 +1,9 @@
 import Foundation
 
-public protocol Pluggable: Sendable, Middleware {}
+@MainActor
+public protocol Pluggable: Middleware {
+  init(client: BetterAuthClient)
+}
 
 @MainActor
 public protocol PluginFactory: Sendable {

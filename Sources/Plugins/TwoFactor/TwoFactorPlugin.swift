@@ -11,10 +11,10 @@ public final class TwoFactorPlugin: PluginFactory {
 }
 
 @MainActor
-public class TwoFactor: Pluggable {
+public final class TwoFactor: Pluggable {
   private weak var client: BetterAuthClient?
 
-  init(client: BetterAuthClient) {
+  public init(client: BetterAuthClient) {
     self.client = client
   }
 

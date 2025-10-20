@@ -4,7 +4,7 @@ import Foundation
 public final class EmailOTPPlugin: PluginFactory {
   public static let id: String = "email-otp"
   public static func create(client: BetterAuthClient) -> Pluggable {
-    EmailOTP()
+    EmailOTP(client: client)
   }
 
   public init() {}
@@ -14,7 +14,7 @@ public final class EmailOTPPlugin: PluginFactory {
 public final class EmailOTP: Pluggable {
   private weak var client: BetterAuthClient?
 
-  init(client: BetterAuthClient? = nil) {
+  public init(client: BetterAuthClient) {
     self.client = client
   }
 

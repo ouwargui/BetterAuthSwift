@@ -4,7 +4,7 @@ import Foundation
 public final class PhoneNumberPlugin: PluginFactory {
   public static let id: String = "phoneNumber"
   public static func create(client: BetterAuthClient) -> Pluggable {
-    PhoneNumber()
+    PhoneNumber(client: client)
   }
 
   public init() {}
@@ -14,7 +14,7 @@ public final class PhoneNumberPlugin: PluginFactory {
 public final class PhoneNumber: Pluggable {
   private weak var client: BetterAuthClient?
 
-  init(client: BetterAuthClient? = nil) {
+  public init(client: BetterAuthClient) {
     self.client = client
   }
 

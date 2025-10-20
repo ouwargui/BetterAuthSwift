@@ -15,13 +15,13 @@
 
   @available(iOS 15.0, macOS 12.0, *)
   @MainActor
-  public class Passkey: Pluggable {
+  public final class Passkey: Pluggable {
     private weak var client: BetterAuthClient?
 
     /// Passkey store. Will be updated on passkey changes
     public let userPasskeys: PasskeyStore
 
-    init(client: BetterAuthClient) {
+    public init(client: BetterAuthClient) {
       self.client = client
       self.userPasskeys = PasskeyStore(httpClient: client.httpClient)
 
@@ -274,7 +274,7 @@
         throw BetterAuthSwiftError(message: "Client deallocated")
       }
 
-      return try await SignalBus.shared.emittingSignal(.passkeyDeletePasskey) {
+      return try await SignalBus.shared.emittingSignal(.passkeyUpdatePasskey) {
         return try await client.httpClient.perform(
           route: BetterAuthPasskeyRoute.passkeyUpdatePasskey,
           body: body,
