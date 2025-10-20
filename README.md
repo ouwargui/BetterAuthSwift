@@ -54,11 +54,11 @@ let client = BetterAuthClient(
 ### 2. Sign In with Email
 
 ```swift
-let response = try? await client.signIn.email(with: .init(
+let response = try await client.signIn.email(with: .init(
   email: "user@example.com",
   password: "securepassword"
 ))
-print(response.user.name)
+print(response.data.user.name)
 
 // Will be automatically updated
 print(client.session.data?.session)
@@ -147,7 +147,8 @@ targets: [
       name: "MyApp",
       dependencies: [
         .product(name: "BetterAuth", package: "BetterAuthSwift"),
-        .product(name: "BetterAuth<PLUGIN_NAME>", package: "BetterAuthSwift"),
+        // Replace or add other plugins as needed
+        .product(name: "BetterAuthTwoFactor", package: "BetterAuthSwift"),
       ]
     )
 ]

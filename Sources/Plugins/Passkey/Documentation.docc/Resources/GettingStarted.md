@@ -32,7 +32,7 @@ targets: [
 
 ## Setup your server
 
-Make sure to setup support for associated domains, otherwise Passkeys won't work with your app. You can check how to do it here: [Supportind Associated Domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains)
+Make sure to setup support for associated domains, otherwise Passkeys won't work with your app. You can check how to do it here: [Supporting Associated Domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains)
 
 ## Quick Setup
 
