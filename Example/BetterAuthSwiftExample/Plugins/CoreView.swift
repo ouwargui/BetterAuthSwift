@@ -4,6 +4,8 @@ import SwiftUI
 
 struct CoreView: View {
   @EnvironmentObject var client: BetterAuthClient
+  private var providers = ["google", "github"]
+  @State private var selectedProvider = "google"
 
   var body: some View {
     VStack(spacing: 24) {
@@ -70,12 +72,18 @@ struct CoreView: View {
 
           Text("You’re not signed in yet")
             .font(.headline)
+          
+          Picker("Select a social provider", selection: $selectedProvider) {
+            ForEach(providers, id: \.self) {
+              Text($0)
+            }
+          }
 
-          Button("Sign in with Google") {
+          Button("Sign in with a social provider") {
             Task {
               do {
                 _ = try await client.signIn.social(
-                  with: .init(provider: "google", callbackURL: "betterauthswiftexample://")
+                  with: .init(provider: selectedProvider, callbackURL: "betterauthswiftexample://")
                 )
               } catch {
                 print(error)

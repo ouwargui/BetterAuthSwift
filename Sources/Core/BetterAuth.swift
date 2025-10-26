@@ -6,12 +6,15 @@ import Foundation
 /// The main client for the BetterAuth API. It's an ObservableObject that updates when session changes.
 /// - Parameters:
 ///   - baseURL: The base URL of your BetterAuth API. Uses `/api/auth` path by default unless you send a different path.
+///   - scheme: The scheme of your application. If you don't know what that means, please read the [Apple docs](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app) about it.
+///   - pluginRegistry: An array with all plugins you want to use.
 ///   - httpClient: You can pass a custom implementation that conforms to ``HTTPClientProtocol``. It uses ``HTTPClient`` by default.
 @MainActor
 public class BetterAuthClient: ObservableObject {
   package let baseUrl: URL
   package let httpClient: HTTPClientProtocol
   package let pluginRegistry: PluginRegistry
+  package let scheme: String
 
   public lazy var signIn = SignIn(client: self)
   public lazy var signUp = SignUp(client: self)
@@ -23,14 +26,16 @@ public class BetterAuthClient: ObservableObject {
 
   public init(
     baseURL: URL,
+    scheme: String,
     plugins: [PluginFactory] = [],
     httpClient: HTTPClientProtocol? = nil
   ) {
     self.baseUrl = baseURL.getBaseURL()
+    self.scheme = scheme.withSchemeSuffix()
     self.pluginRegistry = PluginRegistry(factories: plugins)
     self.httpClient =
       httpClient
-      ?? HTTPClient(baseURL: self.baseUrl, pluginRegistry: self.pluginRegistry)
+    ?? HTTPClient(baseURL: self.baseUrl, scheme: self.scheme, pluginRegistry: self.pluginRegistry)
     self.session = SessionStore(httpClient: self.httpClient)
     self.pluginRegistry.register(client: self)
 
