@@ -40,6 +40,7 @@ import BetterAuthPhoneNumber
 
 let client = BetterAuthClient(
   baseURL: URL(string: "https://your-api.com")!,
+  scheme: "your-app-scheme://",
   plugins: [PhoneNumberPlugin()]
 )
 ```

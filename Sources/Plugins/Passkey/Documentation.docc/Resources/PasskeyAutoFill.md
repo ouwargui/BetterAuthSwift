@@ -22,6 +22,7 @@ struct PasskeyView: View {
     // Make sure to publicly expose your server, you can use
     // ngrok if you're on localhost
     baseURL: URL(string: "https://xxxxxxxx.ngrok-free.app")!,
+    scheme: "your-app-scheme://",
 
     // Don't forget to add the Passkey plugin to the plugins array
     plugins: [PasskeyPlugin()],

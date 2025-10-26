@@ -19,7 +19,8 @@ import SwiftUI
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://your-api-url.com")!
+    baseURL: URL(string: "http://your-api-url.com")!,
+    scheme: "your-app-scheme://"
   )
 
   var body: some View {

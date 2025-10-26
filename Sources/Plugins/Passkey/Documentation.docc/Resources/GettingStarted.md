@@ -44,6 +44,7 @@ import BetterAuthPasskey
 
 let client = BetterAuthClient(
   baseURL: URL(string: "https://your-api.com")!,
+  scheme: "your-app-scheme://",
   plugins: [PasskeyPlugin()]
 )
 ```
@@ -61,6 +62,7 @@ import BetterAuthPasskey
 struct MyApp: App {
   @StateObject private var authClient = BetterAuthClient(
     baseURL: URL(string: "https://your-api.com")!,
+    scheme: "your-app-scheme://",
     plugins: [PasskeyPlugin()]
   )
 

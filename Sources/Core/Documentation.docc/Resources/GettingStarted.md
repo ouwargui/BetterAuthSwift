@@ -28,7 +28,8 @@ dependencies: [
 import BetterAuth
 
 let client = BetterAuthClient(
-  baseURL: URL(string: "https://your-api.com")!
+  baseURL: URL(string: "https://your-api.com")!,
+  scheme: "your-app-scheme://"
 )
 ```
 
@@ -57,7 +58,8 @@ import BetterAuth
 @main
 struct MyApp: App {
   @StateObject private var authClient = BetterAuthClient(
-    baseURL: URL(string: "https://your-api.com")!
+    baseURL: URL(string: "https://your-api.com")!,
+    scheme: "your-app-scheme://"
   )
 
   var body: some Scene {
