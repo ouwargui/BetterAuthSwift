@@ -34,6 +34,7 @@ public protocol HTTPClientProtocol: Sendable {
 
 public actor HTTPClient: HTTPClientProtocol {
   private let baseURL: URL
+  private let scheme: String
   private let session: URLSession
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
@@ -42,10 +43,12 @@ public actor HTTPClient: HTTPClientProtocol {
 
   package init(
     baseURL: URL,
+    scheme: String,
     pluginRegistry: PluginRegistry,
     cookieStorage: CookieStorageProtocol = CookieStorage(),
   ) {
     self.baseURL = baseURL
+    self.scheme = scheme
     self.pluginRegistry = pluginRegistry
     self.cookieStorage = cookieStorage
 
@@ -59,10 +62,12 @@ public actor HTTPClient: HTTPClientProtocol {
 
   public init(
     baseURL: URL,
+    scheme: String,
     pluginRegistry: PluginRegistry,
     cookieStorage: CookieStorageProtocol?
   ) {
     self.baseURL = baseURL
+    self.scheme = scheme
     self.pluginRegistry = pluginRegistry
     self.cookieStorage = cookieStorage ?? CookieStorage()
 
@@ -164,7 +169,7 @@ public actor HTTPClient: HTTPClientProtocol {
 
     try await performWillSend(action: action, request: &reqCtx)
 
-    let request = try reqCtx.buildUrlRequest(baseURL: baseURL, encoder: encoder)
+    let request = try reqCtx.buildUrlRequest(baseURL: baseURL, scheme: self.scheme, encoder: encoder)
 
     let (data, response) = try await session.data(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {

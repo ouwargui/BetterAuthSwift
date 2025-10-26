@@ -57,7 +57,8 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "https://c10c12aae565.ngrok-free.app")!,
+    baseURL: URL(string: "https://joylessly-pointless-lyla.ngrok-free.dev")!,
+    scheme: "betterauthswiftexample://",
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
       MagicLinkPlugin(), EmailOTPPlugin(), PasskeyPlugin(),
@@ -85,7 +86,11 @@ struct ContentView: View {
               ToolbarItem(placement: .topBarTrailing) {
                 Button("Logout") {
                   Task {
-                    _ = try await client.signOut()
+                    do {
+                      _ = try await client.signOut()
+                    } catch {
+                      print(error)
+                    }
                   }
                 }
               }

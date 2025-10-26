@@ -34,7 +34,7 @@ public struct HTTPRequestContext: Sendable {
     self.query = query
   }
 
-  public func buildUrlRequest(baseURL: URL, encoder: JSONEncoder) throws
+  public func buildUrlRequest(baseURL: URL, scheme: String, encoder: JSONEncoder) throws
     -> URLRequest
   {
     var url: URL {
@@ -49,6 +49,7 @@ public struct HTTPRequestContext: Sendable {
     request.httpMethod = self.method
     request.httpShouldHandleCookies = true
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue(scheme, forHTTPHeaderField: "Origin")
     for (k, v) in self.headers {
       request.setValue(v, forHTTPHeaderField: k)
     }
