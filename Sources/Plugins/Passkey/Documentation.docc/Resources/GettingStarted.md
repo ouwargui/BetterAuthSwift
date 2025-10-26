@@ -17,7 +17,7 @@ Or add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ouwargui/BetterAuthSwift.git", from: "1.0.0")
+    .package(url: "https://github.com/ouwargui/BetterAuthSwift.git", from: "2.0.0")
 ],
 targets: [
     .target(
@@ -48,7 +48,7 @@ let client = BetterAuthClient(
 )
 ```
 
-Similar to the `session` variable from the ``/BetterAuth/BetterAuthClient``, you need to explicitly
+Similar to the `session` variable from the `/BetterAuth/BetterAuthClient`, you need to explicitly
 fetch the initial `userPasskeys`. Future changes to the `userPasskeys` will update the variable
 automatically:
 
@@ -70,7 +70,7 @@ struct MyApp: App {
         .environmentObject(authClient)
         .task {
           // Explicitly fetch the initial value.
-          // 
+          //
           // You don't necessarily need to do this on your root view.
           // In fact, it's probably better to load it when you actually need to.
           await authClient.passkey.userPasskeys.refreshPasskeys()
