@@ -14,3 +14,4 @@ Better Auth Swift provides a comprehensive client for integrating with your Bett
 
 - <doc:GettingStarted>
 - <doc:LoginWithApple>
+- <doc:MigrateToV2>

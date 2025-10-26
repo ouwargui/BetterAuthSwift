@@ -73,5 +73,10 @@
         self.error = .unknownError(error)
       }
     }
+
+    public func refreshPasskeysIfNeeded() async {
+      guard self.data != nil else { return }
+      await self.refreshPasskeys()
+    }
   }
 #endif
