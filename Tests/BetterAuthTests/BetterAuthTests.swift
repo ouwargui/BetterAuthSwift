@@ -42,6 +42,20 @@ import Testing
   )
 }
 
+@Test func stringwithSchemeSuffixReturnsCorrectScheme() async {
+  var scheme = "scheme"
+  #expect(
+    scheme.withSchemeSuffix() == "scheme://",
+    "Expected scheme to be scheme://, received \(scheme.withSchemeSuffix())"
+  )
+  
+  scheme = "scheme://"
+  #expect(
+    scheme.withSchemeSuffix() == "scheme://",
+    "Expected scheme to be scheme://, received \(scheme.withSchemeSuffix())"
+  )
+}
+
 @Test func betterAuthClientGetCookieReturnsTheBetterAuthCookie() async throws {
   let baseURL = URL(string: "http://localhost:3001")!
 
@@ -55,6 +69,7 @@ import Testing
   let client = await MainActor.run {
     BetterAuthClient(
       baseURL: baseURL,
+      scheme: "betterauthswifttest://",
       httpClient: MockHTTPClient(
         baseURL: baseURL,
         pluginRegistry: PluginRegistry(factories: []),
