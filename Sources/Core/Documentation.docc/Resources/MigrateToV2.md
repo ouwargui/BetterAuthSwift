@@ -22,7 +22,7 @@ let client = BetterAuthClient(
 
 The client provides `@Published` properties that react to some of the calls to refetch it's data if necessary. The idea is to be as similar as possible to hooks of the JS API. Because of this some changes were made to the V1 API:
 
-### `client.session` and `client.user` are now `client.session`
+### client.session and client.user are now client.session
 
 This allows the client to also provide the async state of the variable
 
@@ -81,7 +81,7 @@ struct MyView: View {
 
 If you were using this package custom errors, like `BetterAuthSwiftError` and `BetterAuthError` you should read these changes and change your code:
 
-### `BetterAuthError` is now ``BetterAuthApiError``
+### BetterAuthError is now BetterAuthApiError
 
 ``BetterAuthError`` is now a new enum created to generalize thrown errors. See changes [here](https://github.com/ouwargui/BetterAuthSwift/pull/7/files#diff-00490b97232b5ebf7228c7dbb56bb18abac65df87ec4d5177f292d4cfe011d9f).
 
@@ -89,7 +89,7 @@ If you were using this package custom errors, like `BetterAuthSwiftError` and `B
 
 MiddlewareActions was renamed to ``MiddlewareAction``. Because of this the ``HTTPClientProtocol`` changed API.
 
-## ``HTTPClientProtocol``
+## HTTPClientProtocol
 
 The ``HTTPClientProtocol`` now uses ``MiddlewareAction`` and the init accepts a ``PluginRegistry`` instead of an array of plugins.
 
@@ -97,7 +97,7 @@ The ``HTTPClientProtocol`` now uses ``MiddlewareAction`` and the init accepts a 
 
 AuthPlugin protocol was renamed to ``Middleware``.
 
-## ``PluginRegistry`` and ``PluginFactory``
+## PluginRegistry and PluginFactory
 
 The client now uses a ``PluginRegistry`` to maintain reference to plugin instances. These instances are created through ``PluginFactory``.
 
