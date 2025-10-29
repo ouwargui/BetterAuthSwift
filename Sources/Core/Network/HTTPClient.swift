@@ -100,7 +100,8 @@ public actor HTTPClient: HTTPClientProtocol {
   }
 
   public func perform<T, C>(route: AuthRoutable, responseType: T.Type)
-    async throws -> APIResource<T, C> {
+    async throws -> APIResource<T, C>
+  {
     return try await self.perform(
       action: nil,
       route: route,
@@ -169,7 +170,11 @@ public actor HTTPClient: HTTPClientProtocol {
 
     try await performWillSend(action: action, request: &reqCtx)
 
-    let request = try reqCtx.buildUrlRequest(baseURL: baseURL, scheme: self.scheme, encoder: encoder)
+    let request = try reqCtx.buildUrlRequest(
+      baseURL: baseURL,
+      scheme: self.scheme,
+      encoder: encoder
+    )
 
     let (data, response) = try await session.data(for: request)
     guard let httpResponse = response as? HTTPURLResponse else {

@@ -6,14 +6,18 @@ public protocol CookieStorageProtocol: HTTPCookieStorage {
   func setCookie(_ cookie: String, for url: URL) throws
 }
 
-public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, Lockable,
+public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
+  Lockable,
   @unchecked Sendable
 {
   private let keychain: StorageProtocol
   private let cookieKey = "better-auth.persistent-cookies"
   package let lock = NSLock()
   private var _cookieStore: [HTTPCookie] = []
-  private let logger = Logger(subsystem: "com.betterauth", category: "CookieStorage")
+  private let logger = Logger(
+    subsystem: "com.betterauth",
+    category: "CookieStorage"
+  )
 
   public init(storage: StorageProtocol) {
     self.keychain = storage
@@ -37,18 +41,11 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol, Lock
 
   public func setCookie(_ cookie: String, for url: URL) throws {
     let host = try url.getHost()
-    let httpCookie = HTTPCookie.cookies(
-      withResponseHeaderFields: ["Set-Cookie": cookie],
-      for: host
+    self.setCookies(
+      HTTPCookie.cookies(fromCombinedHeader: cookie, for: host),
+      for: host,
+      mainDocumentURL: nil
     )
-
-    guard let cookie = httpCookie.first else {
-      throw BetterAuthSwiftError(
-        message: "Failed to get session cookie from callbackURL"
-      )
-    }
-
-    self.setCookie(cookie)
   }
 
   public override func storeCookies(

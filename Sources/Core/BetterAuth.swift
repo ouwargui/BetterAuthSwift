@@ -35,7 +35,11 @@ public class BetterAuthClient: ObservableObject {
     self.pluginRegistry = PluginRegistry(factories: plugins)
     self.httpClient =
       httpClient
-    ?? HTTPClient(baseURL: self.baseUrl, scheme: self.scheme, pluginRegistry: self.pluginRegistry)
+      ?? HTTPClient(
+        baseURL: self.baseUrl,
+        scheme: self.scheme,
+        pluginRegistry: self.pluginRegistry
+      )
     self.session = SessionStore(httpClient: self.httpClient)
     self.pluginRegistry.register(client: self)
 
@@ -466,8 +470,21 @@ extension BetterAuthClient {
           if authResponse.data.redirect, let authURL = authResponse.data.url {
             let handler = OAuthHandler()
 
+            var components = URLComponents(
+              url: client.baseUrl,
+              resolvingAgainstBaseURL: false
+            )
+            components?.path.append(BetterAuthRoute.expoAuthorizationProxy.path)
+            components?.queryItems = [
+              URLQueryItem(name: "authorizationURL", value: authURL)
+            ]
+
+            guard let proxyURL = components?.url else {
+              throw BetterAuthSwiftError(message: "Failed to create proxy URL")
+            }
+
             let sessionCookie = try await handler.authenticate(
-              authURL: authURL,
+              authURL: proxyURL.absoluteString,
               callbackURLScheme: try handler.extractScheme(
                 from: body.callbackURL
               )
