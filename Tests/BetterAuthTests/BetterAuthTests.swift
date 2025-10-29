@@ -48,7 +48,7 @@ import Testing
     scheme.withSchemeSuffix() == "scheme://",
     "Expected scheme to be scheme://, received \(scheme.withSchemeSuffix())"
   )
-  
+
   scheme = "scheme://"
   #expect(
     scheme.withSchemeSuffix() == "scheme://",
@@ -59,11 +59,12 @@ import Testing
 @Test func betterAuthClientGetCookieReturnsTheBetterAuthCookie() async throws {
   let baseURL = URL(string: "http://localhost:3001")!
 
-  let cookieStorage = CookieStorage(storage: InMemoryStorage())
+  let cookieName = "better-auth.session_token"
+  let cookieValue = "123131412312312.dsakhhgeakhg3213yaw%aasda"
 
-  let cookieName = "better-auth.persistent-cookies"
-  let cookieValue = "abc123"
-  let cookieString = "\(cookieName)=\(cookieValue); Path=/"
+  let cookieStorage = CookieStorage(storage: InMemoryStorage())
+  let cookieString =
+    "better-auth.state=;+Max-Age=0,+\(cookieName)=\(cookieValue);+Max-Age=604800;+Path=/;+HttpOnly;+SameSite=Lax"
   try cookieStorage.setCookie(cookieString, for: baseURL)
 
   let client = await MainActor.run {
