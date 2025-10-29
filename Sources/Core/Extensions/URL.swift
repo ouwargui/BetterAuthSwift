@@ -40,4 +40,12 @@ extension URL {
 
     return self
   }
+
+  package func appendingPath(_ path: String) -> URL {
+    if #available(macOS 13.0, iOS 16.0, watchOS 9.0, *) {
+      return self.appending(path: self.path)
+    } else {
+      return self.appendingPathComponent(self.path)
+    }
+  }
 }

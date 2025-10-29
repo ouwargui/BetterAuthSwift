@@ -7,13 +7,13 @@ public class SessionStore: ObservableObject {
   @Published public private(set) var data: Session?
   @Published public private(set) var isPending: Bool = false
   @Published public private(set) var error: BetterAuthError?
-  
+
   private let httpClient: HTTPClientProtocol
   private let logger = Logger(
     subsystem: "com.betterauth",
     category: "session"
   )
-  
+
   private let LISTENED_SIGNALS: [Signal] = [
     .signout,
     .passkeyVerifyAuthentication,
@@ -27,18 +27,18 @@ public class SessionStore: ObservableObject {
     .twoFactor,
     .emailOtpVerifyEmail,
   ]
-  
+
   private var cancellables = Set<AnyCancellable>()
-  
+
   init(httpClient: HTTPClientProtocol) {
     self.httpClient = httpClient
-    
+
     SignalBus.shared.listen(to: LISTENED_SIGNALS, storeIn: &cancellables) {
       [weak self] _ in
       await self?.refreshSession()
     }
   }
-  
+
   package func update(_ session: Session?) {
     self.data = session
     guard let session = session else {
@@ -47,22 +47,22 @@ public class SessionStore: ObservableObject {
     }
     logger.debug("Session updated: \(session)")
   }
-  
+
   private func setLoading(_ loading: Bool) {
     self.isPending = loading
   }
-  
+
   public func refreshSession() async {
     setLoading(true)
     defer { setLoading(false) }
-    
+
     do {
       let session: APIResource<Session?, EmptyContext> =
-      try await httpClient.perform(
-        route: BetterAuthRoute.getSession,
-        responseType: Session?.self
-      )
-      
+        try await httpClient.perform(
+          route: BetterAuthRoute.getSession,
+          responseType: Session?.self
+        )
+
       update(session.data)
     } catch let error as BetterAuthApiError {
       update(nil)
@@ -75,7 +75,7 @@ public class SessionStore: ObservableObject {
       self.error = .unknownError(error)
     }
   }
-  
+
   public func refreshSessionIfNeeded() async {
     guard self.data != nil else { return }
     await self.refreshSession()

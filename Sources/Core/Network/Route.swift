@@ -35,6 +35,7 @@ public enum BetterAuthRoute: AuthRoutable {
   case refreshToken
   case getAccessToken
   case accountInfo
+  case expoAuthorizationProxy
 
   public var path: String {
     switch self {
@@ -86,6 +87,8 @@ public enum BetterAuthRoute: AuthRoutable {
       return "/get-access-token"
     case .accountInfo:
       return "/account-info"
+    case .expoAuthorizationProxy:
+      return "/expo-authorization-proxy"
     }
   }
 
@@ -98,7 +101,7 @@ public enum BetterAuthRoute: AuthRoutable {
       .getAccessToken, .accountInfo, .resetPassword:
       return "POST"
     case .getSession, .verifyEmail, .listSessions,
-      .listAccounts:
+      .listAccounts, .expoAuthorizationProxy:
       return "GET"
     }
   }
