@@ -16,6 +16,18 @@
   </p>
 </p>
 
+## Compatibility
+
+| Better Auth Swift | Better Auth |
+| ----------------- | ----------- |
+| 2.0.1             | >=1.3.22    |
+| 2.0.0             | <=1.3.21    |
+
+> [!WARNING]  
+> From v2.0.1 your server needs the [Expo plugin](https://www.better-auth.com/docs/integrations/expo).
+>
+> This is because the server needs a proxy endpoint for OAuth that right now is coupled to the Expo plugin.
+
 ## Installation
 
 Before starting, make sure to check the [Better Auth docs](https://www.better-auth.com/docs/) first.
