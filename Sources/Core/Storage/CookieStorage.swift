@@ -11,7 +11,8 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
   @unchecked Sendable
 {
   private let keychain: StorageProtocol
-  private let cookieKey = "better-auth.persistent-cookies"
+  private let keychainKey = "better-auth.persistent-cookies"
+  private let betterAuthSessionCookieKey = "better-auth.session_token"
   package let lock = NSLock()
   private var _cookieStore: [HTTPCookie] = []
   private let logger = Logger(
@@ -34,7 +35,7 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
   public func getBetterAuthCookie() -> HTTPCookie? {
     return withLock {
       _cookieStore.first { cookie in
-        cookie.name == cookieKey && !isExpired(cookie)
+        cookie.name == betterAuthSessionCookieKey && !isExpired(cookie)
       }
     }
   }
@@ -142,7 +143,7 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
         currentCookies.map(CookieData.init)
       )
       let jsonString = String(data: cookieData, encoding: .utf8) ?? ""
-      let _ = try keychain.save(key: cookieKey, value: jsonString)
+      let _ = try keychain.save(key: keychainKey, value: jsonString)
       logger.debug("Saved \(currentCookies.count) cookies to keychain")
     } catch {
       logger.error("Failed to save cookies")
@@ -150,7 +151,7 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
   }
 
   private func loadCookiesFromKeychain() {
-    guard let jsonString = keychain.get(key: cookieKey),
+    guard let jsonString = keychain.get(key: keychainKey),
       let data = jsonString.data(using: .utf8)
     else {
       return
