@@ -3,11 +3,11 @@ import Foundation
 
 #if !os(watchOS)
 @MainActor
-class OAuthHandler: NSObject {
+package class OAuthHandler: NSObject {
   private var webAuthSession: ASWebAuthenticationSession?
   private var completion: ((Result<String, Error>) -> Void)?
 
-  func extractScheme(from callbackURL: String?) throws -> String {
+  public func extractScheme(from callbackURL: String?) throws -> String {
     guard let callbackURL = callbackURL,
       let url = URL(string: callbackURL),
       let scheme = url.scheme
@@ -21,7 +21,7 @@ class OAuthHandler: NSObject {
     return scheme
   }
 
-  func authenticate(authURL: String, callbackURLScheme: String) async throws
+  public func authenticate(authURL: String, callbackURLScheme: String) async throws
     -> String
   {
     return try await withCheckedThrowingContinuation { continuation in
@@ -86,7 +86,7 @@ class OAuthHandler: NSObject {
 }
 
 extension OAuthHandler: ASWebAuthenticationPresentationContextProviding {
-  func presentationAnchor(for session: ASWebAuthenticationSession)
+  public func presentationAnchor(for session: ASWebAuthenticationSession)
     -> ASPresentationAnchor
   {
     #if os(iOS)
