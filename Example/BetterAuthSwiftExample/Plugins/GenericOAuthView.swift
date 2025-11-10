@@ -9,7 +9,7 @@ import SwiftUI
 import BetterAuth
 import BetterAuthGenericOAuth
 
-struct genericOAuthView: View {
+struct GenericOAuthView: View {
     @EnvironmentObject var client: BetterAuthClient
     
     @State private var providerId = ""
