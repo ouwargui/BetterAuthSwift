@@ -3,7 +3,7 @@ import Foundation
 
 #if !os(watchOS)
 @MainActor
-public class OAuthHandler: NSObject {  // CHANGED: public
+package class OAuthHandler: NSObject {
   private var webAuthSession: ASWebAuthenticationSession?
   private var completion: ((Result<String, Error>) -> Void)?
 
