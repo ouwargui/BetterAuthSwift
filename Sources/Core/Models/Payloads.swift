@@ -78,6 +78,7 @@ public struct SignInSocialRequest: Codable, Sendable {
   public let scopes: [String]?
   public let requestSignUp: Bool?
   public let loginHint: String?
+  public let additionalData: [String: AnyCodable]?
 
   public struct IDToken: Codable, Sendable {
     public let token: String
@@ -111,6 +112,7 @@ public struct SignInSocialRequest: Codable, Sendable {
     scopes: [String]? = nil,
     requestSignUp: Bool? = nil,
     loginHint: String? = nil,
+    additionalData: [String: AnyCodable]? = nil,
   ) {
     self.provider = provider
     self.callbackURL = callbackURL
@@ -121,17 +123,20 @@ public struct SignInSocialRequest: Codable, Sendable {
     self.scopes = scopes
     self.requestSignUp = requestSignUp
     self.loginHint = loginHint
+    self.additionalData = additionalData
   }
 }
 
 public struct SignInSocialResponse: Codable, Sendable {
   public let redirect: Bool
-  public let token: String?
+  public let token: String
+  public let user: User
   public let url: String?
 
-  public init(redirect: Bool, token: String?, url: String?) {
+  public init(redirect: Bool, token: String, user: User, url: String?) {
     self.redirect = redirect
     self.token = token
+    self.user = user
     self.url = url
   }
 }
