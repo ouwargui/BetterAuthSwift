@@ -84,21 +84,22 @@ extension BetterAuthClient {
     }
   }
 
-  public typealias ForgetPassword = APIResource<
-    ForgetPasswordResponse, EmptyContext
+  public typealias RequestPasswordReset = APIResource<
+    RequestPasswordResetResponse, EmptyContext
   >
 
-  /// Make a request to /forget-password.
-  /// - Parameter body: ``ForgetPasswordRequest``
-  /// - Returns: ``ForgetPassword``
+  /// Make a request to /request-password-reset.
+  /// - Parameter body: ``RequestPasswordResetRequest``
+  /// - Returns: ``RequestPasswordReset``
   /// - Throws: ``BetterAuthApiError`` - ``BetterAuthSwiftError``
-  public func forgetPassword(with body: ForgetPasswordRequest) async throws
-    -> ForgetPassword
+  public func requestPasswordReset(with body: RequestPasswordResetRequest)
+    async throws
+    -> RequestPasswordReset
   {
     return try await httpClient.perform(
       route: BetterAuthRoute.forgetPassword,
       body: body,
-      responseType: ForgetPasswordResponse.self
+      responseType: RequestPasswordResetResponse.self
     )
   }
 

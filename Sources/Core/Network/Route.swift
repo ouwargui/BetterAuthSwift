@@ -98,10 +98,10 @@ public enum BetterAuthRoute: AuthRoutable {
       .sendVerificationEmail, .changeEmail, .changePassword, .updateUser,
       .deleteUser, .requestPasswordReset, .revokeSession, .revokeSessions,
       .revokeOtherSessions, .linkSocial, .unlinkAccount, .refreshToken,
-      .getAccessToken, .accountInfo, .resetPassword:
+      .getAccessToken, .resetPassword:
       return "POST"
     case .getSession, .verifyEmail, .listSessions,
-      .listAccounts, .expoAuthorizationProxy:
+      .listAccounts, .expoAuthorizationProxy, .accountInfo:
       return "GET"
     }
   }

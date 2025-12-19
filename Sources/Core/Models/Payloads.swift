@@ -149,26 +149,6 @@ public struct SignOutResponse: Codable, Sendable {
   }
 }
 
-public struct ForgetPasswordRequest: Codable, Sendable {
-  public let email: String
-  public let redirectTo: String?
-
-  public init(email: String, redirectTo: String?) {
-    self.email = email
-    self.redirectTo = redirectTo
-  }
-}
-
-public struct ForgetPasswordResponse: Codable, Sendable {
-  public let status: Bool
-  public let message: String
-
-  public init(status: Bool, message: String) {
-    self.status = status
-    self.message = message
-  }
-}
-
 public struct ResetPasswordRequest: Codable, Sendable {
   public let token: String?
   public let newPassword: String
