@@ -57,7 +57,7 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
 
 struct ContentView: View {
   @StateObject private var client = BetterAuthClient(
-    baseURL: URL(string: "http://localhost:3001")!,
+    baseURL: URL(string: "https://joylessly-pointless-lyla.ngrok-free.dev")!,
     scheme: "betterauthswiftexample://",
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
