@@ -56,6 +56,10 @@ public struct HTTPRequestContext: Sendable {
 
     if let body = self.body {
       request.httpBody = try encoder.encode(body)
+    } else if self.method == "POST" {
+      // better-auth expects a JSON body on every POST request;
+      // sending an empty body causes JSON.parse("") to throw.
+      request.httpBody = Data("{}".utf8)
     }
     if let query = self.query {
       request.addQueryItems(query.toQueryItems())
