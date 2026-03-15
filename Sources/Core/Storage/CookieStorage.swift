@@ -189,8 +189,18 @@ public final class CookieStorage: HTTPCookieStorage, CookieStorageProtocol,
   private func shouldSendCookie(_ cookie: HTTPCookie, for url: URL) -> Bool {
     do {
       let host = try url.getHost()
+      let urlHost = host.host ?? ""
 
-      if host.host != cookie.domain {
+      // Strip leading dot from cookie domain for comparison.
+      // HTTPCookie(properties:) may prepend a dot during Keychain
+      // round-trip deserialization, and servers may set the Domain
+      // attribute with a leading dot per RFC 2965.
+      let cookieDomain = cookie.domain.hasPrefix(".")
+        ? String(cookie.domain.dropFirst())
+        : cookie.domain
+
+      // Exact match or subdomain match per RFC 6265 Section 5.1.3
+      if urlHost != cookieDomain && !urlHost.hasSuffix(".\(cookieDomain)") {
         return false
       }
 
