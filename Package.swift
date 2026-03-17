@@ -16,7 +16,8 @@ let package = Package(
     .library(name: "BetterAuthPhoneNumber", targets: ["BetterAuthPhoneNumber"]),
     .library(name: "BetterAuthMagicLink", targets: ["BetterAuthMagicLink"]),
     .library(name: "BetterAuthEmailOTP", targets: ["BetterAuthEmailOTP"]),
-    .library(name: "BetterAuthPasskey", targets: ["BetterAuthPasskey"])
+    .library(name: "BetterAuthPasskey", targets: ["BetterAuthPasskey"]),
+    .library(name: "BetterAuthGenericOAuth", targets: ["BetterAuthGenericOAuth"])
   ],
   dependencies: [
     .package(
@@ -64,6 +65,11 @@ let package = Package(
       name: "BetterAuthPasskey",
       dependencies: ["BetterAuth"],
       path: "Sources/Plugins/Passkey"
+    ),
+    .target(
+      name: "BetterAuthGenericOAuth",
+      dependencies: ["BetterAuth"],
+      path: "Sources/Plugins/GenericOAuth"
     ),
     .testTarget(
       name: "BetterAuthTests",

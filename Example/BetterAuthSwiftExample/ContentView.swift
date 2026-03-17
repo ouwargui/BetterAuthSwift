@@ -13,6 +13,7 @@ import BetterAuthPasskey
 import BetterAuthPhoneNumber
 import BetterAuthTwoFactor
 import BetterAuthUsername
+import BetterAuthGenericOAuth
 import SwiftUI
 
 extension String {
@@ -32,6 +33,7 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
   case magicLink
   case emailOTP
   case passkeyView
+  case genericOAuthView
 
   var id: String { rawValue }
 
@@ -51,6 +53,8 @@ enum Screen: String, Hashable, Identifiable, CaseIterable {
       "Email OTP"
     case .passkeyView:
       "Passkey"
+    case .genericOAuthView:
+      "Generic OAuth"
     }
   }
 }
@@ -62,6 +66,7 @@ struct ContentView: View {
     plugins: [
       TwoFactorPlugin(), UsernamePlugin(), PhoneNumberPlugin(),
       MagicLinkPlugin(), EmailOTPPlugin(), PasskeyPlugin(),
+      GenericOAuthPlugin(),
     ],
   )
   @State private var path: [Screen] = []
@@ -135,6 +140,8 @@ struct ContentView: View {
       EmailOTPView()
     case .passkeyView:
       PasskeyView()
+    case .genericOAuthView:
+      GenericOAuthView()
     }
   }
 }
