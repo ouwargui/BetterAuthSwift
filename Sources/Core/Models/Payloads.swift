@@ -129,11 +129,11 @@ public struct SignInSocialRequest: Codable, Sendable {
 
 public struct SignInSocialResponse: Codable, Sendable {
   public let redirect: Bool
-  public let token: String
-  public let user: User
+  public let token: String?
+  public let user: User?
   public let url: String?
 
-  public init(redirect: Bool, token: String, user: User, url: String?) {
+  public init(redirect: Bool, token: String? = nil, user: User? = nil, url: String?) {
     self.redirect = redirect
     self.token = token
     self.user = user

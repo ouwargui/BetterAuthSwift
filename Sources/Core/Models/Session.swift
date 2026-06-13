@@ -14,8 +14,8 @@ public struct SessionData: Codable, Sendable, Loggable {
   public let id: String
   public let userId: String
   public let token: String
-  public let ipAddress: String
-  public let userAgent: String
+  public let ipAddress: String?
+  public let userAgent: String?
   public let expiresAt: Date
   public let createdAt: Date
   public let updatedAt: Date
@@ -24,8 +24,8 @@ public struct SessionData: Codable, Sendable, Loggable {
     id: String,
     userId: String,
     token: String,
-    ipAddress: String,
-    userAgent: String,
+    ipAddress: String? = nil,
+    userAgent: String? = nil,
     expiresAt: Date,
     createdAt: Date,
     updatedAt: Date
