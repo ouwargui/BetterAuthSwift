@@ -5,7 +5,6 @@ import Foundation
 @MainActor
 class OAuthHandler: NSObject {
   private var webAuthSession: ASWebAuthenticationSession?
-  private var completion: ((Result<String, Error>) -> Void)?
 
   func extractScheme(from callbackURL: String?) throws -> String {
     guard let callbackURL = callbackURL,
@@ -24,11 +23,8 @@ class OAuthHandler: NSObject {
   func authenticate(authURL: String, callbackURLScheme: String) async throws
     -> String
   {
-    return try await withCheckedThrowingContinuation { continuation in
-      self.completion = { result in
-        continuation.resume(with: result)
-      }
-
+    return try await withCheckedThrowingContinuation {
+      (continuation: CheckedContinuation<String, Error>) in
       guard let url = URL(string: authURL) else {
         continuation.resume(
           throwing: BetterAuthSwiftError(message: "Invalid auth URL")
@@ -36,41 +32,35 @@ class OAuthHandler: NSObject {
         return
       }
 
-      webAuthSession = .init(
+      let session = ASWebAuthenticationSession(
         url: url,
         callbackURLScheme: callbackURLScheme
-      ) { [weak self] callbackURL, error in
+      ) { @Sendable callbackURL, error in
         if let error = error {
-          self?.completion?(.failure(error))
-        } else if let callbackURL = callbackURL {
-          guard let cookie = self?.extractCookieFromCallback(callbackURL) else {
-            self?.completion?(
-              .failure(
-                BetterAuthSwiftError(
-                  message: "Failed to extract session cookie from callback URL"
-                )
-              )
-            )
-            return
-          }
-          self?.completion?(.success(cookie))
+          continuation.resume(throwing: error)
+        } else if let callbackURL = callbackURL,
+          let cookie = OAuthHandler.extractCookieFromCallback(callbackURL)
+        {
+          continuation.resume(returning: cookie)
         } else {
-          self?.completion?(
-            .failure(BetterAuthSwiftError(message: "No callback URL received"))
+          continuation.resume(
+            throwing: BetterAuthSwiftError(
+              message: "Failed to extract session cookie from callback URL"
+            )
           )
         }
-
-        self?.webAuthSession = nil
-        self?.completion = nil
       }
 
-      webAuthSession?.presentationContextProvider = self
-      webAuthSession?.prefersEphemeralWebBrowserSession = false
-      webAuthSession?.start()
+      session.presentationContextProvider = self
+      session.prefersEphemeralWebBrowserSession = false
+      self.webAuthSession = session
+      session.start()
     }
   }
 
-  private func extractCookieFromCallback(_ callbackURL: URL) -> String? {
+  nonisolated private static func extractCookieFromCallback(_ callbackURL: URL)
+    -> String?
+  {
     guard
       let components = URLComponents(
         url: callbackURL,

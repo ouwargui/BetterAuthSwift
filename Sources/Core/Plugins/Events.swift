@@ -64,7 +64,7 @@ package final class SignalBus {
       subject
       .filter { listenedSignals.contains($0) }
       .sink { signal in
-        Task { await action(signal) }
+        Task { @MainActor in await action(signal) }
       }
 
     cancellables.insert(cancellable)
